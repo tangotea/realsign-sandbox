@@ -1,0 +1,17 @@
+import fs from "node:fs";import path from "node:path";const root=process.cwd();const read=p=>fs.readFileSync(path.join(root,p),"utf8");const migration=read("supabase/migrations/0006_notifications_access_changes_help.sql");const checks=[
+["Web push dependency",JSON.parse(read("package.json")).dependencies["web-push"]],
+["Push service worker",read("public/sw.js").includes('addEventListener("push"')],
+["Reminder queue",migration.includes("enqueue_booking_reminders")],
+["60/24 cancellation policy config",migration.includes("free_cancellation_hours")],
+["Short-notice reschedule request",migration.includes("provider_respond_reschedule")&&migration.includes("replacement_reservation_id")],
+["No-show reporting",migration.includes("report_booking_no_show")],
+["Sponsor fund",migration.includes("create table public.sponsor_funds")],
+["General Deaf Access eligibility",migration.includes("user_deaf_verifications")&&migration.includes("ca.user_id is null and deaf_ok")],
+["Sponsor credit returns on cancellation",migration.includes("return_used_credit_for_booking")],
+["Sponsored checkout adjusts cash due",migration.includes("cash_due:=greatest(0,r.price_cents_snapshot-r.sponsor_subsidy_cents)")],
+["Fully sponsored checkout",migration.includes("finalize_fully_sponsored_booking")],
+["Help video manager",migration.includes("create table public.help_content")&&fs.existsSync(path.join(root,"app/admin/help/page.tsx"))],
+["Boxed contextual help",read("components/help/HelpButton.tsx").includes("help-btn mini")],
+["Admin rules editable",fs.existsSync(path.join(root,"app/admin/rules/page.tsx"))],
+["Cancellation refund keeps cancellation state",read("app/api/payments/paystack/webhook/route.ts").includes("cancelled_by_learner")],
+];let failed=0;for(const [name,ok] of checks){console.log(`${ok?"PASS":"FAIL"} ${name}`);if(!ok)failed++}if(failed)process.exit(1);

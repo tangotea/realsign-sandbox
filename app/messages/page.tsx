@@ -1,0 +1,2 @@
+import AppNav from "@/components/AppNav";
+export default function Page(){return <div className="shell"><header className="topbar"><div className="brand">REALSIGN</div><strong>Messages</strong></header><main className="main"><section className="card"><h1>Messages</h1><p className="muted">This module is reserved for the next RealSign build milestone.</p></section></main><AppNav /></div>}

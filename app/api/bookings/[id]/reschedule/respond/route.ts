@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {createClient} from "@/lib/supabase/server";
+export async function POST(request:Request){const s=await createClient();const {data:a}=await s.auth.getUser();if(!a.user)return NextResponse.json({error:"Sign in required"},{status:401});const {requestId,accept}=await request.json();const {data,error}=await s.rpc("provider_respond_reschedule",{p_request_id:requestId,p_accept:Boolean(accept)});return error?NextResponse.json({error:error.message},{status:400}):NextResponse.json({ok:true,...data})}

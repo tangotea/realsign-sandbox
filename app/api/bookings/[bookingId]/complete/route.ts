@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {createClient} from "@/lib/supabase/server";
+export async function POST(_r:Request,{params}:{params:Promise<{bookingId:string}>}){const {bookingId}=await params;const s=await createClient();const {data:a}=await s.auth.getUser();if(!a.user)return NextResponse.json({error:"Sign in required"},{status:401});const {error}=await s.rpc("complete_booking_after_end",{p_booking_id:bookingId});if(error)return NextResponse.json({error:error.message},{status:409});return NextResponse.json({ok:true});}

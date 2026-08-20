@@ -1,0 +1,16 @@
+import fs from 'node:fs';import path from 'node:path';const root=process.cwd(),read=p=>fs.readFileSync(path.join(root,p),'utf8');const m=read('supabase/migrations/0007_launch_hardening.sql');const checks=[
+['Interpreter request table',m.includes('create table public.interpreter_requests')],
+['Request-to-book accept protected slot',m.includes('respond_interpreter_request')&&m.includes('booking_reservations')],
+['Identity required for interpreter requests',m.includes('Identity verification is required')],
+['Technical credits reuse subsidy engine',m.includes('RealSign Technical Credits')&&m.includes('admin_issue_technical_credit')],
+['Review moderation',m.includes('review_reports')&&m.includes('admin_moderate_review')],
+['Sponsor impact reporting',m.includes('sponsor_fund_impact')],
+['Admin launch statistics',m.includes('admin_dashboard_stats')],
+['Transactional email queue',m.includes('outbound_emails')&&fs.existsSync(path.join(root,'app/api/jobs/email/dispatch/route.ts'))],
+['Email service-role protected',m.includes('revoke all on function public.queue_booking_email')],
+['Privacy retention metadata',m.includes('verification_files_due_for_deletion')&&fs.existsSync(path.join(root,'app/api/jobs/privacy/retention/route.ts'))],
+['Interpreter provider inbox',fs.existsSync(path.join(root,'app/provider/requests/page.tsx'))],
+['Admin reviews UI',fs.existsSync(path.join(root,'app/admin/reviews/page.tsx'))],
+['Admin statistics UI',fs.existsSync(path.join(root,'app/admin/statistics/page.tsx'))],
+['Read-only live smoke harness',fs.existsSync(path.join(root,'scripts/live-smoke.mjs'))],
+];let fail=0;for(const [n,ok] of checks){console.log(`${ok?'PASS':'FAIL'} ${n}`);if(!ok)fail++}if(fail)process.exit(1);

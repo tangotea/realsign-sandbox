@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RealSign V1 Milestone 2 Prototype</title>
+<style>
+:root{--bg:#f7f7f4;--surface:#fff;--text:#181818;--muted:#66665f;--border:#deded7;--dark:#111;--soft:#efefe9}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}.app{max-width:430px;min-height:100vh;margin:auto;background:var(--bg);padding-bottom:82px}.top{position:sticky;top:0;background:#f7f7f4ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:15px 18px;display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;letter-spacing:.08em}.main{padding:22px 18px}.hero h1{font-size:38px;line-height:1.02;margin:10px 0}.muted{color:var(--muted)}.stack{display:grid;gap:13px}.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 2px 12px #00000008}.choice{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center}.choice b{font-size:19px}.icon{font-size:30px}.help{width:36px;height:36px;border:1px solid var(--dark);background:white;border-radius:9px;font-weight:800}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.btn{border:0;border-radius:13px;padding:12px 15px;background:#111;color:#fff;font-weight:700}.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:white;border-top:1px solid var(--border);padding:8px 5px}.nav button{border:0;background:white;padding:7px 2px;color:var(--muted);font-size:11px}.nav span{display:block;font-size:21px}.screen{display:none}.screen.active{display:block}.check{display:flex;gap:10px;align-items:center;border:1px solid var(--border);background:white;border-radius:12px;padding:12px;margin:8px 0}.pill{border:1px solid var(--border);background:var(--soft);border-radius:999px;padding:4px 8px;font-size:12px;margin-left:7px}.stat{font-size:30px;font-weight:800}.admin-item{padding:13px 0;border-bottom:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand">REALSIGN</div><button class="btn" onclick="show('profile')">Profile</button></header>
+<main class="main">
+<section id="home" class="screen active">
+  <div class="hero"><h1>Find. Book.<br>Pay. Meet.</h1><p class="muted">Connect with Deaf tutors, qualified Deaf teachers and SASL interpreters.</p></div>
+  <div class="row" style="margin:18px 0 12px"><b>What is RealSign?</b><button class="help" onclick="alert('SASL help video opens here.')">?</button></div>
+  <div class="stack">
+    <div class="card choice"><div class="icon">🤟</div><div><b>Learn Sign Language</b><div class="muted">Find a Deaf SASL tutor or teacher.</div></div></div>
+    <div class="card choice"><div class="icon">📚</div><div><b>School & Subject Help</b><div class="muted">Find a Deaf tutor or qualified teacher.</div></div></div>
+    <div class="card choice"><div class="icon">👐</div><div><b>Find an Interpreter</b><div class="muted">Remote or in-person SASL interpreting.</div></div></div>
+  </div>
+  <button class="btn" style="width:100%;margin-top:20px" onclick="show('provider')">I want to offer a service</button>
+</section>
+<section id="profile" class="screen">
+  <div class="row"><div><h2>Languages I use</h2><p class="muted">Select all that apply.</p></div><button class="help">?</button></div>
+  <label class="check"><input type="checkbox" checked> <b>SASL</b><span class="pill">Sign language</span></label>
+  <label class="check"><input type="checkbox" checked> English</label>
+  <label class="check"><input type="checkbox"> Afrikaans</label>
+  <label class="check"><input type="checkbox"> isiNdebele</label>
+  <label class="check"><input type="checkbox"> isiXhosa</label>
+  <label class="check"><input type="checkbox"> isiZulu</label>
+  <label class="check"><input type="checkbox"> Sepedi</label>
+  <label class="check"><input type="checkbox"> Sesotho</label>
+  <label class="check"><input type="checkbox"> Setswana</label>
+  <label class="check"><input type="checkbox"> siSwati</label>
+  <label class="check"><input type="checkbox"> Tshivenda</label>
+  <label class="check"><input type="checkbox"> Xitsonga</label>
+  <button class="btn" style="width:100%;margin-top:10px">Save languages</button>
+</section>
+<section id="provider" class="screen">
+  <div class="row"><h2>Offer a Service</h2><button class="help">?</button></div>
+  <div class="stack">
+    <div class="card choice"><div class="icon">🤟</div><div><b>Deaf Tutor</b><div class="muted">SASL, homework, subjects or tutoring.</div></div></div>
+    <div class="card choice"><div class="icon">🎓</div><div><b>Qualified Deaf Teacher</b><div class="muted">Verified teaching qualification.</div></div></div>
+    <div class="card choice"><div class="icon">👐</div><div><b>Interpreter</b><div class="muted">Remote or in-person interpreting.</div></div></div>
+    <div class="card"><b>Application progress</b><p class="muted">Account → Verification → Introduction → Languages → Subjects → Services & rates → Availability → Admin review → Payout setup</p></div>
+    <div class="card"><b>Booking protection</b><p class="muted">Minimum notice: 60 min (provider can increase)<br>Minimum break: 15 min (provider can increase)</p></div>
+    <div class="card"><b>Example service</b><p>Grade 8 Mathematics Tutoring</p><p class="muted">30 minutes · R220 · within Admin rate range</p></div>
+  </div>
+</section>
+<section id="admin" class="screen">
+  <h2>Admin dashboard</h2><p class="muted">What needs your attention?</p>
+  <div class="stack">
+    <div class="card"><span class="stat">4</span><br>Provider approvals</div>
+    <div class="card"><span class="stat">2</span><br>Technical disputes</div>
+    <div class="card"><span class="stat">1</span><br>Payment problem</div>
+    <div class="card"><b>Milestone 2 controls</b><div class="admin-item">Provider Applications ✓</div><div class="admin-item">Verification Review ✓</div><div class="admin-item">Subjects & Services ✓</div><div class="admin-item">Rates & Booking Rules ✓</div><div class="admin-item">Availability ✓</div><div class="admin-item">Audit Log ✓</div></div><div class="card"><b>Later controls</b><div class="admin-item">Providers & Verification</div><div class="admin-item">Bookings & Disputes</div><div class="admin-item">Payments & Payouts</div><div class="admin-item">Sponsorships</div><div class="admin-item">SASL Help Videos</div><div class="admin-item">Rates & Rules</div><div class="admin-item">Audit Log</div></div>
+  </div>
+</section>
+</main>
+<nav class="nav"><button onclick="show('home')"><span>⌂</span>Home</button><button><span>▣</span>Bookings</button><button><span>⌕</span>Dictionary</button><button onclick="show('provider')"><span>◇</span>Provider</button><button onclick="show('profile')"><span>◉</span>Profile</button></nav>
+</div>
+<script>function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)};document.addEventListener('keydown',e=>{if(e.key==='a'&&e.altKey)show('admin')})</script>
+</body></html>
