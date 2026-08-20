@@ -2,7 +2,7 @@ import {NextResponse} from "next/server";import {createClient} from "@/lib/supab
 export async function POST(){
  const supabase=await createClient();const{data:auth}=await supabase.auth.getUser();if(!auth.user)return NextResponse.json({error:"Sign in required"},{status:401});
  const{data:adminProfile}=await supabase.from("admin_profiles").select("role,is_active").eq("user_id",auth.user.id).eq("is_active",true).maybeSingle();if(!adminProfile||!["super","finance"].includes(adminProfile.role))return NextResponse.json({error:"Finance Admin access required"},{status:403});
- const admin=createAdminClient();if(!admin)return NextResponse.json({error:"Server not configured"},{status:500});let batchId:string|null=null;
+ const admin:any=createAdminClient();if(!admin)return NextResponse.json({error:"Server not configured"},{status:500});let batchId:string|null=null;
  try{
   await admin.rpc("release_provider_earnings");
   const{data:earnings}=await admin.from("provider_earnings").select("id,provider_id,amount_cents").eq("state","available").gt("amount_cents",0);if(!earnings?.length)return NextResponse.json({ok:true,message:"No available provider earnings."});
