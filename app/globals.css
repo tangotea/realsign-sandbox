@@ -36,6 +36,8 @@ button { cursor: pointer; }
   border-bottom: 1px solid var(--border);
 }
 .brand { font-weight: 900; letter-spacing: .08em; }
+.brand-lockup { display:inline-flex; align-items:center; gap:8px; }
+.brand-lockup img { width:30px; height:30px; border-radius:8px; object-fit:cover; }
 .main { width: min(100%, 760px); margin: 0 auto; padding: 24px 18px 98px; }
 .hero { padding: 18px 0 12px; }
 .hero h1 { margin: 0 0 8px; font-size: clamp(30px, 7vw, 46px); line-height: 1.05; }
