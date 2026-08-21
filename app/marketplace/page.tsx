@@ -25,7 +25,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       <form className="market-filters" method="get">
         {subject ? <input type="hidden" name="subject" value={subject}/> : null}
         {q.subjectName ? <input type="hidden" name="subjectName" value={q.subjectName}/> : null}
-        <label>Provider type<select className="field" name="role" defaultValue={role || ""}><option value="">Tutor or teacher</option><option value="deaf_tutor">Deaf Tutor</option><option value="qualified_deaf_teacher">Qualified Deaf Teacher</option></select></label>
+        <label>Provider type<select className="field" name="role" defaultValue={role || ""}><option value="">Tutor or teacher</option><option value="deaf_tutor">Deaf Tutor</option><option value="qualified_deaf_teacher">Deaf Teacher</option></select></label>
         <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select></label>
         <button className="btn secondary">Update results</button>
       </form>
