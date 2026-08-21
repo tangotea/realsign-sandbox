@@ -10,7 +10,7 @@ export default async function LearnPage() {
     <section className="hero"><h1>How would you like help?</h1><p>V1 connects you with people. Structured RealSASL lessons can be added later.</p></section>
     <div className="stack">
       <Link className="card choice" href={href}><div className="icon">🤟</div><div><h2>Conversation & Practice</h2><p>Find Deaf tutors for SASL practice.</p></div></Link>
-      <Link className="card choice" href={href}><div className="icon">🎓</div><div><h2>SASL Tutoring</h2><p>Find Deaf tutors or qualified Deaf teachers.</p></div></Link>
+      <Link className="card choice" href={href}><div className="icon">🎓</div><div><h2>SASL Tutoring</h2><p>Find Deaf tutors or Deaf teachers.</p></div></Link>
     </div>
   </main><AppNav /></div>;
 }
