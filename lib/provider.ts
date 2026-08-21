@@ -1,7 +1,7 @@
 export const PROVIDER_ROLES = [
-  { value: "deaf_tutor", label: "Deaf Tutor", icon: "🤟", description: "SASL, homework, subjects or informal tutoring." },
-  { value: "qualified_deaf_teacher", label: "Qualified Deaf Teacher", icon: "🎓", description: "Teach with a verified teaching qualification." },
-  { value: "interpreter", label: "Interpreter", icon: "👐", description: "Remote or in-person SASL interpreting." },
+  { value: "deaf_tutor", label: "SASL Tutor", icon: "🤟", description: "SASL practice, conversation and tutoring." },
+  { value: "qualified_deaf_teacher", label: "School Teacher", icon: "🎓", description: "Grade 10, 11 and 12 subject support." },
+  { value: "interpreter", label: "SASL Interpreter", icon: "👐", description: "Remote or in-person SASL interpreting." },
 ] as const;
 
 export const BOOKING_NOTICE_OPTIONS = [60, 120, 240, 720, 1440] as const;

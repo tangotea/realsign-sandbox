@@ -13,8 +13,8 @@ export default async function PhaseSubjectsPage({ params }: { params: Promise<{ 
   return <div className="shell">
     <header className="topbar"><Link href="/subjects">←</Link><strong>{config.label}</strong><button className="help-btn" aria-label="Open SASL help">?</button></header>
     <main className="main">
-      <section className="hero"><h1>What subject?</h1><p>Choose what the learner needs help with.</p></section>
-      <div className="stack compact">{(subjects || []).map(s=><Link className="card subject-link" key={s.id} href={`/marketplace?subject=${s.id}&subjectName=${encodeURIComponent(s.name)}`}><strong>{s.name}</strong><span>Find Deaf tutors and teachers →</span></Link>)}</div>
+      <section className="hero"><h1>What subject?</h1><p>Choose what the Grade {config.grade} learner needs help with.</p></section>
+      <div className="stack compact">{(subjects || []).map(s=><Link className="card subject-link" key={s.id} href={`/marketplace?subject=${s.id}&subjectName=${encodeURIComponent(s.name)}&grade=${config.grade}`}><strong>{s.name}</strong><span>Find tutors and teachers →</span></Link>)}</div>
     </main><AppNav />
   </div>;
 }

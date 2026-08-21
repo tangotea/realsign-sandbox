@@ -1,7 +1,7 @@
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import { createClient } from "@/lib/supabase/server";
-import { MarketplaceProvider, money, roleLabel } from "@/lib/marketplace";
+import { MarketplaceProvider, languageLabel, money, roleLabel } from "@/lib/marketplace";
 
 export default async function MarketplacePage({ searchParams }: { searchParams: Promise<Record<string,string|undefined>> }) {
   const q = await searchParams;
@@ -9,9 +9,11 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const subject = q.subject || null;
   const language = q.language || null;
   const role = q.role || null;
+  const selectedGrade = q.grade ? Number(q.grade) : null;
+  const grade = Number.isInteger(selectedGrade) ? selectedGrade : null;
   const { data, error } = await supabase.rpc("search_marketplace_providers", {
     p_subject_id: subject,
-    p_grade: null,
+    p_grade: grade,
     p_language_code: language,
     p_role: role,
     p_limit: 30,
@@ -25,8 +27,9 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       <form className="market-filters" method="get">
         {subject ? <input type="hidden" name="subject" value={subject}/> : null}
         {q.subjectName ? <input type="hidden" name="subjectName" value={q.subjectName}/> : null}
-        <label>Provider type<select className="field" name="role" defaultValue={role || ""}><option value="">Tutor or teacher</option><option value="deaf_tutor">Deaf Tutor</option><option value="qualified_deaf_teacher">Deaf Teacher</option></select></label>
-        <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select></label>
+        {grade ? <input type="hidden" name="grade" value={String(grade)}/> : null}
+        <label>Provider type<select className="field" name="role" defaultValue={role || ""}><option value="">Any provider type</option><option value="deaf_tutor">SASL Tutor</option><option value="qualified_deaf_teacher">School Teacher</option><option value="interpreter">SASL Interpreter</option></select></label>
+        <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any written language</option>{(languages||[]).map(l=><option key={l.code} value={l.code}>{languageLabel(l.name)}</option>)}</select></label>
         <button className="btn secondary">Update results</button>
       </form>
       {error ? <p className="notice">Marketplace could not load: {error.message}</p> : null}
@@ -34,7 +37,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         <div className="provider-avatar">▶</div>
         <div className="provider-card-body"><h2>{p.public_display_name}</h2>
           <div className="tag-row">{p.roles.map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}</div>
-          {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.join(" · ")}</p> : null}
+          {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.map(languageLabel).join(" · ")}</p> : null}
           <p><strong>{p.sample_service_title}</strong><br/>{p.sample_duration_min} min · from {money(p.min_price_cents)}</p>
           <div className="row wrap"><Link className="btn" href={`/providers/${p.provider_id}`}>View profile</Link><Link className="btn secondary" href={`/providers/${p.provider_id}/book?service=${p.sample_service_id}`}>View times</Link></div>
         </div>

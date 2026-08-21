@@ -45,11 +45,9 @@ export type PublicProvider = {
 };
 
 export const PHASES = [
-  { slug: "r-3", label: "Grade R–3", db: "Foundation" },
-  { slug: "4-6", label: "Grade 4–6", db: "Intermediate" },
-  { slug: "7-9", label: "Grade 7–9", db: "Senior" },
-  { slug: "10-12", label: "Grade 10–12", db: "FET" },
-  { slug: "adult", label: "Adult / Other", db: "Adult / Other" },
+  { slug: "grade-10", label: "Grade 10", db: "FET", grade: 10 },
+  { slug: "grade-11", label: "Grade 11", db: "FET", grade: 11 },
+  { slug: "grade-12", label: "Grade 12", db: "FET", grade: 12 },
 ] as const;
 
 export function money(cents: number) {
@@ -57,8 +55,14 @@ export function money(cents: number) {
 }
 
 export function roleLabel(role: string) {
-  if (role === "deaf tutor" || role === "deaf_tutor") return "🤟 Deaf Tutor";
-  if (role === "qualified deaf teacher" || role === "qualified_deaf_teacher") return "🎓 Qualified Deaf Teacher";
-  if (role === "interpreter") return "👐 Interpreter";
+  if (role === "deaf tutor" || role === "deaf_tutor") return "🤟 SASL Tutor";
+  if (role === "qualified deaf teacher" || role === "qualified_deaf_teacher") return "🎓 School Teacher";
+  if (role === "interpreter") return "👐 SASL Interpreter";
   return role.replaceAll("_", " ");
+}
+
+export function languageLabel(name: string) {
+  if (name.toLowerCase() === "sasl") return "SASL";
+  if (name.toLowerCase().startsWith("sasl")) return name;
+  return `SASL with written ${name}`;
 }
