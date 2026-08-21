@@ -27,7 +27,7 @@ export default function Home() {
           </Link>
           <Link className="card choice" href="/subjects">
             <div className="icon">📚</div>
-            <div><h2>School & Subject Help</h2><p>Find a Deaf tutor or qualified teacher.</p></div>
+            <div><h2>School Help</h2><p>Find a Deaf tutor or qualified teacher.</p></div>
           </Link>
           <Link className="card choice" href="/interpreter">
             <div className="icon">👐</div>
