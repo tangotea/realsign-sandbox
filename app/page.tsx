@@ -12,7 +12,7 @@ export default function Home() {
       <main className="main">
         <section className="hero">
           <h1>Find. Book. Pay. Meet.</h1>
-          <p>Connect with Deaf tutors, qualified Deaf teachers and SASL interpreters.</p>
+          <p>Deaf tutors, Deaf teachers and SASL interpreters.</p>
         </section>
 
         <div className="row" style={{marginTop: 14}}>
@@ -27,7 +27,7 @@ export default function Home() {
           </Link>
           <Link className="card choice" href="/subjects">
             <div className="icon">📚</div>
-            <div><h2>School Help</h2><p>Find a Deaf tutor or qualified teacher.</p></div>
+            <div><h2>School Help</h2><p>Find a Deaf tutor or teacher.</p></div>
           </Link>
           <Link className="card choice" href="/interpreter">
             <div className="icon">👐</div>
