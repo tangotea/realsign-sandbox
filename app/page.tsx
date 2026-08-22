@@ -13,7 +13,7 @@ export default function Home() {
       <main className="main">
         <section className="hero">
           <h1>Find. Book. Pay. Meet.</h1>
-          <p>Deaf tutors, Deaf teachers and SASL interpreters.</p>
+          <p>Deaf tutors and SASL interpreters.</p>
         </section>
 
         <div className="row" style={{marginTop: 14}}>
@@ -25,10 +25,6 @@ export default function Home() {
           <Link className="card choice" href="/learn">
             <div className="icon">🤟</div>
             <div><h2>Learn Sign Language</h2></div>
-          </Link>
-          <Link className="card choice" href="/subjects">
-            <div className="icon">📚</div>
-            <div><h2>Grade 10, 11 or 12 Support</h2></div>
           </Link>
           <Link className="card choice" href="/interpreter">
             <div className="icon">👐</div>

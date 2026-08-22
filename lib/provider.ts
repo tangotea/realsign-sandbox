@@ -1,6 +1,5 @@
 export const PROVIDER_ROLES = [
   { value: "deaf_tutor", label: "SASL Tutor", icon: "🤟", description: "SASL practice, conversation and tutoring." },
-  { value: "qualified_deaf_teacher", label: "School Teacher", icon: "🎓", description: "Grade 10, 11 and 12 subject support." },
   { value: "interpreter", label: "SASL Interpreter", icon: "👐", description: "Remote or in-person SASL interpreting." },
 ] as const;
 

@@ -12,6 +12,7 @@ type Service = { id: string; title: string; duration_min: number; price_cents: n
 type Verification = { type: VerificationType; state: VerificationState; storage_path: string | null };
 
 const HELP_LABEL = "Open SASL help";
+const ACTIVE_PROVIDER_ROLES: ProviderRole[] = ["deaf_tutor", "interpreter"];
 
 export default function ProviderApplication() {
   const supabase = useMemo(() => createClient(), []);
@@ -44,7 +45,7 @@ export default function ProviderApplication() {
     const [profileRes, roleRes, subjectRes, chosenRes, serviceRes, verifyRes, settingsRes] = await Promise.all([
       supabase.from("provider_profiles").select("status,public_display_name,introduction_text").eq("id", pid).single(),
       supabase.from("provider_roles").select("role").eq("provider_id", pid),
-      supabase.from("subjects").select("id,name,phase,min_grade,max_grade").eq("active", true).or("phase.eq.FET,code.eq.sasl-r12").order("display_order"),
+      supabase.from("subjects").select("id,name,phase,min_grade,max_grade").eq("active", true).eq("code","sasl-r12").order("display_order"),
       supabase.from("provider_subjects").select("subject_id").eq("provider_id", pid),
       supabase.from("provider_services").select("id,title,duration_min,price_cents,status,provider_role").eq("provider_id", pid).order("created_at"),
       supabase.from("verification_records").select("type,state,storage_path").eq("provider_id", pid),
@@ -57,7 +58,7 @@ export default function ProviderApplication() {
     }
     const visibleSubjects = (subjectRes.data || []) as Subject[];
     const visibleSubjectIds = new Set(visibleSubjects.map(s => s.id));
-    setRoles(new Set((roleRes.data || []).map((r: { role: ProviderRole }) => r.role)));
+    setRoles(new Set((roleRes.data || []).map((r: { role: ProviderRole }) => r.role).filter(role => ACTIVE_PROVIDER_ROLES.includes(role))));
     setSubjects(visibleSubjects);
     setSelectedSubjects(new Set((chosenRes.data || []).map((r: { subject_id: string }) => r.subject_id).filter(id => visibleSubjectIds.has(id))));
     setServices((serviceRes.data || []) as Service[]);
@@ -188,8 +189,7 @@ export default function ProviderApplication() {
     <section className="card">
       <h2>2. Verification</h2>
       <VerificationRow label="Identity" state={verificationState("identity")} onFile={e=>uploadVerification("identity",e)} disabled={!editable} />
-      {(roles.has("deaf_tutor") || roles.has("qualified_deaf_teacher")) ? <VerificationRow label="Deaf verification" state={verificationState("deaf")} onFile={e=>uploadVerification("deaf",e)} disabled={!editable} /> : null}
-      {roles.has("qualified_deaf_teacher") ? <VerificationRow label="Teaching qualification" state={verificationState("teacher_qualification")} onFile={e=>uploadVerification("teacher_qualification",e)} disabled={!editable} /> : null}
+      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf verification" state={verificationState("deaf")} onFile={e=>uploadVerification("deaf",e)} disabled={!editable} /> : null}
       {roles.has("interpreter") ? <VerificationRow label="Interpreter assessment / evidence" state={verificationState("interpreter_assessment")} onFile={e=>uploadVerification("interpreter_assessment",e)} disabled={!editable} /> : null}
     </section>
 
@@ -204,9 +204,9 @@ export default function ProviderApplication() {
     <LanguageSelector />
 
     <section className="card">
-      <h2>4. Subjects</h2><p>Choose the Grade 10, 11 and 12 subjects you genuinely want to tutor or teach.</p>
-      {Array.from(new Set(subjects.map(s=>s.phase))).map(phase => <details key={phase} className="subject-group" open={phase==="FET"}><summary>{phase==="FET" ? "Grade 10–12" : phase}</summary><div className="checklist">{subjects.filter(s=>s.phase===phase).map(s=><label className="check" key={s.id}><input disabled={!editable} type="checkbox" checked={selectedSubjects.has(s.id)} onChange={()=>{const next=new Set(selectedSubjects); next.has(s.id)?next.delete(s.id):next.add(s.id); setSelectedSubjects(next);}}/><span><strong>{s.name}</strong><small>{s.phase==="FET" && s.min_grade ? `Grade ${s.min_grade}` : ""}{s.phase==="FET" && s.max_grade && s.max_grade!==s.min_grade ? `–${s.max_grade}`:""}</small></span></label>)}</div></details>)}
-      {editable ? <button className="btn secondary" onClick={saveSubjects}>Save subjects</button> : null}
+      <h2>4. SASL tutoring</h2><p>Select SASL if you want to offer sign language lessons or practice.</p>
+      <div className="checklist">{subjects.map(s=><label className="check" key={s.id}><input disabled={!editable} type="checkbox" checked={selectedSubjects.has(s.id)} onChange={()=>{const next=new Set(selectedSubjects); next.has(s.id)?next.delete(s.id):next.add(s.id); setSelectedSubjects(next);}}/><span><strong>{s.name}</strong><small>Sign language lessons and practice</small></span></label>)}</div>
+      {editable ? <button className="btn secondary" onClick={saveSubjects}>Save SASL tutoring</button> : null}
     </section>
 
     <section className="card">
@@ -215,7 +215,7 @@ export default function ProviderApplication() {
       {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
         <label>Role<select className="field" name="providerRole" required>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
         <label>Subject<select className="field" name="subjectId"><option value="">General / no subject</option>{subjects.filter(s=>selectedSubjects.has(s.id)).map(s=><option value={s.id} key={s.id}>{s.name} — {s.phase}</option>)}</select></label>
-        <label className="span2">Service title<input className="field" name="title" placeholder="e.g. Grade 11 Mathematics Tutoring" required /></label>
+        <label className="span2">Service title<input className="field" name="title" placeholder="e.g. SASL Conversation Practice" required /></label>
         <label>Duration<select className="field" name="duration">{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
         <label>Price (R)<input className="field" name="price" type="number" min="0" step="1" required /></label>
         <button className="btn span2">Add service</button>

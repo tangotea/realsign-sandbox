@@ -8,7 +8,8 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const supabase = await createClient();
   const subject = q.subject || null;
   const language = q.language || null;
-  const role = q.role || null;
+  const requestedRole = q.role || null;
+  const role = requestedRole === "deaf_tutor" || requestedRole === "interpreter" ? requestedRole : null;
   const selectedGrade = q.grade ? Number(q.grade) : null;
   const grade = Number.isInteger(selectedGrade) ? selectedGrade : null;
   const { data, error } = await supabase.rpc("search_marketplace_providers", {
@@ -18,7 +19,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     p_role: role,
     p_limit: 30,
   });
-  const providers = (data || []) as MarketplaceProvider[];
+  const providers = ((data || []) as MarketplaceProvider[]).filter(p => p.roles.some(r => r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter"));
   const { data: languages } = await supabase.from("languages").select("code,name").eq("active",true).order("display_order");
 
   return <div className="shell"><header className="topbar"><Link href={subject?"/subjects":"/"}>←</Link><strong>{q.subjectName || "Find a provider"}</strong><button className="help-btn" aria-label="Open SASL help">?</button></header>
@@ -28,7 +29,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         {subject ? <input type="hidden" name="subject" value={subject}/> : null}
         {q.subjectName ? <input type="hidden" name="subjectName" value={q.subjectName}/> : null}
         {grade ? <input type="hidden" name="grade" value={String(grade)}/> : null}
-        <label>Provider type<select className="field" name="role" defaultValue={role || ""}><option value="">Any provider type</option><option value="deaf_tutor">SASL Tutor</option><option value="qualified_deaf_teacher">School Teacher</option><option value="interpreter">SASL Interpreter</option></select></label>
+        <label>Provider type<select className="field" name="role" defaultValue={role || ""}><option value="">Any provider type</option><option value="deaf_tutor">SASL Tutor</option><option value="interpreter">SASL Interpreter</option></select></label>
         <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).map(l=><option key={l.code} value={l.code}>{languageLabel(l.name)}</option>)}</select></label>
         <button className="btn secondary">Update results</button>
       </form>
@@ -36,7 +37,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       <div className="stack marketplace-list">{providers.map(p=><article className="card provider-card" key={p.provider_id}>
         <div className="provider-avatar">▶</div>
         <div className="provider-card-body"><h2>{p.public_display_name}</h2>
-          <div className="tag-row">{p.roles.map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}</div>
+          <div className="tag-row">{p.roles.filter(r => r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter").map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}</div>
           {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.map(languageLabel).join(" · ")}</p> : null}
           <p><strong>{p.sample_service_title}</strong><br/>{p.sample_duration_min} min · from {money(p.min_price_cents)}</p>
           <div className="row wrap"><Link className="btn" href={`/providers/${p.provider_id}`}>View profile</Link><Link className="btn secondary" href={`/providers/${p.provider_id}/book?service=${p.sample_service_id}`}>View times</Link></div>

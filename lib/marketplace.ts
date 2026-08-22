@@ -44,19 +44,13 @@ export type PublicProvider = {
   booking_settings: { booking_notice_min: number; buffer_min: number; timezone: string } | null;
 };
 
-export const PHASES = [
-  { slug: "grade-10", label: "Grade 10", db: "FET", grade: 10 },
-  { slug: "grade-11", label: "Grade 11", db: "FET", grade: 11 },
-  { slug: "grade-12", label: "Grade 12", db: "FET", grade: 12 },
-] as const;
-
 export function money(cents: number) {
   return `R${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`;
 }
 
 export function roleLabel(role: string) {
   if (role === "deaf tutor" || role === "deaf_tutor") return "🤟 SASL Tutor";
-  if (role === "qualified deaf teacher" || role === "qualified_deaf_teacher") return "🎓 School Teacher";
+  if (role === "qualified deaf teacher" || role === "qualified_deaf_teacher") return "🎓 SASL Provider";
   if (role === "interpreter") return "👐 SASL Interpreter";
   return role.replaceAll("_", " ");
 }
