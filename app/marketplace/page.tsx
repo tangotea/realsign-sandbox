@@ -1,7 +1,7 @@
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import { createClient } from "@/lib/supabase/server";
-import { MarketplaceProvider, languageLabel, money, roleLabel } from "@/lib/marketplace";
+import { MarketplaceProvider, languageLabel, money, roleLabel, serviceLabel } from "@/lib/marketplace";
 
 export default async function MarketplacePage({ searchParams }: { searchParams: Promise<Record<string,string|undefined>> }) {
   const q = await searchParams;
@@ -40,7 +40,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         <div className="provider-card-body"><h2>{p.public_display_name}</h2>
           <div className="tag-row">{p.roles.filter(r => role ? (r === role || (role === "deaf_tutor" && r === "deaf tutor")) : (r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter")).map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}</div>
           {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.map(language => languageLabel(language, role)).join(" · ")}</p> : null}
-          <p><strong>{p.sample_service_title}</strong><br/>{p.sample_duration_min} min · from {money(p.min_price_cents)}</p>
+          <p><strong>{role ? serviceLabel(role) : p.sample_service_title}</strong><br/>{p.sample_duration_min} min · from {money(p.min_price_cents)}</p>
           <div className="row wrap"><Link className="btn" href={`/providers/${p.provider_id}${role ? `?role=${role}` : ""}`}>View profile</Link><Link className="btn secondary" href={`/providers/${p.provider_id}/book?service=${p.sample_service_id}`}>View times</Link></div>
         </div>
       </article>)}</div>

@@ -55,6 +55,32 @@ export function roleLabel(role: string) {
   return role.replaceAll("_", " ");
 }
 
+type ServiceLike = { title?: string | null; provider_role?: string | null } | string | null | undefined;
+
+function serviceRole(service: ServiceLike) {
+  if (typeof service === "string") return service;
+  return service?.provider_role || "";
+}
+
+function legacySchoolTitle(title?: string | null) {
+  if (!title) return true;
+  return /\bgrade\s*\d+\b/i.test(title) || /\b(mathematics|school|subject|homework)\b/i.test(title);
+}
+
+export function serviceLabel(service: ServiceLike) {
+  const role = serviceRole(service);
+  if (role === "deaf tutor" || role === "deaf_tutor") return "Sign Language Lesson";
+  if (role === "interpreter") return "Video Call SASL Interpreting";
+  if (typeof service !== "string" && service?.title) return service.title;
+  return role ? role.replaceAll("_", " ") : "RealSign Service";
+}
+
+export function serviceDetailLabel(service: ServiceLike) {
+  if (typeof service === "string" || !service?.title || legacySchoolTitle(service.title)) return "";
+  if (service.title === serviceLabel(service)) return "";
+  return service.title;
+}
+
 export function languageLabel(name: string, role?: string | null) {
   const normal = name.toLowerCase().replace("south african sign language", "sasl");
   if (role === "interpreter") {

@@ -4,10 +4,10 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import LanguageSelector from "@/components/LanguageSelector";
 import { createClient } from "@/lib/supabase/client";
+import { roleLabel, serviceDetailLabel, serviceLabel } from "@/lib/marketplace";
 import { BOOKING_NOTICE_OPTIONS, BUFFER_OPTIONS, PROVIDER_ROLES, SESSION_DURATIONS, minutesLabel } from "@/lib/provider";
 import type { ProviderRole, ProviderStatus, VerificationState, VerificationType } from "@/lib/domain";
 
-type Subject = { id: string; name: string; phase: string; min_grade: number | null; max_grade: number | null };
 type Service = { id: string; title: string; duration_min: number; price_cents: number; status: string; provider_role: ProviderRole };
 type Verification = { type: VerificationType; state: VerificationState; storage_path: string | null };
 
@@ -24,8 +24,6 @@ export default function ProviderApplication() {
   const [displayName, setDisplayName] = useState("");
   const [introText, setIntroText] = useState("");
   const [roles, setRoles] = useState<Set<ProviderRole>>(new Set());
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [selectedSubjects, setSelectedSubjects] = useState<Set<string>>(new Set());
   const [services, setServices] = useState<Service[]>([]);
   const [verifications, setVerifications] = useState<Verification[]>([]);
   const [notice, setNotice] = useState(120);
@@ -42,11 +40,9 @@ export default function ProviderApplication() {
     const pid = String(ensured);
     setProviderId(pid);
 
-    const [profileRes, roleRes, subjectRes, chosenRes, serviceRes, verifyRes, settingsRes] = await Promise.all([
+    const [profileRes, roleRes, serviceRes, verifyRes, settingsRes] = await Promise.all([
       supabase.from("provider_profiles").select("status,public_display_name,introduction_text").eq("id", pid).single(),
       supabase.from("provider_roles").select("role").eq("provider_id", pid),
-      supabase.from("subjects").select("id,name,phase,min_grade,max_grade").eq("active", true).eq("code","sasl-r12").order("display_order"),
-      supabase.from("provider_subjects").select("subject_id").eq("provider_id", pid),
       supabase.from("provider_services").select("id,title,duration_min,price_cents,status,provider_role").eq("provider_id", pid).order("created_at"),
       supabase.from("verification_records").select("type,state,storage_path").eq("provider_id", pid),
       supabase.from("provider_booking_settings").select("booking_notice_min,buffer_min").eq("provider_id", pid).single(),
@@ -56,11 +52,7 @@ export default function ProviderApplication() {
       setDisplayName(profileRes.data.public_display_name || "");
       setIntroText(profileRes.data.introduction_text || "");
     }
-    const visibleSubjects = (subjectRes.data || []) as Subject[];
-    const visibleSubjectIds = new Set(visibleSubjects.map(s => s.id));
     setRoles(new Set((roleRes.data || []).map((r: { role: ProviderRole }) => r.role).filter(role => ACTIVE_PROVIDER_ROLES.includes(role))));
-    setSubjects(visibleSubjects);
-    setSelectedSubjects(new Set((chosenRes.data || []).map((r: { subject_id: string }) => r.subject_id).filter(id => visibleSubjectIds.has(id))));
     setServices((serviceRes.data || []) as Service[]);
     setVerifications((verifyRes.data || []) as Verification[]);
     if (settingsRes.data) { setNotice(settingsRes.data.booking_notice_min); setBuffer(settingsRes.data.buffer_min); }
@@ -119,26 +111,10 @@ export default function ProviderApplication() {
     await refresh();
   }
 
-  async function saveSubjects() {
-    if (!providerId) return;
-    setMessage("Saving subjects…");
-    const current = await supabase.from("provider_subjects").select("subject_id").eq("provider_id", providerId);
-    const currentIds = new Set((current.data || []).map((r: { subject_id: string }) => r.subject_id));
-    const toDelete = Array.from(currentIds).filter(id => !selectedSubjects.has(id));
-    const toAdd = Array.from(selectedSubjects).filter(id => !currentIds.has(id));
-    if (toDelete.length) await supabase.from("provider_subjects").delete().eq("provider_id", providerId).in("subject_id", toDelete);
-    if (toAdd.length) {
-      const { error } = await supabase.from("provider_subjects").insert(toAdd.map(subject_id => ({ provider_id: providerId, subject_id, general_tutoring: true })));
-      if (error) return setMessage(error.message);
-    }
-    setMessage("Subjects saved ✓");
-  }
-
   async function createService(form: HTMLFormElement) {
     if (!providerId) return;
     const data = new FormData(form);
     const providerRole = String(data.get("providerRole")) as ProviderRole;
-    const subjectId = String(data.get("subjectId") || "") || null;
     const duration = Number(data.get("duration"));
     const priceRands = Number(data.get("price"));
     const title = String(data.get("title") || "").trim();
@@ -147,7 +123,7 @@ export default function ProviderApplication() {
     if (rule && (cents < rule.min_price_cents || cents > rule.max_price_cents)) {
       setMessage(`Price must be between R${(rule.min_price_cents/100).toFixed(0)} and R${(rule.max_price_cents/100).toFixed(0)}.`); return;
     }
-    const { error } = await supabase.from("provider_services").insert({ provider_id: providerId, provider_role: providerRole, subject_id: subjectId, title, duration_min: duration, price_cents: cents, status: "active", remote: true });
+    const { error } = await supabase.from("provider_services").insert({ provider_id: providerId, provider_role: providerRole, subject_id: null, title, duration_min: duration, price_cents: cents, status: "active", remote: true });
     setMessage(error ? error.message : "Service added ✓");
     if (!error) { form.reset(); await refresh(); }
   }
@@ -204,26 +180,19 @@ export default function ProviderApplication() {
     <LanguageSelector />
 
     <section className="card">
-      <h2>4. SASL tutoring</h2><p>Select SASL if you want to offer sign language lessons or practice.</p>
-      <div className="checklist">{subjects.map(s=><label className="check" key={s.id}><input disabled={!editable} type="checkbox" checked={selectedSubjects.has(s.id)} onChange={()=>{const next=new Set(selectedSubjects); next.has(s.id)?next.delete(s.id):next.add(s.id); setSelectedSubjects(next);}}/><span><strong>{s.name}</strong><small>Sign language lessons and practice</small></span></label>)}</div>
-      {editable ? <button className="btn secondary" onClick={saveSubjects}>Save SASL tutoring</button> : null}
-    </section>
-
-    <section className="card">
-      <h2>5. Services & rates</h2><p>Providers select their price within RealSign-approved ranges.</p>
-      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{s.title}</strong><small>{s.duration_min} min · {s.provider_role.replaceAll("_"," ")}</small></div><strong>R{(s.price_cents/100).toFixed(0)}</strong></div>)}</div> : <p className="muted">No services yet.</p>}
+      <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, write a short lesson outline, then set the length and price.</p>
+      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><strong>R{(s.price_cents/100).toFixed(0)}</strong></div>)}</div> : <p className="muted">No services yet.</p>}
       {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
         <label>Role<select className="field" name="providerRole" required>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
-        <label>Subject<select className="field" name="subjectId"><option value="">General / no subject</option>{subjects.filter(s=>selectedSubjects.has(s.id)).map(s=><option value={s.id} key={s.id}>{s.name} — {s.phase}</option>)}</select></label>
-        <label className="span2">Service title<input className="field" name="title" placeholder="e.g. SASL Conversation Practice" required /></label>
         <label>Duration<select className="field" name="duration">{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
+        <label className="span2">Lesson outline<input className="field" name="title" placeholder="e.g. Beginner SASL conversation practice" required /></label>
         <label>Price (R)<input className="field" name="price" type="number" min="0" step="1" required /></label>
         <button className="btn span2">Add service</button>
       </form> : null}
     </section>
 
     <section className="card">
-      <div className="row"><div><h2>6. Booking settings</h2><p>RealSign protects preparation and rest time.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h2>5. Booking settings</h2><p>RealSign protects preparation and rest time.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       <div className="grid2">
         <label>Minimum notice<select className="field" disabled={!editable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
         <label>Break between sessions<select className="field" disabled={!editable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
@@ -233,7 +202,7 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <h2>7. Submit</h2><p>RealSign Admin will review your profile and verification. Approval is required before you can be booked.</p>
+      <h2>6. Submit</h2><p>RealSign Admin will review your profile and verification. Approval is required before you can be booked.</p>
       {editable ? <button className="btn" onClick={submitApplication}>Submit for approval</button> : null}
       {message ? <p className="muted" aria-live="polite">{message}</p> : null}
     </section>
