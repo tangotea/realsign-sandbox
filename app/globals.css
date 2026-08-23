@@ -213,7 +213,7 @@ button { cursor: pointer; }
 .calendar-day.has-slots:hover, .calendar-day.selected { border-color:#2f9e44; outline:2px solid #2f9e44; outline-offset:1px; }
 .calendar-day.no-slots, .calendar-day.past { color:var(--muted); background:var(--soft); cursor:not-allowed; }
 .day-number { font-weight:900; }
-.day-pill { align-self:stretch; display:block; padding:7px 8px; border-radius:999px; background:#2f9e44; color:white; text-align:center; line-height:1.05; }
+.day-pill { align-self:stretch; display:block; padding:7px 8px; border-radius:8px; background:#2f9e44; color:white; text-align:center; line-height:1.05; }
 .day-pill small { display:block; margin-top:2px; font-size:11px; font-weight:800; color:white; }
 .day-status { align-self:stretch; display:grid; place-items:center; min-height:36px; color:var(--muted); font-size:12px; text-align:center; }
 .day-status strong { color:var(--text); font-size:19px; line-height:1; }
