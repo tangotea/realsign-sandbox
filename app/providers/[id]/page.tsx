@@ -5,14 +5,16 @@ import BookingPicker from "@/components/booking/BookingPicker";
 import { createClient } from "@/lib/supabase/server";
 import { PublicProvider, languageLabel, money, roleLabel } from "@/lib/marketplace";import ReportReviewButton from "@/components/meet/ReportReviewButton";
 
-export default async function ProviderProfilePage({ params }: { params: Promise<{id:string}> }) {
+export default async function ProviderProfilePage({ params, searchParams }: { params: Promise<{id:string}>; searchParams: Promise<{role?:string}> }) {
   const { id } = await params;
+  const q = await searchParams;
+  const roleContext = q.role === "deaf_tutor" || q.role === "interpreter" ? q.role : null;
   const supabase = await createClient();
   const { data } = await supabase.rpc("get_public_provider", { p_provider_id: id });
   if (!data) notFound();
   const p = data as PublicProvider;
-  const visibleRoles = p.roles.filter(r => r.role === "deaf_tutor" || r.role === "deaf tutor" || r.role === "interpreter");
-  const visibleServices = p.services.filter(s => s.provider_role === "deaf_tutor" || s.provider_role === "deaf tutor" || s.provider_role === "interpreter");
+  const visibleRoles = p.roles.filter(r => roleContext ? (r.role === roleContext || (roleContext === "deaf_tutor" && r.role === "deaf tutor")) : (r.role === "deaf_tutor" || r.role === "deaf tutor" || r.role === "interpreter"));
+  const visibleServices = p.services.filter(s => roleContext ? (s.provider_role === roleContext || (roleContext === "deaf_tutor" && s.provider_role === "deaf tutor")) : (s.provider_role === "deaf_tutor" || s.provider_role === "deaf tutor" || s.provider_role === "interpreter"));
   const bookableServices = visibleServices.filter(s => s.remote);
   const bookableService = bookableServices[0];
   const { data: reviewData } = await supabase.rpc("get_public_provider_reviews", { p_provider_id: id, p_limit: 8 });

@@ -56,7 +56,19 @@ export function roleLabel(role: string) {
 }
 
 export function languageLabel(name: string) {
-  if (name.toLowerCase() === "sasl") return "SASL";
-  if (name.toLowerCase().startsWith("sasl")) return name;
-  return `SASL with written ${name}`;
+  const normal = name.toLowerCase().replace("south african sign language", "sasl");
+  if (normal === "sasl") return "South African Sign Language (SASL)";
+  if (normal.includes("english")) return "SASL (Tutor can type in English)";
+  if (normal.includes("afrikaans")) return "SASL (Tutor kan in Afrikaans tik)";
+  if (normal.includes("isindebele")) return "SASL (Tutor can type in isiNdebele)";
+  if (normal.includes("isixhosa")) return "SASL (Tutor can type in isiXhosa)";
+  if (normal.includes("isizulu")) return "SASL (Tutor can type in isiZulu)";
+  if (normal.includes("sepedi")) return "SASL (Tutor can type in Sepedi)";
+  if (normal.includes("sesotho")) return "SASL (Tutor can type in Sesotho)";
+  if (normal.includes("setswana")) return "SASL (Tutor can type in Setswana)";
+  if (normal.includes("siswati")) return "SASL (Tutor can type in siSwati)";
+  if (normal.includes("tshivenda")) return "SASL (Tutor can type in Tshivenda)";
+  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "SASL (Tutor can type in Xitsonga)";
+  if (normal.startsWith("sasl")) return name;
+  return `SASL (Tutor can type in ${name})`;
 }

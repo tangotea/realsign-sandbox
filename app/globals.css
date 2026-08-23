@@ -133,6 +133,7 @@ button { cursor: pointer; }
   border-radius:12px;
   background:white;
 }
+.readonly-field { display:flex; align-items:center; min-height:47px; color:var(--text); }
 
 /* Milestone 2 provider marketplace */
 .stack.compact { gap: 9px; margin-top: 14px; }
