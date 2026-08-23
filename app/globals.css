@@ -37,7 +37,7 @@ button { cursor: pointer; }
 }
 .brand { font-weight: 900; letter-spacing: .08em; }
 .brand-lockup { display:inline-flex; align-items:center; gap:8px; }
-.brand-lockup img { width:30px; height:30px; border-radius:8px; object-fit:cover; }
+.brand-lockup img { width:30px; height:30px; border-radius:8px; object-fit:contain; }
 .main { width: min(100%, 760px); margin: 0 auto; padding: 24px 18px 98px; }
 .hero { padding: 18px 0 12px; }
 .hero h1 { margin: 0 0 8px; font-size: clamp(30px, 7vw, 46px); line-height: 1.05; }
@@ -191,8 +191,37 @@ button { cursor: pointer; }
 .service-action { display:flex; align-items:center; gap:10px; }
 .slot-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:12px; }
 .slot-btn { min-height:48px; border:1px solid var(--border); border-radius:12px; background:white; font-weight:800; }
+.slot-btn small { display:block; color:var(--muted); font-weight:700; margin-top:2px; }
 .slot-btn.selected { border-color:var(--strong); outline:2px solid var(--strong); outline-offset:1px; }
 @media (max-width:720px){.market-filters{grid-template-columns:1fr}.provider-card{grid-template-columns:1fr}.provider-avatar{min-height:110px}.slot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.service-row{align-items:flex-start}.service-action{flex-direction:column;align-items:flex-end}}
+
+/* Month booking calendar */
+.calendar-head { display:grid; grid-template-columns:44px 1fr 44px; gap:10px; align-items:center; margin:18px 0 10px; text-align:center; }
+.calendar-head strong { font-size:18px; }
+.calendar-head .mini-btn:disabled { opacity:.35; cursor:not-allowed; }
+.calendar-legend { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 14px; color:var(--muted); font-size:13px; }
+.calendar-legend span { display:inline-flex; align-items:center; gap:6px; }
+.legend-dot { width:10px; height:10px; border-radius:999px; display:inline-block; }
+.legend-dot.available { background:#2f9e44; }
+.legend-dot.unavailable { background:#c9c9c1; }
+.legend-x { font-weight:900; color:var(--text); }
+.booking-calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; }
+.calendar-weekday { color:var(--muted); font-size:12px; font-weight:800; text-align:center; padding:4px 0; }
+.calendar-day { min-height:92px; display:flex; flex-direction:column; align-items:flex-start; gap:7px; padding:8px; border:1px solid var(--border); border-radius:12px; background:white; text-align:left; }
+.calendar-day.empty { border:0; background:transparent; }
+.calendar-day.has-slots { border-color:#b8dfbc; background:#f3fbf3; }
+.calendar-day.has-slots:hover, .calendar-day.selected { border-color:#2f9e44; outline:2px solid #2f9e44; outline-offset:1px; }
+.calendar-day.no-slots, .calendar-day.past { color:var(--muted); background:var(--soft); cursor:not-allowed; }
+.day-number { font-weight:900; }
+.day-pill { align-self:stretch; display:block; padding:7px 8px; border-radius:999px; background:#2f9e44; color:white; text-align:center; line-height:1.05; }
+.day-pill small { display:block; margin-top:2px; font-size:11px; font-weight:800; color:white; }
+.day-status { align-self:stretch; display:grid; place-items:center; min-height:36px; color:var(--muted); font-size:12px; text-align:center; }
+.day-status strong { color:var(--text); font-size:19px; line-height:1; }
+.day-status small { display:block; }
+.selected-day { margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+.compact-field { width:auto; min-width:180px; margin:0; }
+.blocked-days { margin-top:18px; padding-top:18px; border-top:1px solid var(--border); }
+@media (max-width:720px){.booking-calendar{gap:4px}.calendar-day{min-height:76px;padding:6px;border-radius:9px}.day-pill{padding:6px 4px;font-size:12px;border-radius:9px}.day-pill small{font-size:10px}.calendar-legend{font-size:12px}.compact-field{width:100%}}
 
 /* Milestone 4 payments + payouts */
 .finance-row { grid-template-columns: 1.7fr 1.3fr auto; }
