@@ -13,6 +13,22 @@ type Verification = { type: VerificationType; state: VerificationState; storage_
 
 const HELP_LABEL = "Open SASL help";
 const ACTIVE_PROVIDER_ROLES: ProviderRole[] = ["deaf_tutor", "interpreter"];
+const SERVICE_OPTIONS: Record<ProviderRole, string[]> = {
+  deaf_tutor: [
+    "Beginner SASL: introductions and greetings",
+    "Beginner SASL: fingerspelling and numbers",
+    "Everyday SASL conversation practice",
+    "SASL vocabulary practice",
+    "SASL homework or revision support",
+  ],
+  interpreter: [
+    "Video Call SASL Interpreting",
+    "Education SASL Interpreting",
+    "Work or appointment SASL Interpreting",
+    "General SASL Interpreting",
+  ],
+  qualified_deaf_teacher: [],
+};
 
 export default function ProviderApplication() {
   const supabase = useMemo(() => createClient(), []);
@@ -28,6 +44,7 @@ export default function ProviderApplication() {
   const [verifications, setVerifications] = useState<Verification[]>([]);
   const [notice, setNotice] = useState(120);
   const [buffer, setBuffer] = useState(15);
+  const [serviceRole, setServiceRole] = useState<ProviderRole>("deaf_tutor");
 
   const refresh = useCallback(async () => {
     setBusy(true);
@@ -146,6 +163,8 @@ export default function ProviderApplication() {
 
   const verificationState = (type: VerificationType) => verifications.find(v => v.type === type)?.state || "not_submitted";
   const editable = status === "draft" || status === "rejected";
+  const selectedServiceRole = roles.has(serviceRole) ? serviceRole : (Array.from(roles)[0] || "deaf_tutor");
+  const serviceOptions = SERVICE_OPTIONS[selectedServiceRole].length ? SERVICE_OPTIONS[selectedServiceRole] : ["General RealSign service"];
 
   return <div className="stack">
     <section className="card">
@@ -180,14 +199,14 @@ export default function ProviderApplication() {
     <LanguageSelector />
 
     <section className="card">
-      <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, write a short lesson outline, then set the length and price.</p>
+      <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, service option, length and price.</p>
       {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><strong>R{(s.price_cents/100).toFixed(0)}</strong></div>)}</div> : <p className="muted">No services yet.</p>}
       {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
-        <label>Role<select className="field" name="providerRole" required>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
+        <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
         <label>Duration<select className="field" name="duration">{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
-        <label className="span2">Lesson outline<input className="field" name="title" placeholder="e.g. Beginner SASL conversation practice" required /></label>
+        <label className="span2">Service option<select className="field" name="title" required>{serviceOptions.map(option=><option key={option} value={option}>{option}</option>)}</select></label>
         <label>Price (R)<input className="field" name="price" type="number" min="0" step="1" required /></label>
-        <button className="btn span2">Add service</button>
+        <button className="btn span2" disabled={!roles.size}>Add service</button>
       </form> : null}
     </section>
 
