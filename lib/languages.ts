@@ -1,4 +1,5 @@
 export type LanguageModality = "signed" | "spoken_written";
+export type LanguageDisplayMode = "tutor" | "interpreter";
 
 export const OFFICIAL_LANGUAGES = [
   { code: "sasl", label: "South African Sign Language (SASL)", modality: "signed" as LanguageModality },
@@ -14,3 +15,24 @@ export const OFFICIAL_LANGUAGES = [
   { code: "ve", label: "SASL (Mudededzi a nga thaipha nga Tshivenda)", modality: "spoken_written" as LanguageModality },
   { code: "ts", label: "SASL (Mudyondzisi a nga thayipa hi Xitsonga)", modality: "spoken_written" as LanguageModality }
 ] as const;
+
+const INTERPRETER_LABELS: Record<string, string> = {
+  sasl: "SASL",
+  en: "SASL & English",
+  af: "SASL & Afrikaans",
+  nr: "SASL & isiNdebele",
+  xh: "SASL & isiXhosa",
+  zu: "SASL & isiZulu",
+  nso: "SASL & Sepedi",
+  st: "SASL & Sesotho",
+  tn: "SASL & Setswana",
+  ss: "SASL & siSwati",
+  ve: "SASL & Tshivenda",
+  ts: "SASL & Xitsonga"
+};
+
+export function officialLanguageLabel(code: string, mode: LanguageDisplayMode) {
+  const language = OFFICIAL_LANGUAGES.find(item => item.code === code);
+  if (mode === "interpreter") return INTERPRETER_LABELS[code] || language?.label || code;
+  return language?.label || code;
+}

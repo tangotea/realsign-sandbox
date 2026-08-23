@@ -3,10 +3,28 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { OFFICIAL_LANGUAGES } from "@/lib/languages";
+import { OFFICIAL_LANGUAGES, LanguageDisplayMode, officialLanguageLabel } from "@/lib/languages";
 
-export default function LanguageSelector() {
+type LanguageSelectorProps = {
+  modes?: LanguageDisplayMode[];
+};
+
+const MODE_COPY: Record<LanguageDisplayMode, { title: string; subtitle: string; button: string }> = {
+  tutor: {
+    title: "Tutor languages I use",
+    subtitle: "Choose the written languages you can use while teaching SASL.",
+    button: "Save tutor languages",
+  },
+  interpreter: {
+    title: "Interpreter languages I use",
+    subtitle: "Choose the languages you can interpret with SASL.",
+    button: "Save interpreter languages",
+  },
+};
+
+export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelectorProps) {
   const supabase = useMemo(() => createClient(), []);
+  const visibleModes = Array.from(new Set(modes));
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [userId, setUserId] = useState<string | null>(null);
   const [status, setStatus] = useState("Loading…");
@@ -51,11 +69,17 @@ export default function LanguageSelector() {
 
   return (
     <section className="card">
-      <div className="row"><div><h2>Languages I use</h2><p>Select all that apply.</p></div><button className="help-btn" aria-label="Languages help">?</button></div>
-      <div className="checklist">
-        {OFFICIAL_LANGUAGES.map((language) => <label className="check" key={language.code}><input type="checkbox" checked={selected.has(language.code)} onChange={() => toggle(language.code)} /><span><strong>{language.label}</strong>{language.modality === "signed" ? <span className="pill" style={{marginLeft:8}}>Sign language</span> : null}</span></label>)}
-      </div>
-      {userId ? <button className="btn" style={{marginTop:16}} onClick={save}>Save languages</button> : <Link href="/sign-in" className="btn" style={{marginTop:16}}>Sign in to save</Link>}
+      <div className="row"><div><h2>Languages I use</h2><p>{visibleModes.length ? "Select all that apply." : "Choose tutor or interpreter first."}</p></div><button className="help-btn" aria-label="Languages help">?</button></div>
+      {visibleModes.map(mode => (
+        <div className="language-mode" key={mode}>
+          <h3>{MODE_COPY[mode].title}</h3>
+          <p>{MODE_COPY[mode].subtitle}</p>
+          <div className="checklist">
+            {OFFICIAL_LANGUAGES.map((language) => <label className="check" key={`${mode}-${language.code}`}><input type="checkbox" checked={selected.has(language.code)} onChange={() => toggle(language.code)} /><span><strong>{officialLanguageLabel(language.code, mode)}</strong>{language.modality === "signed" ? <span className="pill" style={{marginLeft:8}}>Sign language</span> : null}</span></label>)}
+          </div>
+        </div>
+      ))}
+      {userId ? <button className="btn" style={{marginTop:16}} onClick={save}>{visibleModes.length === 1 ? MODE_COPY[visibleModes[0]].button : "Save languages"}</button> : <Link href="/sign-in" className="btn" style={{marginTop:16}}>Sign in to save</Link>}
       {status ? <p className="muted" aria-live="polite">{status}</p> : null}
     </section>
   );

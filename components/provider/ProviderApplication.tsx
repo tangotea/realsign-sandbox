@@ -173,6 +173,10 @@ export default function ProviderApplication() {
   const selectedRateRule = rateRules.find(rule => rule.provider_role === selectedServiceRole && rule.duration_min === serviceDuration);
   const minPrice = selectedRateRule ? selectedRateRule.min_price_cents / 100 : null;
   const maxPrice = selectedRateRule ? selectedRateRule.max_price_cents / 100 : null;
+  const languageModes = [
+    roles.has("deaf_tutor") ? "tutor" : null,
+    roles.has("interpreter") ? "interpreter" : null,
+  ].filter(Boolean) as ("tutor" | "interpreter")[];
 
   return <div className="stack">
     <section className="card">
@@ -204,7 +208,7 @@ export default function ProviderApplication() {
       <div className="row wrap">{editable ? <button className="btn secondary" onClick={saveProfile}>Save introduction</button> : null}<button className="btn ghost" type="button" disabled>✨ Improve my writing — AI hook ready</button></div>
     </section>
 
-    <LanguageSelector />
+    <LanguageSelector modes={languageModes} />
 
     <section className="card">
       <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, service option, length and price.</p>
