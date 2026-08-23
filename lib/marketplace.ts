@@ -102,15 +102,15 @@ export function languageLabel(name: string, role?: string | null) {
   if (normal === "sasl") return "South African Sign Language (SASL)";
   if (normal.includes("english")) return "SASL (Tutor can type in English)";
   if (normal.includes("afrikaans")) return "SASL (Tutor kan in Afrikaans tik)";
-  if (normal.includes("isindebele")) return "SASL (Tutor can type in isiNdebele)";
-  if (normal.includes("isixhosa")) return "SASL (Tutor can type in isiXhosa)";
-  if (normal.includes("isizulu")) return "SASL (Tutor can type in isiZulu)";
-  if (normal.includes("sepedi")) return "SASL (Tutor can type in Sepedi)";
-  if (normal.includes("sesotho")) return "SASL (Tutor can type in Sesotho)";
-  if (normal.includes("setswana")) return "SASL (Tutor can type in Setswana)";
-  if (normal.includes("siswati")) return "SASL (Tutor can type in siSwati)";
-  if (normal.includes("tshivenda")) return "SASL (Tutor can type in Tshivenda)";
-  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "SASL (Tutor can type in Xitsonga)";
+  if (normal.includes("isindebele")) return "SASL (Umfundisi angathayipha ngesiNdebele)";
+  if (normal.includes("isixhosa")) return "SASL (Umhlohli angachwetheza ngesiXhosa)";
+  if (normal.includes("isizulu")) return "SASL (Umfundisi angathayipha ngesiZulu)";
+  if (normal.includes("sepedi")) return "SASL (Morutisi a ka thaepa ka Sepedi)";
+  if (normal.includes("sesotho")) return "SASL (Morupeli a ka thaepa ka Sesotho)";
+  if (normal.includes("setswana")) return "SASL (Morutabana a ka tlanya ka Setswana)";
+  if (normal.includes("siswati")) return "SASL (Thishela angathayipha ngeSiSwati)";
+  if (normal.includes("tshivenda")) return "SASL (Mudededzi a nga thaipha nga Tshivenda)";
+  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "SASL (Mudyondzisi a nga thayipa hi Xitsonga)";
   if (normal.startsWith("sasl")) return name;
   return `SASL (Tutor can type in ${name})`;
 }

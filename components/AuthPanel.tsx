@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AuthPanel() {
-  const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
+  const [mode, setMode] = useState<"sign-in" | "sign-up" | "reset">("sign-in");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -24,6 +24,12 @@ export default function AuthPanel() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         window.location.href = "/profile";
+      } else if (mode === "reset") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+        });
+        if (error) throw error;
+        setMessage("Password reset email sent. Open the link in your email to choose a new password.");
       } else {
         const { data: result, error } = await supabase.auth.signUp({
           email,
@@ -51,7 +57,7 @@ export default function AuthPanel() {
   return (
     <section className="card">
       <div className="row">
-        <h1 style={{margin: 0}}>{mode === "sign-in" ? "Welcome back" : "Create account"}</h1>
+        <h1 style={{margin: 0}}>{mode === "sign-in" ? "Welcome back" : mode === "reset" ? "Reset password" : "Create account"}</h1>
         <button className="help-btn" type="button" aria-label="Account help">?</button>
       </div>
       <form onSubmit={submit} style={{marginTop: 18}}>
@@ -62,13 +68,16 @@ export default function AuthPanel() {
           </div>
         )}
         <label>Email<input className="field" name="email" type="email" required /></label>
-        <label>Password<input className="field" name="password" type="password" minLength={8} required /></label>
-        <button className="btn" disabled={busy}>{busy ? "Please wait…" : mode === "sign-in" ? "Sign in" : "Create account"}</button>
+        {mode !== "reset" ? <label>Password<input className="field" name="password" type="password" minLength={8} required /></label> : null}
+        <button className="btn" disabled={busy}>{busy ? "Please wait…" : mode === "sign-in" ? "Sign in" : mode === "reset" ? "Send reset email" : "Create account"}</button>
       </form>
       {message ? <p aria-live="polite" className="muted">{message}</p> : null}
-      <button className="btn secondary" style={{marginTop: 12}} onClick={() => setMode(mode === "sign-in" ? "sign-up" : "sign-in")}>
-        {mode === "sign-in" ? "Create an account" : "I already have an account"}
-      </button>
+      <div className="row wrap" style={{marginTop: 12}}>
+        <button className="btn secondary" onClick={() => { setMessage(""); setMode(mode === "sign-up" ? "sign-in" : "sign-up"); }}>
+          {mode === "sign-up" ? "I already have an account" : "Create an account"}
+        </button>
+        {mode !== "reset" ? <button className="btn ghost" onClick={() => { setMessage(""); setMode("reset"); }}>Forgot password?</button> : <button className="btn ghost" onClick={() => { setMessage(""); setMode("sign-in"); }}>Back to sign in</button>}
+      </div>
     </section>
   );
 }
