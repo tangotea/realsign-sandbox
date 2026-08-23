@@ -160,6 +160,22 @@ button { cursor: pointer; }
 .time-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .time-row input { min-height:38px; padding:6px 8px; border:1px solid var(--border); border-radius:10px; }
 .add-time { width:100%; }
+.availability-cards { display:grid; gap:12px; margin:18px 0; }
+.availability-card { display:grid; gap:14px; padding:16px; border:1px solid var(--border); border-radius:16px; background:white; }
+.availability-card.inactive { background:var(--soft); color:var(--muted); }
+.availability-card-top { display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center; }
+.availability-card-top strong { display:block; font-size:28px; line-height:1.05; }
+.availability-card-top small { display:block; margin-top:6px; color:var(--muted); }
+.time-select-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.time-select-row .field { margin:6px 0 0; }
+.repeat-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+.repeat-days button { min-height:44px; border:1px solid transparent; border-radius:999px; background:transparent; color:var(--muted); font-weight:900; }
+.repeat-days button.selected { background:#8f8cf8; color:white; }
+.toggle-switch { width:58px; height:32px; padding:3px; border:0; border-radius:999px; background:#c9c9c1; display:flex; align-items:center; justify-content:flex-start; }
+.toggle-switch span { width:26px; height:26px; border-radius:50%; background:white; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+.toggle-switch.on { justify-content:flex-end; background:#8f8cf8; }
+.danger-text { color:#8a1f1f; justify-self:start; }
+.new-availability-panel { margin-top:18px; padding-top:18px; border-top:1px solid var(--border); }
 .admin-table { border:1px solid var(--border); border-radius:16px; overflow:hidden; background:white; }
 .admin-row { display:grid; grid-template-columns:2fr 1fr auto; gap:18px; align-items:center; padding:16px; border-bottom:1px solid var(--border); }
 .admin-row:last-child { border-bottom:0; }
@@ -172,6 +188,11 @@ button { cursor: pointer; }
   .grid2, .form-grid { grid-template-columns:1fr; }
   .form-grid .span2 { grid-column:auto; }
   .availability-day { grid-template-columns:1fr; gap:8px; }
+  .availability-card { padding:14px; border-radius:18px; }
+  .availability-card-top strong { font-size:24px; }
+  .time-select-row { grid-template-columns:1fr 1fr; }
+  .repeat-days { gap:6px; }
+  .repeat-days button { min-height:38px; font-size:14px; }
   .admin-row { grid-template-columns:1fr; gap:8px; }
   .admin-review-grid { grid-template-columns:1fr; }
   .admin-review-grid > .card { position:static; }
