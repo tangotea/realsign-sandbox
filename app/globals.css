@@ -189,11 +189,16 @@ button { cursor: pointer; }
 .verification-badges > span { display:inline-flex; gap:6px; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:12px; background:white; }
 .help-btn.mini { width:25px; height:25px; border-radius:7px; font-size:12px; }
 .service-action { display:flex; align-items:center; gap:10px; }
+.service-picker { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:14px 0; }
+.service-picker button { min-height:66px; padding:10px; border:1px solid var(--border); border-radius:12px; background:white; text-align:left; }
+.service-picker button.selected { border-color:var(--strong); outline:2px solid var(--strong); outline-offset:1px; }
+.service-picker strong, .service-picker small { display:block; }
+.service-picker small { color:var(--muted); margin-top:3px; }
 .slot-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:12px; }
 .slot-btn { min-height:48px; border:1px solid var(--border); border-radius:12px; background:white; font-weight:800; }
 .slot-btn small { display:block; color:var(--muted); font-weight:700; margin-top:2px; }
 .slot-btn.selected { border-color:var(--strong); outline:2px solid var(--strong); outline-offset:1px; }
-@media (max-width:720px){.market-filters{grid-template-columns:1fr}.provider-card{grid-template-columns:1fr}.provider-avatar{min-height:110px}.slot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.service-row{align-items:flex-start}.service-action{flex-direction:column;align-items:flex-end}}
+@media (max-width:720px){.market-filters{grid-template-columns:1fr}.provider-card{grid-template-columns:1fr}.provider-avatar{min-height:110px}.service-picker{grid-template-columns:1fr}.slot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.service-row{align-items:flex-start}.service-action{flex-direction:column;align-items:flex-end}}
 
 /* Month booking calendar */
 .calendar-head { display:grid; grid-template-columns:44px 1fr 44px; gap:10px; align-items:center; margin:18px 0 10px; text-align:center; }
