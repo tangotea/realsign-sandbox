@@ -10,6 +10,7 @@ import type { ProviderRole, ProviderStatus, VerificationState, VerificationType 
 
 type Service = { id: string; title: string; duration_min: number; price_cents: number; status: string; provider_role: ProviderRole };
 type Verification = { type: VerificationType; state: VerificationState; storage_path: string | null };
+type RateRule = { provider_role: ProviderRole; duration_min: number; min_price_cents: number; max_price_cents: number };
 
 const HELP_LABEL = "Open SASL help";
 const ACTIVE_PROVIDER_ROLES: ProviderRole[] = ["deaf_tutor", "interpreter"];
@@ -45,6 +46,8 @@ export default function ProviderApplication() {
   const [notice, setNotice] = useState(120);
   const [buffer, setBuffer] = useState(15);
   const [serviceRole, setServiceRole] = useState<ProviderRole>("deaf_tutor");
+  const [serviceDuration, setServiceDuration] = useState(30);
+  const [rateRules, setRateRules] = useState<RateRule[]>([]);
 
   const refresh = useCallback(async () => {
     setBusy(true);
@@ -57,12 +60,13 @@ export default function ProviderApplication() {
     const pid = String(ensured);
     setProviderId(pid);
 
-    const [profileRes, roleRes, serviceRes, verifyRes, settingsRes] = await Promise.all([
+    const [profileRes, roleRes, serviceRes, verifyRes, settingsRes, rateRulesRes] = await Promise.all([
       supabase.from("provider_profiles").select("status,public_display_name,introduction_text").eq("id", pid).single(),
       supabase.from("provider_roles").select("role").eq("provider_id", pid),
       supabase.from("provider_services").select("id,title,duration_min,price_cents,status,provider_role").eq("provider_id", pid).order("created_at"),
       supabase.from("verification_records").select("type,state,storage_path").eq("provider_id", pid),
       supabase.from("provider_booking_settings").select("booking_notice_min,buffer_min").eq("provider_id", pid).single(),
+      supabase.from("rate_rules").select("provider_role,duration_min,min_price_cents,max_price_cents").eq("active", true),
     ]);
     if (profileRes.data) {
       setStatus(profileRes.data.status as ProviderStatus);
@@ -72,6 +76,7 @@ export default function ProviderApplication() {
     setRoles(new Set((roleRes.data || []).map((r: { role: ProviderRole }) => r.role).filter(role => ACTIVE_PROVIDER_ROLES.includes(role))));
     setServices((serviceRes.data || []) as Service[]);
     setVerifications((verifyRes.data || []) as Verification[]);
+    setRateRules((rateRulesRes.data || []) as RateRule[]);
     if (settingsRes.data) { setNotice(settingsRes.data.booking_notice_min); setBuffer(settingsRes.data.buffer_min); }
     setBusy(false);
   }, [supabase]);
@@ -165,6 +170,9 @@ export default function ProviderApplication() {
   const editable = status === "draft" || status === "rejected";
   const selectedServiceRole = roles.has(serviceRole) ? serviceRole : (Array.from(roles)[0] || "deaf_tutor");
   const serviceOptions = SERVICE_OPTIONS[selectedServiceRole].length ? SERVICE_OPTIONS[selectedServiceRole] : ["General RealSign service"];
+  const selectedRateRule = rateRules.find(rule => rule.provider_role === selectedServiceRole && rule.duration_min === serviceDuration);
+  const minPrice = selectedRateRule ? selectedRateRule.min_price_cents / 100 : null;
+  const maxPrice = selectedRateRule ? selectedRateRule.max_price_cents / 100 : null;
 
   return <div className="stack">
     <section className="card">
@@ -203,9 +211,9 @@ export default function ProviderApplication() {
       {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><strong>R{(s.price_cents/100).toFixed(0)}</strong></div>)}</div> : <p className="muted">No services yet.</p>}
       {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
         <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
-        <label>Duration<select className="field" name="duration">{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
+        <label>Duration<select className="field" name="duration" value={serviceDuration} onChange={e=>setServiceDuration(Number(e.target.value))}>{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
         <label className="span2">Service option<select className="field" name="title" required>{serviceOptions.map(option=><option key={option} value={option}>{option}</option>)}</select></label>
-        <label>Price (R)<input className="field" name="price" type="number" min="0" step="1" required /></label>
+        <label>Price (R)<input className="field" name="price" type="number" min={minPrice ?? 0} max={maxPrice ?? undefined} step="1" required />{selectedRateRule ? <small className="price-guidance">Allowed price: R{minPrice?.toFixed(0)} to R{maxPrice?.toFixed(0)} for {serviceDuration} minutes.</small> : <small className="price-guidance">Choose a role and duration to see the allowed price range.</small>}</label>
         <button className="btn span2" disabled={!roles.size}>Add service</button>
       </form> : null}
     </section>
