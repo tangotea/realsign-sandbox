@@ -49,14 +49,30 @@ export function money(cents: number) {
 }
 
 export function roleLabel(role: string) {
-  if (role === "deaf tutor" || role === "deaf_tutor") return "🤟 SASL Tutor";
+  if (role === "deaf tutor" || role === "deaf_tutor") return "SA Sign Language Tutor";
   if (role === "qualified deaf teacher" || role === "qualified_deaf_teacher") return "🎓 SASL Provider";
-  if (role === "interpreter") return "👐 SASL Interpreter";
+  if (role === "interpreter") return "SA Sign Language Interpreter";
   return role.replaceAll("_", " ");
 }
 
-export function languageLabel(name: string) {
+export function languageLabel(name: string, role?: string | null) {
   const normal = name.toLowerCase().replace("south african sign language", "sasl");
+  if (role === "interpreter") {
+    if (normal === "sasl") return "SASL";
+    if (normal.includes("english")) return "SASL & English";
+    if (normal.includes("afrikaans")) return "SASL & Afrikaans";
+    if (normal.includes("isindebele")) return "SASL & isiNdebele";
+    if (normal.includes("isixhosa")) return "SASL & isiXhosa";
+    if (normal.includes("isizulu")) return "SASL & isiZulu";
+    if (normal.includes("sepedi")) return "SASL & Sepedi";
+    if (normal.includes("sesotho")) return "SASL & Sesotho";
+    if (normal.includes("setswana")) return "SASL & Setswana";
+    if (normal.includes("siswati")) return "SASL & siSwati";
+    if (normal.includes("tshivenda")) return "SASL & Tshivenda";
+    if (normal.includes("xitsonga") || normal.includes("itsonga")) return "SASL & Xitsonga";
+    if (normal.startsWith("sasl")) return name;
+    return `SASL & ${name}`;
+  }
   if (normal === "sasl") return "South African Sign Language (SASL)";
   if (normal.includes("english")) return "SASL (Tutor can type in English)";
   if (normal.includes("afrikaans")) return "SASL (Tutor kan in Afrikaans tik)";
