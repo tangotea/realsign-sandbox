@@ -109,8 +109,46 @@ button { cursor: pointer; }
   background:white;
   padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
 }
-.bottomnav a { text-align:center; font-size:12px; padding:5px 2px; color:var(--muted); }
-.bottomnav span { display:block; font-size:20px; }
+.bottomnav a {
+  position:relative;
+  display:flex;
+  min-height:56px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:6px 4px;
+  border-radius:12px;
+  color:var(--muted);
+  font-size:12px;
+  outline:none;
+  transition:background-color .16s ease, color .16s ease, transform .12s ease;
+}
+.bottomnav a:hover { background:var(--soft); color:var(--text); }
+.bottomnav a:active { transform:translateY(1px); background:#e7e7df; color:var(--strong); }
+.bottomnav a:focus-visible { box-shadow:0 0 0 3px rgba(24,24,24,.18); color:var(--strong); }
+.bottomnav a.active { color:var(--strong); font-weight:800; }
+.bottomnav a.active::before {
+  content:"";
+  position:absolute;
+  top:-8px;
+  left:18%;
+  right:18%;
+  height:3px;
+  border-radius:999px;
+  background:var(--strong);
+}
+.bottomnav a.active span { background:var(--soft); border-color:var(--strong); }
+.bottomnav span {
+  display:grid;
+  width:28px;
+  height:24px;
+  place-items:center;
+  border:1px solid transparent;
+  border-radius:9px;
+  font-size:18px;
+  line-height:1;
+}
 .admin-shell { display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
 .sidebar { padding:24px 16px; border-right:1px solid var(--border); background:white; }
 .sidebar nav { display:grid; gap:8px; margin-top:24px; }
