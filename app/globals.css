@@ -55,6 +55,8 @@ button { cursor: pointer; }
 .card p { margin: 0; color: var(--muted); }
 .choice { min-height: 98px; display: grid; grid-template-columns: 46px 1fr; gap: 12px; align-items: center; }
 .choice .icon { font-size: 30px; }
+.provider-choice { background:transparent; box-shadow:none; }
+.provider-choice .icon { font-size:28px; }
 .btn {
   display: inline-flex;
   align-items: center;
@@ -104,7 +106,7 @@ button { cursor: pointer; }
   right: 0;
   z-index: 20;
   display:grid;
-  grid-template-columns:repeat(5,1fr);
+  grid-template-columns:repeat(auto-fit,minmax(0,1fr));
   border-top:1px solid var(--border);
   background:white;
   padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));

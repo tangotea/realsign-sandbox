@@ -16,6 +16,20 @@ export const OFFICIAL_LANGUAGES = [
   { code: "ts", label: "SASL (Mudyondzisi a nga thayipa hi Xitsonga)", modality: "spoken_written" as LanguageModality }
 ] as const;
 
+export const LEARNER_LANGUAGE_OPTIONS = [
+  { code: "en", label: "English" },
+  { code: "af", label: "Afrikaans" },
+  { code: "nr", label: "isiNdebele" },
+  { code: "xh", label: "isiXhosa" },
+  { code: "zu", label: "isiZulu" },
+  { code: "nso", label: "Sepedi" },
+  { code: "st", label: "Sesotho" },
+  { code: "tn", label: "Setswana" },
+  { code: "ss", label: "siSwati" },
+  { code: "ve", label: "Tshivenda" },
+  { code: "ts", label: "Xitsonga" }
+] as const;
+
 const INTERPRETER_LABELS: Record<string, string> = {
   sasl: "SASL",
   en: "SASL & English",

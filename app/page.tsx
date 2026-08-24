@@ -30,11 +30,11 @@ export default function Home() {
             <div className="icon">👐</div>
             <div><h2>Video Call SASL Interpreting</h2></div>
           </Link>
+          <Link className="card choice provider-choice" href="/provider">
+            <div className="icon">＋</div>
+            <div><h2>Offer a Service</h2><p>Apply as a SASL tutor or interpreter.</p></div>
+          </Link>
         </section>
-
-        <div style={{marginTop: 24, textAlign: "center"}}>
-          <Link href="/provider"><strong>I want to offer a service</strong></Link>
-        </div>
       </main>
       <AppNav />
     </div>
