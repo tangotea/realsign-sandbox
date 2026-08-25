@@ -1,6 +1,6 @@
 export const PROVIDER_ROLES = [
-  { value: "deaf_tutor", label: "SA Sign Language Tutor", icon: "🤟", description: "Sign language lessons and practice." },
-  { value: "interpreter", label: "SA Sign Language Interpreter", icon: "👐", description: "Video call SASL interpreting." },
+  { value: "deaf_tutor", label: "Teach SASL", icon: "🤟", description: "For Deaf SASL tutors." },
+  { value: "interpreter", label: "Interpret SASL", icon: "👐", description: "For approved SASL interpreters." },
 ] as const;
 
 export const BOOKING_NOTICE_OPTIONS = [60, 120, 240, 720, 1440] as const;

@@ -3,17 +3,17 @@ export type LanguageDisplayMode = "tutor" | "interpreter";
 
 export const OFFICIAL_LANGUAGES = [
   { code: "sasl", label: "South African Sign Language (SASL)", modality: "signed" as LanguageModality },
-  { code: "en", label: "SASL (Tutor can type in English)", modality: "spoken_written" as LanguageModality },
-  { code: "af", label: "SASL (Tutor kan in Afrikaans tik)", modality: "spoken_written" as LanguageModality },
-  { code: "nr", label: "SASL (Umfundisi angathayipha ngesiNdebele)", modality: "spoken_written" as LanguageModality },
-  { code: "xh", label: "SASL (Umhlohli angachwetheza ngesiXhosa)", modality: "spoken_written" as LanguageModality },
-  { code: "zu", label: "SASL (Umfundisi angathayipha ngesiZulu)", modality: "spoken_written" as LanguageModality },
-  { code: "nso", label: "SASL (Morutisi a ka thaepa ka Sepedi)", modality: "spoken_written" as LanguageModality },
-  { code: "st", label: "SASL (Morupeli a ka thaepa ka Sesotho)", modality: "spoken_written" as LanguageModality },
-  { code: "tn", label: "SASL (Morutabana a ka tlanya ka Setswana)", modality: "spoken_written" as LanguageModality },
-  { code: "ss", label: "SASL (Thishela angathayipha ngeSiSwati)", modality: "spoken_written" as LanguageModality },
-  { code: "ve", label: "SASL (Mudededzi a nga thaipha nga Tshivenda)", modality: "spoken_written" as LanguageModality },
-  { code: "ts", label: "SASL (Mudyondzisi a nga thayipa hi Xitsonga)", modality: "spoken_written" as LanguageModality }
+  { code: "en", label: "I can type in English", modality: "spoken_written" as LanguageModality },
+  { code: "af", label: "I can type in Afrikaans", modality: "spoken_written" as LanguageModality },
+  { code: "nr", label: "I can type in isiNdebele", modality: "spoken_written" as LanguageModality },
+  { code: "xh", label: "I can type in isiXhosa", modality: "spoken_written" as LanguageModality },
+  { code: "zu", label: "I can type in isiZulu", modality: "spoken_written" as LanguageModality },
+  { code: "nso", label: "I can type in Sepedi", modality: "spoken_written" as LanguageModality },
+  { code: "st", label: "I can type in Sesotho", modality: "spoken_written" as LanguageModality },
+  { code: "tn", label: "I can type in Setswana", modality: "spoken_written" as LanguageModality },
+  { code: "ss", label: "I can type in siSwati", modality: "spoken_written" as LanguageModality },
+  { code: "ve", label: "I can type in Tshivenda", modality: "spoken_written" as LanguageModality },
+  { code: "ts", label: "I can type in Xitsonga", modality: "spoken_written" as LanguageModality }
 ] as const;
 
 export const LEARNER_LANGUAGE_OPTIONS = [
@@ -31,22 +31,25 @@ export const LEARNER_LANGUAGE_OPTIONS = [
 ] as const;
 
 const INTERPRETER_LABELS: Record<string, string> = {
-  sasl: "SASL",
-  en: "SASL & English",
-  af: "SASL & Afrikaans",
-  nr: "SASL & isiNdebele",
-  xh: "SASL & isiXhosa",
-  zu: "SASL & isiZulu",
-  nso: "SASL & Sepedi",
-  st: "SASL & Sesotho",
-  tn: "SASL & Setswana",
-  ss: "SASL & siSwati",
-  ve: "SASL & Tshivenda",
-  ts: "SASL & Xitsonga"
+  en: "English",
+  af: "Afrikaans",
+  nr: "isiNdebele",
+  xh: "isiXhosa",
+  zu: "isiZulu",
+  nso: "Sepedi",
+  st: "Sesotho",
+  tn: "Setswana",
+  ss: "siSwati",
+  ve: "Tshivenda",
+  ts: "Xitsonga"
 };
 
 export function officialLanguageLabel(code: string, mode: LanguageDisplayMode) {
   const language = OFFICIAL_LANGUAGES.find(item => item.code === code);
   if (mode === "interpreter") return INTERPRETER_LABELS[code] || language?.label || code;
   return language?.label || code;
+}
+
+export function officialLanguageOptions(mode: LanguageDisplayMode) {
+  return OFFICIAL_LANGUAGES.filter(language => mode === "tutor" || language.modality === "spoken_written");
 }

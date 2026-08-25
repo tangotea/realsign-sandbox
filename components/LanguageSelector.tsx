@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { OFFICIAL_LANGUAGES, LanguageDisplayMode, officialLanguageLabel } from "@/lib/languages";
+import { LanguageDisplayMode, officialLanguageLabel, officialLanguageOptions } from "@/lib/languages";
 
 type LanguageSelectorProps = {
   modes?: LanguageDisplayMode[];
@@ -11,13 +11,13 @@ type LanguageSelectorProps = {
 
 const MODE_COPY: Record<LanguageDisplayMode, { title: string; subtitle: string; button: string }> = {
   tutor: {
-    title: "Tutor languages I use",
+    title: "Languages I can use while teaching",
     subtitle: "Choose the written languages you can use while teaching SASL.",
     button: "Save tutor languages",
   },
   interpreter: {
-    title: "Interpreter languages I use",
-    subtitle: "Choose the languages you can interpret with SASL.",
+    title: "Languages I can interpret",
+    subtitle: "Choose the spoken or written languages you can interpret with SASL.",
     button: "Save interpreter languages",
   },
 };
@@ -75,7 +75,7 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
           <h3>{MODE_COPY[mode].title}</h3>
           <p>{MODE_COPY[mode].subtitle}</p>
           <div className="checklist">
-            {OFFICIAL_LANGUAGES.map((language) => <label className="check" key={`${mode}-${language.code}`}><input type="checkbox" checked={selected.has(language.code)} onChange={() => toggle(language.code)} /><span><strong>{officialLanguageLabel(language.code, mode)}</strong>{language.modality === "signed" ? <span className="pill" style={{marginLeft:8}}>Sign language</span> : null}</span></label>)}
+            {officialLanguageOptions(mode).map((language) => <label className="check" key={`${mode}-${language.code}`}><input type="checkbox" checked={selected.has(language.code)} onChange={() => toggle(language.code)} /><span><strong>{officialLanguageLabel(language.code, mode)}</strong>{language.modality === "signed" ? <span className="pill" style={{marginLeft:8}}>Sign language</span> : null}</span></label>)}
           </div>
         </div>
       ))}

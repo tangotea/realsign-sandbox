@@ -49,9 +49,9 @@ export function money(cents: number) {
 }
 
 export function roleLabel(role: string) {
-  if (role === "deaf tutor" || role === "deaf_tutor") return "SA Sign Language Tutor";
+  if (role === "deaf tutor" || role === "deaf_tutor") return "SASL Tutor";
   if (role === "qualified deaf teacher" || role === "qualified_deaf_teacher") return "🎓 SASL Provider";
-  if (role === "interpreter") return "SA Sign Language Interpreter";
+  if (role === "interpreter") return "SASL Interpreter";
   return role.replaceAll("_", " ");
 }
 
@@ -84,33 +84,33 @@ export function serviceDetailLabel(service: ServiceLike) {
 export function languageLabel(name: string, role?: string | null) {
   const normal = name.toLowerCase().replace("south african sign language", "sasl");
   if (role === "interpreter") {
-    if (normal === "sasl") return "SASL";
-    if (normal.includes("english")) return "SASL & English";
-    if (normal.includes("afrikaans")) return "SASL & Afrikaans";
-    if (normal.includes("isindebele")) return "SASL & isiNdebele";
-    if (normal.includes("isixhosa")) return "SASL & isiXhosa";
-    if (normal.includes("isizulu")) return "SASL & isiZulu";
-    if (normal.includes("sepedi")) return "SASL & Sepedi";
-    if (normal.includes("sesotho")) return "SASL & Sesotho";
-    if (normal.includes("setswana")) return "SASL & Setswana";
-    if (normal.includes("siswati")) return "SASL & siSwati";
-    if (normal.includes("tshivenda")) return "SASL & Tshivenda";
-    if (normal.includes("xitsonga") || normal.includes("itsonga")) return "SASL & Xitsonga";
+    if (normal === "sasl") return "";
+    if (normal.includes("english")) return "English";
+    if (normal.includes("afrikaans")) return "Afrikaans";
+    if (normal.includes("isindebele")) return "isiNdebele";
+    if (normal.includes("isixhosa")) return "isiXhosa";
+    if (normal.includes("isizulu")) return "isiZulu";
+    if (normal.includes("sepedi")) return "Sepedi";
+    if (normal.includes("sesotho")) return "Sesotho";
+    if (normal.includes("setswana")) return "Setswana";
+    if (normal.includes("siswati")) return "siSwati";
+    if (normal.includes("tshivenda")) return "Tshivenda";
+    if (normal.includes("xitsonga") || normal.includes("itsonga")) return "Xitsonga";
     if (normal.startsWith("sasl")) return name;
-    return `SASL & ${name}`;
+    return name;
   }
   if (normal === "sasl") return "South African Sign Language (SASL)";
-  if (normal.includes("english")) return "SASL (Tutor can type in English)";
-  if (normal.includes("afrikaans")) return "SASL (Tutor kan in Afrikaans tik)";
-  if (normal.includes("isindebele")) return "SASL (Umfundisi angathayipha ngesiNdebele)";
-  if (normal.includes("isixhosa")) return "SASL (Umhlohli angachwetheza ngesiXhosa)";
-  if (normal.includes("isizulu")) return "SASL (Umfundisi angathayipha ngesiZulu)";
-  if (normal.includes("sepedi")) return "SASL (Morutisi a ka thaepa ka Sepedi)";
-  if (normal.includes("sesotho")) return "SASL (Morupeli a ka thaepa ka Sesotho)";
-  if (normal.includes("setswana")) return "SASL (Morutabana a ka tlanya ka Setswana)";
-  if (normal.includes("siswati")) return "SASL (Thishela angathayipha ngeSiSwati)";
-  if (normal.includes("tshivenda")) return "SASL (Mudededzi a nga thaipha nga Tshivenda)";
-  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "SASL (Mudyondzisi a nga thayipa hi Xitsonga)";
+  if (normal.includes("english")) return "I can type in English";
+  if (normal.includes("afrikaans")) return "I can type in Afrikaans";
+  if (normal.includes("isindebele")) return "I can type in isiNdebele";
+  if (normal.includes("isixhosa")) return "I can type in isiXhosa";
+  if (normal.includes("isizulu")) return "I can type in isiZulu";
+  if (normal.includes("sepedi")) return "I can type in Sepedi";
+  if (normal.includes("sesotho")) return "I can type in Sesotho";
+  if (normal.includes("setswana")) return "I can type in Setswana";
+  if (normal.includes("siswati")) return "I can type in siSwati";
+  if (normal.includes("tshivenda")) return "I can type in Tshivenda";
+  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "I can type in Xitsonga";
   if (normal.startsWith("sasl")) return name;
-  return `SASL (Tutor can type in ${name})`;
+  return `I can type in ${name}`;
 }

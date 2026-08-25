@@ -34,7 +34,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         {q.subjectName ? <input type="hidden" name="subjectName" value={q.subjectName}/> : null}
         {grade ? <input type="hidden" name="grade" value={String(grade)}/> : null}
         {roleLocked ? <><input type="hidden" name="role" value={role}/><label>Provider type<div className="field readonly-field">{roleLabel(role)}</div></label></> : null}
-        <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).map(l=><option key={l.code} value={l.code}>{languageLabel(l.name, role)}</option>)}</select></label>
+        <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).filter(l=>role!=="interpreter"||l.code!=="sasl").map(l=><option key={l.code} value={l.code}>{languageLabel(l.name, role)}</option>)}</select></label>
         <button className="btn secondary">Update results</button>
       </form>
       {error ? <p className="notice">Marketplace could not load: {error.message}</p> : null}
@@ -42,7 +42,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         <div className="provider-avatar">▶</div>
         <div className="provider-card-body"><h2>{p.public_display_name}</h2>
           <div className="tag-row">{p.roles.filter(r => role ? (r === role || (role === "deaf_tutor" && r === "deaf tutor")) : (r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter")).map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}</div>
-          {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.map(language => languageLabel(language, role)).join(" · ")}</p> : null}
+          {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.map(language => languageLabel(language, role)).filter(Boolean).join(" · ")}</p> : null}
           <p><strong>{serviceLabel(role)}</strong><br/>{p.sample_duration_min} min · from {money(p.min_price_cents)}</p>
           <div className="row wrap"><Link className="btn" href={`/providers/${p.provider_id}${role ? `?role=${role}` : ""}`}>View profile</Link><Link className="btn secondary" href={`/providers/${p.provider_id}/book?service=${p.sample_service_id}`}>View times</Link></div>
         </div>

@@ -190,13 +190,14 @@ export default function ProviderApplication() {
       <div className="stack compact">
         {PROVIDER_ROLES.map(r => <label className="check" key={r.value}><input disabled={!editable} type="checkbox" checked={roles.has(r.value)} onChange={() => { const next=new Set(roles); next.has(r.value)?next.delete(r.value):next.add(r.value); setRoles(next); }} /><span><strong>{r.icon} {r.label}</strong><small>{r.description}</small></span></label>)}
       </div>
+      {roles.has("deaf_tutor") ? <p className="notice">RealSign SASL lessons are reserved for Deaf SASL tutors. Interpreter approval is handled separately.</p> : null}
       {editable ? <button className="btn secondary" onClick={saveRoles}>Save roles</button> : null}
     </section>
 
     <section className="card">
       <h2>2. Verification</h2>
       <VerificationRow label="Identity" state={verificationState("identity")} onFile={e=>uploadVerification("identity",e)} disabled={!editable} />
-      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf verification" state={verificationState("deaf")} onFile={e=>uploadVerification("deaf",e)} disabled={!editable} /> : null}
+      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf SASL tutor verification" state={verificationState("deaf")} onFile={e=>uploadVerification("deaf",e)} disabled={!editable} /> : null}
       {roles.has("interpreter") ? <VerificationRow label="Interpreter assessment / evidence" state={verificationState("interpreter_assessment")} onFile={e=>uploadVerification("interpreter_assessment",e)} disabled={!editable} /> : null}
     </section>
 
