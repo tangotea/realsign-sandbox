@@ -1,13 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import AppNav from "@/components/AppNav";
+import AuthAction from "@/components/AuthAction";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+
   return (
     <div className="shell">
       <header className="topbar">
         <div className="brand brand-lockup"><Image src="/realsign-logo.png" width={30} height={30} alt="" priority />REALSIGN</div>
-        <Link className="btn secondary" href="/sign-in">Sign in</Link>
+        <AuthAction initialSignedIn={Boolean(auth.user)} />
       </header>
 
       <main className="main">
