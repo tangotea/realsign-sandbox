@@ -6,25 +6,31 @@ import { createClient } from "@/lib/supabase/client";
 import { LanguageDisplayMode, officialLanguageLabel, officialLanguageOptions } from "@/lib/languages";
 
 type LanguageSelectorProps = {
-  modes?: LanguageDisplayMode[];
+  modes?: Array<Exclude<LanguageDisplayMode, "combined">>;
 };
 
 const MODE_COPY: Record<LanguageDisplayMode, { title: string; subtitle: string; button: string }> = {
   tutor: {
-    title: "Languages I can use while teaching",
-    subtitle: "Choose the written languages you can use while teaching SASL.",
+    title: "Written languages I can use",
+    subtitle: "Lessons are taught in SASL. Select the languages you can read and type. This does not mean you hear or speak these languages.",
     button: "Save tutor languages",
   },
   interpreter: {
     title: "Languages I can interpret",
-    subtitle: "Choose the spoken or written languages you can interpret with SASL.",
+    subtitle: "Select the spoken languages you can interpret between and SASL.",
     button: "Save interpreter languages",
+  },
+  combined: {
+    title: "Languages I can use for both roles",
+    subtitle: "Select only languages you can read and type and also interpret between SASL. Selecting a language does not mean you hear or speak it.",
+    button: "Save language choices",
   },
 };
 
 export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelectorProps) {
   const supabase = useMemo(() => createClient(), []);
   const visibleModes = Array.from(new Set(modes));
+  const displayMode: LanguageDisplayMode | null = visibleModes.length > 1 ? "combined" : visibleModes[0] || null;
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [userId, setUserId] = useState<string | null>(null);
   const [status, setStatus] = useState("Loading…");
@@ -69,17 +75,18 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
 
   return (
     <section className="card">
-      <div className="row"><div><h2>Languages I use</h2><p>{visibleModes.length ? "Select all that apply." : "Choose tutor or interpreter first."}</p></div><button className="help-btn" aria-label="Languages help">?</button></div>
-      {visibleModes.map(mode => (
-        <div className="language-mode" key={mode}>
-          <h3>{MODE_COPY[mode].title}</h3>
-          <p>{MODE_COPY[mode].subtitle}</p>
+      <div className="row"><div><h2>Languages</h2><p>{displayMode ? "Select all that apply." : "Choose tutor or interpreter first."}</p></div><button className="help-btn" aria-label="Languages help">?</button></div>
+      {displayMode ? (
+        <div className="language-mode">
+          <h3>{MODE_COPY[displayMode].title}</h3>
+          <p>{MODE_COPY[displayMode].subtitle}</p>
           <div className="checklist">
-            {officialLanguageOptions(mode).map((language) => <label className="check" key={`${mode}-${language.code}`}><input type="checkbox" checked={selected.has(language.code)} onChange={() => toggle(language.code)} /><span><strong>{officialLanguageLabel(language.code, mode)}</strong>{language.modality === "signed" ? <span className="pill" style={{marginLeft:8}}>Sign language</span> : null}</span></label>)}
+            {officialLanguageOptions(displayMode).map((language) => <label className="check" key={language.code}><input type="checkbox" checked={selected.has(language.code)} onChange={() => toggle(language.code)} /><span><strong>{officialLanguageLabel(language.code, displayMode)}</strong>{language.modality === "signed" ? <span className="pill" style={{marginLeft:8}}>Sign language</span> : null}</span></label>)}
           </div>
         </div>
-      ))}
-      {userId ? <button className="btn" style={{marginTop:16}} onClick={save}>{visibleModes.length === 1 ? MODE_COPY[visibleModes[0]].button : "Save languages"}</button> : <Link href="/sign-in" className="btn" style={{marginTop:16}}>Sign in to save</Link>}
+      ) : null}
+      {userId && displayMode ? <button className="btn" style={{marginTop:16}} onClick={save}>{MODE_COPY[displayMode].button}</button> : null}
+      {!userId ? <Link href="/sign-in" className="btn" style={{marginTop:16}}>Sign in to save</Link> : null}
       {status ? <p className="muted" aria-live="polite">{status}</p> : null}
     </section>
   );
