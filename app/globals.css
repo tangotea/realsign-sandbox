@@ -141,7 +141,7 @@ button { cursor: pointer; }
   gap:3px;
   padding:6px 4px;
   border-radius:12px;
-  color:var(--text);
+  color:#000;
   font-size:12px;
   outline:none;
   transition:background-color .16s ease, color .16s ease, transform .12s ease;
@@ -150,6 +150,7 @@ button { cursor: pointer; }
 .bottomnav a:active { transform:translateY(1px); background:#e7e7df; color:var(--strong); }
 .bottomnav a:focus-visible { box-shadow:0 0 0 3px rgba(24,24,24,.18); color:var(--strong); }
 .bottomnav a.active { color:#0f4c81; background:#e8f1f9; font-weight:800; }
+.bottomnav a > span { color:#000; }
 .bottomnav a.active::before {
   content:"";
   position:absolute;
@@ -176,7 +177,7 @@ button { cursor: pointer; }
   height:24px;
   border:0;
   border-radius:0;
-  background-color:currentColor;
+  background-color:#000;
   background-position:center;
   background-repeat:no-repeat;
   background-size:contain;
