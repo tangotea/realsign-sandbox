@@ -38,6 +38,8 @@ button { cursor: pointer; }
 .brand { font-weight: 900; letter-spacing: .08em; }
 .brand-lockup { display:inline-flex; align-items:center; gap:8px; }
 .brand-lockup img { width:38px; height:38px; border-radius:8px; object-fit:contain; }
+.topbar .brand:not(.brand-lockup) { display:inline-flex; align-items:center; gap:8px; min-height:38px; }
+.topbar .brand:not(.brand-lockup)::before { content:""; width:38px; height:38px; flex:none; background:url('/realsign-logo.png') center / contain no-repeat; }
 .topbar > a:first-child {
   display:inline-flex;
   width:44px;
