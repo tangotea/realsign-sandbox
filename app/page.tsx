@@ -18,7 +18,7 @@ export default async function Home() {
       <main className="main">
         <section className="hero">
           <h1>Find. Book. Pay. Meet.</h1>
-          <p>Deaf tutors and SASL interpreters.</p>
+          <p>Deaf tutors and South African Sign Language (SASL) interpreters.</p>
         </section>
 
         <div className="row" style={{marginTop: 14}}>

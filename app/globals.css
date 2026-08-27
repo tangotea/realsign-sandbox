@@ -39,7 +39,7 @@ button { cursor: pointer; }
 .brand-lockup { display:inline-flex; align-items:center; gap:6px; }
 .brand-lockup img { width:48px; height:48px; border-radius:8px; object-fit:contain; }
 .brand-copy { display:grid; gap:3px; line-height:1; min-width:0; }
-.brand-copy strong { font-weight:900; letter-spacing:.08em; white-space:nowrap; }
+.brand-copy strong { font-size:18px; font-weight:900; letter-spacing:.08em; white-space:nowrap; }
 .brand-copy small { color:#16803c; font-size:14px; font-weight:700; letter-spacing:0; line-height:1.1; text-align:right; white-space:nowrap; }
 .topbar .brand:not(.brand-lockup) { display:inline-flex; align-items:center; gap:8px; min-height:48px; }
 .topbar .brand:not(.brand-lockup)::before { content:""; width:48px; height:48px; flex:none; background:url('/realsign-logo.png') center / contain no-repeat; }
@@ -146,10 +146,10 @@ button { cursor: pointer; }
   outline:none;
   transition:background-color .16s ease, color .16s ease, transform .12s ease;
 }
-.bottomnav a:hover { background:var(--soft); color:var(--text); }
-.bottomnav a:active { transform:translateY(1px); background:#e7e7df; color:var(--strong); }
+.bottomnav a:hover { background:#eaf7ed; color:#1f7a3f; }
+.bottomnav a:active { transform:translateY(1px); background:#dff1e3; color:#176b35; }
 .bottomnav a:focus-visible { box-shadow:0 0 0 3px rgba(24,24,24,.18); color:var(--strong); }
-.bottomnav a.active { color:var(--strong); font-weight:800; }
+.bottomnav a.active { color:#1d5fa7; background:#eef5fc; font-weight:800; }
 .bottomnav a.active::before {
   content:"";
   position:absolute;
@@ -158,9 +158,9 @@ button { cursor: pointer; }
   right:18%;
   height:3px;
   border-radius:999px;
-  background:var(--strong);
+  background:#1d5fa7;
 }
-.bottomnav a.active span { background:var(--soft); border-color:var(--strong); }
+.bottomnav a.active span:not(.nav-icon) { background:#e3effb; border-color:#1d5fa7; }
 .bottomnav span {
   display:grid;
   width:28px;
@@ -171,6 +171,26 @@ button { cursor: pointer; }
   font-size:18px;
   line-height:1;
 }
+.bottomnav .nav-icon {
+  width:24px;
+  height:24px;
+  border:0;
+  border-radius:0;
+  background-color:currentColor;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  -webkit-mask-position:center;
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-size:contain;
+  mask-position:center;
+  mask-repeat:no-repeat;
+  mask-size:contain;
+}
+.bottomnav .nav-icon-home { background-image:none; -webkit-mask-image:url('/nav-icons/home.svg'); mask-image:url('/nav-icons/home.svg'); }
+.bottomnav .nav-icon-booking { background-image:none; -webkit-mask-image:url('/nav-icons/booking.svg'); mask-image:url('/nav-icons/booking.svg'); }
+.bottomnav .nav-icon-message { background-image:none; -webkit-mask-image:url('/nav-icons/message.svg'); mask-image:url('/nav-icons/message.svg'); }
+.bottomnav .nav-icon-profile { background-image:none; -webkit-mask-image:url('/nav-icons/profile.svg'); mask-image:url('/nav-icons/profile.svg'); }
 .admin-shell { display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
 .sidebar { padding:24px 16px; border-right:1px solid var(--border); background:white; }
 .sidebar nav { display:grid; gap:8px; margin-top:24px; }

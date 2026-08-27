@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
-  { href: "/", icon: "⌂", label: "Home", exact: true },
-  { href: "/bookings", icon: "▣", label: "Bookings" },
+  { href: "/", iconClass: "nav-icon-home", label: "Home", exact: true },
+  { href: "/bookings", iconClass: "nav-icon-booking", label: "Bookings" },
   { href: "/dictionary", icon: "⌕", label: "Dictionary" },
-  { href: "/messages", icon: "▤", label: "Messages" },
-  { href: "/profile", icon: "◉", label: "Profile", authRequired: true },
+  { href: "/messages", iconClass: "nav-icon-message", label: "Messages" },
+  { href: "/profile", iconClass: "nav-icon-profile", label: "Profile", authRequired: true },
 ];
 
 export default function AppNav() {
@@ -38,7 +38,7 @@ export default function AppNav() {
         const active = item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Link key={item.href} href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
-            <span>{item.icon}</span>
+            <span className={item.iconClass || undefined} aria-hidden="true">{item.icon || ""}</span>
             {item.label}
           </Link>
         );
