@@ -1,2 +1,2 @@
-import AppNav from "@/components/AppNav";import DictionarySearch from "@/components/dictionary/DictionarySearch";
-export default function Page(){return <div className="shell"><header className="topbar"><div className="brand">REALSIGN</div><strong>Dictionary</strong><button className="help-btn" aria-label="Dictionary help">?</button></header><main className="main"><section className="card"><DictionarySearch/></section></main><AppNav/></div>}
+import AppNav from "@/components/AppNav";import BrandLockup from "@/components/BrandLockup";import DictionarySearch from "@/components/dictionary/DictionarySearch";
+export default function Page(){return <div className="shell"><header className="topbar"><BrandLockup/><strong>Dictionary</strong><button className="help-btn" aria-label="Dictionary help">?</button></header><main className="main"><section className="card"><DictionarySearch/></section></main><AppNav/></div>}

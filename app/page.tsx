@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import AppNav from "@/components/AppNav";
 import AuthAction from "@/components/AuthAction";
+import BrandLockup from "@/components/BrandLockup";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
@@ -11,7 +11,7 @@ export default async function Home() {
   return (
     <div className="shell">
       <header className="topbar">
-        <div className="brand brand-lockup"><Image src="/realsign-logo.png" width={52} height={52} alt="" priority />REALSIGN</div>
+        <BrandLockup />
         <AuthAction initialSignedIn={Boolean(auth.user)} />
       </header>
 

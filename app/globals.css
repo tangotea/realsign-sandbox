@@ -36,8 +36,11 @@ button { cursor: pointer; }
   border-bottom: 1px solid var(--border);
 }
 .brand { font-weight: 900; letter-spacing: .08em; }
-.brand-lockup { display:inline-flex; align-items:center; gap:8px; }
+.brand-lockup { display:inline-flex; align-items:center; gap:6px; }
 .brand-lockup img { width:52px; height:52px; border-radius:8px; object-fit:contain; }
+.brand-copy { display:grid; gap:3px; line-height:1; min-width:0; }
+.brand-copy strong { font-weight:900; letter-spacing:.08em; white-space:nowrap; }
+.brand-copy small { color:#16803c; font-size:14px; font-weight:700; letter-spacing:0; line-height:1.1; text-align:right; white-space:nowrap; }
 .topbar .brand:not(.brand-lockup) { display:inline-flex; align-items:center; gap:8px; min-height:52px; }
 .topbar .brand:not(.brand-lockup)::before { content:""; width:52px; height:52px; flex:none; background:url('/realsign-logo.png') center / contain no-repeat; }
 .topbar > a:first-child {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
+import BrandLockup from "@/components/BrandLockup";
 import AccountProfile from "@/components/profile/AccountProfile";
 import LearnerLanguagePreferences from "@/components/profile/LearnerLanguagePreferences";
 import { createClient } from "@/lib/supabase/server";
@@ -30,7 +31,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="shell">
-      <header className="topbar"><div className="brand">REALSIGN</div><strong>Profile</strong></header>
+      <header className="topbar"><BrandLockup /><strong>Profile</strong></header>
       <main className="main">
         <section className="hero">
           <h1>Your profile</h1>

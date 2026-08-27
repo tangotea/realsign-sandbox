@@ -1,4 +1,5 @@
 import AppNav from "@/components/AppNav";
+import BrandLockup from "@/components/BrandLockup";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { money, serviceLabel } from "@/lib/marketplace";
@@ -50,7 +51,7 @@ export default async function Page() {
   return (
     <div className="shell">
       <header className="topbar">
-        <div className="brand">REALSIGN</div>
+        <BrandLockup />
         <strong>Bookings</strong>
       </header>
       <main className="main">
