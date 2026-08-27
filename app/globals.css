@@ -183,6 +183,9 @@ button { cursor: pointer; }
 .check small, .verification-row small, .service-row small, .availability-day small, .admin-row small { display:block; color:var(--muted); margin-top:3px; }
 .notice { margin-top:14px !important; padding:12px 14px; border-radius:12px; background:var(--soft); color:var(--text) !important; }
 .success-box { margin-top:14px !important; padding:12px 14px; border:1px solid var(--strong); border-radius:12px; color:var(--text) !important; }
+.auth-error { display:grid; gap:4px; margin-top:14px !important; padding:12px 14px; border:1px solid #b42318; border-radius:12px; background:#fff1f0; color:#8a1f1f !important; }
+.auth-error strong { color:#8a1f1f; }
+.auth-error a { color:#8a1f1f; text-decoration:underline; font-weight:700; }
 .wrap { flex-wrap: wrap; justify-content:flex-start; }
 .btn.ghost { background:transparent; color:var(--text); border-color:var(--border); }
 .btn.danger { background:white; color:var(--text); border-style:dashed; }
