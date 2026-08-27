@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
-  { href: "/", iconClass: "nav-icon-home", label: "Home", exact: true },
-  { href: "/bookings", iconClass: "nav-icon-booking", label: "Bookings" },
-  { href: "/dictionary", icon: "⌕", label: "Dictionary" },
-  { href: "/messages", iconClass: "nav-icon-message", label: "Messages" },
-  { href: "/profile", iconClass: "nav-icon-profile", label: "Profile", authRequired: true },
+  { href: "/", icon: "", iconSrc: "/nav-icons/home.svg", label: "Home", exact: true },
+  { href: "/bookings", icon: "", iconSrc: "/nav-icons/booking.svg", label: "Bookings" },
+  { href: "/dictionary", icon: "⌕", iconSrc: "", label: "Dictionary" },
+  { href: "/messages", icon: "", iconSrc: "/nav-icons/message.svg", label: "Messages" },
+  { href: "/profile", icon: "", iconSrc: "/nav-icons/profile.svg", label: "Profile", authRequired: true },
 ];
 
 export default function AppNav() {
@@ -38,7 +38,7 @@ export default function AppNav() {
         const active = item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Link key={item.href} href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
-            <span className={item.iconClass || undefined} aria-hidden="true">{item.icon || ""}</span>
+            <span className="nav-icon-frame" aria-hidden="true">{item.iconSrc ? <img className="nav-icon-img" src={item.iconSrc} alt="" /> : item.icon}</span>
             {item.label}
           </Link>
         );

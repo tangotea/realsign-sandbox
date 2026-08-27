@@ -161,7 +161,7 @@ button { cursor: pointer; }
   border-radius:999px;
   background:#0f4c81;
 }
-.bottomnav a.active span:not(.nav-icon) { background:#dceaf5; border-color:#0f4c81; }
+.bottomnav a.active span { background:#dceaf5; border-color:#0f4c81; }
 .bottomnav span {
   display:grid;
   width:28px;
@@ -172,26 +172,8 @@ button { cursor: pointer; }
   font-size:18px;
   line-height:1;
 }
-.bottomnav .nav-icon {
-  width:24px;
-  height:24px;
-  border:0;
-  border-radius:0;
-  background-color:#000;
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:contain;
-  -webkit-mask-position:center;
-  -webkit-mask-repeat:no-repeat;
-  -webkit-mask-size:contain;
-  mask-position:center;
-  mask-repeat:no-repeat;
-  mask-size:contain;
-}
-.bottomnav .nav-icon-home { background-image:none; -webkit-mask-image:url('/nav-icons/home.svg'); mask-image:url('/nav-icons/home.svg'); }
-.bottomnav .nav-icon-booking { background-image:none; -webkit-mask-image:url('/nav-icons/booking.svg'); mask-image:url('/nav-icons/booking.svg'); }
-.bottomnav .nav-icon-message { background-image:none; -webkit-mask-image:url('/nav-icons/message.svg'); mask-image:url('/nav-icons/message.svg'); }
-.bottomnav .nav-icon-profile { background-image:none; -webkit-mask-image:url('/nav-icons/profile.svg'); mask-image:url('/nav-icons/profile.svg'); }
+.bottomnav .nav-icon-frame { width:28px; height:24px; }
+.bottomnav .nav-icon-img { display:block; width:24px; height:24px; object-fit:contain; filter:brightness(0); }
 .admin-shell { display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
 .sidebar { padding:24px 16px; border-right:1px solid var(--border); background:white; }
 .sidebar nav { display:grid; gap:8px; margin-top:24px; }
