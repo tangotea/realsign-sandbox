@@ -1,2 +1,105 @@
-import AppNav from "@/components/AppNav"; import Link from "next/link"; import { createClient } from "@/lib/supabase/server"; import { money, serviceLabel } from "@/lib/marketplace";
-export default async function Page(){const supabase=await createClient();const {data:auth}=await supabase.auth.getUser();if(!auth.user)return <div className="shell"><main className="main"><section className="card"><h1>Bookings</h1><p>Sign in to see your bookings.</p><Link className="btn" href="/sign-in">Sign in</Link></section></main><AppNav/></div>;const {data:bookings}=await supabase.from("bookings").select("id,reference,state,start_at,end_at,price_cents,provider_services(title,provider_role),provider_profiles(public_display_name)").eq("learner_user_id",auth.user.id).order("start_at",{ascending:false});const {data:requests}=await supabase.from("interpreter_requests").select("id,state,mode,requested_start_at,expires_at,replacement_reservation_id,provider_profiles(public_display_name),provider_services(title,provider_role)").eq("learner_user_id",auth.user.id).order("created_at",{ascending:false}).limit(20);const {data:holds}=await supabase.from("booking_reservations").select("id,state,start_at,expires_at,price_cents_snapshot,provider_services(title,provider_role),provider_profiles(public_display_name)").eq("learner_user_id",auth.user.id).eq("state","hold").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:false});return <div className="shell"><header className="topbar"><div className="brand">REALSIGN</div><strong>Bookings</strong></header><main className="main"><h1>Bookings</h1>{requests?.filter((r:any)=>!["confirmed","expired","declined","cancelled"].includes(r.state)).map((r:any)=><section className="card" key={r.id}><span className="status">Interpreter request · {r.state.replaceAll("_"," ")}</span><h2>{r.provider_profiles?.public_display_name}</h2><p>{serviceLabel(r.provider_services)}<br/>{new Date(r.requested_start_at).toLocaleString()} · {r.mode.replace("_"," ")}</p>{r.state==="awaiting_payment"&&r.replacement_reservation_id?<Link className="btn secondary" href={`/checkout/${r.replacement_reservation_id}`}>Confirm & pay</Link>:<p className="muted">You will be notified when the interpreter responds.</p>}</section>)}{holds?.map((h:any)=><section className="card" key={h.id}><span className="status">Checkout hold</span><h2>{h.provider_profiles?.public_display_name}</h2><p>{serviceLabel(h.provider_services)}<br/>{new Date(h.start_at).toLocaleString()} · {money(h.price_cents_snapshot)}</p><Link className="btn secondary" href={`/checkout/${h.id}`}>Continue checkout</Link></section>)}{bookings?.map((b:any)=><section className="card" key={b.id}><span className="status">{b.state.replaceAll("_"," ")}</span><h2>{b.provider_profiles?.public_display_name}</h2><p>{serviceLabel(b.provider_services)}<br/>{new Date(b.start_at).toLocaleString()} · {money(b.price_cents)}</p><small>{b.reference}</small><div style={{marginTop:12}}><Link className="mini-btn" href={`/bookings/${b.id}`}>Manage booking</Link></div></section>)}{!holds?.length&&!bookings?.length?<section className="card"><p>No bookings yet.</p><Link className="btn" href="/">Find a provider</Link></section>:null}</main><AppNav/></div>}
+import AppNav from "@/components/AppNav";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { money, serviceLabel } from "@/lib/marketplace";
+
+export default async function Page() {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+
+  if (!auth.user) {
+    return (
+      <div className="shell">
+        <main className="main">
+          <section className="card">
+            <h1>Bookings</h1>
+            <p>Sign in to see your bookings.</p>
+            <Link className="btn" href="/sign-in">Sign in</Link>
+          </section>
+        </main>
+        <AppNav />
+      </div>
+    );
+  }
+
+  const [{ data: bookings }, { data: requests }, { data: holds }] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("id,reference,state,start_at,end_at,price_cents,provider_id,provider_services(title,provider_role),provider_profiles(public_display_name)")
+      .eq("learner_user_id", auth.user.id)
+      .order("start_at", { ascending: false }),
+    supabase
+      .from("interpreter_requests")
+      .select("id,state,mode,requested_start_at,expires_at,replacement_reservation_id,provider_profiles(public_display_name),provider_services(title,provider_role)")
+      .eq("learner_user_id", auth.user.id)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("booking_reservations")
+      .select("id,state,start_at,expires_at,price_cents_snapshot,provider_services(title,provider_role),provider_profiles(public_display_name)")
+      .eq("learner_user_id", auth.user.id)
+      .eq("state", "hold")
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const activeRequests = (requests || []).filter((request: any) => !["confirmed", "expired", "declined", "cancelled"].includes(request.state));
+  const recentTutor = (bookings || []).find((booking: any) => booking.provider_services?.provider_role !== "interpreter");
+  const recentInterpreter = (bookings || []).find((booking: any) => booking.provider_services?.provider_role === "interpreter");
+
+  return (
+    <div className="shell">
+      <header className="topbar">
+        <div className="brand">REALSIGN</div>
+        <strong>Bookings</strong>
+      </header>
+      <main className="main">
+        <h1>Bookings</h1>
+
+        <section className="card booking-shortcuts">
+          <h2>Book again</h2>
+          <p>Start with a recent provider, or choose a service.</p>
+          <div className="booking-choices">
+            <Link className="btn secondary" href={recentTutor ? `/providers/${recentTutor.provider_id}` : "/learn"}>
+              {recentTutor ? `Book ${recentTutor.provider_profiles?.[0]?.public_display_name || "your recent tutor"} again` : "Book a Deaf Tutor"}
+            </Link>
+            <Link className="btn secondary" href={recentInterpreter ? `/providers/${recentInterpreter.provider_id}` : "/interpreter"}>
+              {recentInterpreter ? `Book ${recentInterpreter.provider_profiles?.[0]?.public_display_name || "your recent interpreter"} again` : "Book an Interpreter"}
+            </Link>
+          </div>
+        </section>
+
+        {activeRequests.map((request: any) => (
+          <section className="card" key={request.id}>
+            <span className="status">Interpreter request · {request.state.replaceAll("_", " ")}</span>
+            <h2>{request.provider_profiles?.public_display_name}</h2>
+            <p>{serviceLabel(request.provider_services)}<br />{new Date(request.requested_start_at).toLocaleString()} · {request.mode.replace("_", " ")}</p>
+            {request.state === "awaiting_payment" && request.replacement_reservation_id ? <Link className="btn secondary" href={`/checkout/${request.replacement_reservation_id}`}>Confirm &amp; pay</Link> : <p className="muted">You will be notified when the interpreter responds.</p>}
+          </section>
+        ))}
+
+        {(holds || []).map((hold: any) => (
+          <section className="card" key={hold.id}>
+            <span className="status">Checkout hold</span>
+            <h2>{hold.provider_profiles?.public_display_name}</h2>
+            <p>{serviceLabel(hold.provider_services)}<br />{new Date(hold.start_at).toLocaleString()} · {money(hold.price_cents_snapshot)}</p>
+            <Link className="btn secondary" href={`/checkout/${hold.id}`}>Continue checkout</Link>
+          </section>
+        ))}
+
+        {(bookings || []).map((booking: any) => (
+          <section className="card" key={booking.id}>
+            <span className="status">{booking.state.replaceAll("_", " ")}</span>
+            <h2>{booking.provider_profiles?.public_display_name}</h2>
+            <p>{serviceLabel(booking.provider_services)}<br />{new Date(booking.start_at).toLocaleString()} · {money(booking.price_cents)}</p>
+            <small>{booking.reference}</small>
+            <div style={{ marginTop: 12 }}><Link className="mini-btn" href={`/bookings/${booking.id}`}>Manage booking</Link></div>
+          </section>
+        ))}
+
+        {!activeRequests.length && !holds?.length && !bookings?.length ? <section className="card"><p>No bookings yet. Choose a service above to get started.</p></section> : null}
+      </main>
+      <AppNav />
+    </div>
+  );
+}

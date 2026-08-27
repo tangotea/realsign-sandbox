@@ -11,7 +11,7 @@ export default async function Home() {
   return (
     <div className="shell">
       <header className="topbar">
-        <div className="brand brand-lockup"><Image src="/realsign-logo.png" width={30} height={30} alt="" priority />REALSIGN</div>
+        <div className="brand brand-lockup"><Image src="/realsign-logo.png" width={38} height={38} alt="" priority />REALSIGN</div>
         <AuthAction initialSignedIn={Boolean(auth.user)} />
       </header>
 

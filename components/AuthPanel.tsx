@@ -1,17 +1,42 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+
+function retrySecondsFrom(message: string) {
+  const match = message.match(/(?:after|in)\s+(\d+)\s+seconds?/i);
+  return match ? Number(match[1]) : null;
+}
+
+function isResetRateLimit(message: string) {
+  return /rate limit|too many|security purposes|request this after/i.test(message);
+}
 
 export default function AuthPanel() {
   const [mode, setMode] = useState<"sign-in" | "sign-up" | "reset">("sign-in");
   const [message, setMessage] = useState("");
+  const [messageKind, setMessageKind] = useState<"error" | "success" | "">("");
+  const [retryAfter, setRetryAfter] = useState(0);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (retryAfter <= 0) return;
+    const timer = window.setTimeout(() => setRetryAfter((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [retryAfter]);
+
+  function changeMode(nextMode: "sign-in" | "sign-up" | "reset") {
+    setMessage("");
+    setMessageKind("");
+    setRetryAfter(0);
+    setMode(nextMode);
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setMessage("");
+    setMessageKind("");
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "");
@@ -30,6 +55,7 @@ export default function AuthPanel() {
         });
         if (error) throw error;
         setMessage("Password reset email sent. Open the link in your email to choose a new password.");
+        setMessageKind("success");
       } else {
         const { data: result, error } = await supabase.auth.signUp({
           email,
@@ -45,10 +71,19 @@ export default function AuthPanel() {
         });
         if (error) throw error;
         setMessage(result.session ? "Account created. You are signed in." : "Account created. Check your email to confirm your address.");
+        setMessageKind("success");
         if (result.session) window.location.href = "/profile";
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Something went wrong.");
+      const errorText = error instanceof Error ? error.message : "Something went wrong.";
+      const seconds = mode === "reset" ? retrySecondsFrom(errorText) : null;
+      if (mode === "reset" && isResetRateLimit(errorText)) {
+        setMessage(seconds ? "Please wait a moment before requesting another reset email." : "Email delivery is temporarily limited. Please try again later.");
+        setRetryAfter(seconds || 0);
+      } else {
+        setMessage(errorText);
+      }
+      setMessageKind("error");
     } finally {
       setBusy(false);
     }
@@ -69,14 +104,15 @@ export default function AuthPanel() {
         )}
         <label>Email<input className="field" name="email" type="email" required /></label>
         {mode !== "reset" ? <label>Password<input className="field" name="password" type="password" minLength={8} required /></label> : null}
-        <button className="btn" disabled={busy}>{busy ? "Please wait…" : mode === "sign-in" ? "Sign in" : mode === "reset" ? "Send reset email" : "Create account"}</button>
+        <button className="btn" disabled={busy || (mode === "reset" && retryAfter > 0)}>{retryAfter > 0 ? "Please wait..." : busy ? "Please wait..." : mode === "sign-in" ? "Sign in" : mode === "reset" ? "Send reset email" : "Create account"}</button>
       </form>
-      {message ? <p aria-live="polite" className="muted">{message}</p> : null}
+      {message ? <p aria-live="polite" className={messageKind === "error" ? "auth-error" : messageKind === "success" ? "auth-success" : "muted"}>{message}</p> : null}
+      {mode === "reset" && retryAfter > 0 ? <p className="muted">You can request another email in {retryAfter} seconds.</p> : null}
       <div className="row wrap" style={{marginTop: 12}}>
-        <button className="btn secondary" onClick={() => { setMessage(""); setMode(mode === "sign-up" ? "sign-in" : "sign-up"); }}>
+        <button className="btn secondary" onClick={() => changeMode(mode === "sign-up" ? "sign-in" : "sign-up")}>
           {mode === "sign-up" ? "I already have an account" : "Create an account"}
         </button>
-        {mode !== "reset" ? <button className="btn ghost" onClick={() => { setMessage(""); setMode("reset"); }}>Forgot password?</button> : <button className="btn ghost" onClick={() => { setMessage(""); setMode("sign-in"); }}>Back to sign in</button>}
+        {mode !== "reset" ? <button className="btn ghost" onClick={() => changeMode("reset")}>Forgot password?</button> : <button className="btn ghost" onClick={() => changeMode("sign-in")}>Back to sign in</button>}
       </div>
     </section>
   );
