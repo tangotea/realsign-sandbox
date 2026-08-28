@@ -11,6 +11,7 @@ import type { ProviderRole, ProviderStatus, VerificationState, VerificationType 
 type Service = { id: string; title: string; duration_min: number; price_cents: number; status: string; provider_role: ProviderRole };
 type Verification = { type: VerificationType; state: VerificationState; storage_path: string | null };
 type RateRule = { provider_role: ProviderRole; duration_min: number; min_price_cents: number; max_price_cents: number };
+type FeedbackKind = "success" | "error" | "info";
 
 const HELP_LABEL = "Open SASL help";
 const ACTIVE_PROVIDER_ROLES: ProviderRole[] = ["deaf_tutor", "interpreter"];
@@ -36,7 +37,13 @@ export default function ProviderApplication() {
   const [busy, setBusy] = useState(true);
   const [message, setMessage] = useState("");
   const [serviceMessage, setServiceMessage] = useState("");
-  const [serviceMessageKind, setServiceMessageKind] = useState<"success" | "error" | "info">("success");
+  const [serviceMessageKind, setServiceMessageKind] = useState<FeedbackKind>("success");
+  const [rolesMessage, setRolesMessage] = useState("");
+  const [rolesMessageKind, setRolesMessageKind] = useState<FeedbackKind>("success");
+  const [profileMessage, setProfileMessage] = useState("");
+  const [profileMessageKind, setProfileMessageKind] = useState<FeedbackKind>("success");
+  const [bookingMessage, setBookingMessage] = useState("");
+  const [bookingMessageKind, setBookingMessageKind] = useState<FeedbackKind>("success");
   const [userId, setUserId] = useState<string | null>(null);
   const [providerId, setProviderId] = useState<string | null>(null);
   const [status, setStatus] = useState<ProviderStatus>("draft");
@@ -87,33 +94,41 @@ export default function ProviderApplication() {
 
   async function saveRoles() {
     if (!providerId) return;
-    setMessage("Saving roles…");
+    setMessage("");
+    setRolesMessageKind("info");
+    setRolesMessage("Saving roles…");
     const { error: del } = await supabase.from("provider_roles").delete().eq("provider_id", providerId);
-    if (del) return setMessage(del.message);
+    if (del) { setRolesMessageKind("error"); setRolesMessage(del.message); return; }
     if (roles.size) {
       const { error } = await supabase.from("provider_roles").insert(Array.from(roles).map(role => ({ provider_id: providerId, role })));
-      if (error) return setMessage(error.message);
+      if (error) { setRolesMessageKind("error"); setRolesMessage(error.message); return; }
     }
-    setMessage("Provider roles saved ✓");
+    setRolesMessageKind("success");
+    setRolesMessage("Provider roles saved.");
   }
 
   async function saveProfile() {
     if (!providerId) return;
-    setMessage("Saving profile…");
+    setMessage("");
+    setProfileMessageKind("info");
+    setProfileMessage("Saving profile…");
     const { error } = await supabase.from("provider_profiles").update({ public_display_name: displayName, introduction_text: introText }).eq("id", providerId);
-    setMessage(error ? error.message : "Profile saved ✓");
+    setProfileMessageKind(error ? "error" : "success");
+    setProfileMessage(error ? error.message : "Profile saved.");
   }
 
   async function uploadIntro(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file || !userId || !providerId) return;
-    setMessage("Uploading introduction video…");
+    setProfileMessageKind("info");
+    setProfileMessage("Uploading introduction video…");
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const path = `${userId}/intro/${Date.now()}-${safeName}`;
     const { error: uploadError } = await supabase.storage.from("provider-media").upload(path, file, { upsert: false });
-    if (uploadError) return setMessage(uploadError.message);
+    if (uploadError) { setProfileMessageKind("error"); setProfileMessage(uploadError.message); return; }
     const { error } = await supabase.from("provider_profiles").update({ introduction_video_path: path }).eq("id", providerId);
-    setMessage(error ? error.message : "Introduction video uploaded ✓");
+    setProfileMessageKind(error ? "error" : "success");
+    setProfileMessage(error ? error.message : "Introduction video uploaded.");
   }
 
   async function uploadVerification(type: VerificationType, event: ChangeEvent<HTMLInputElement>) {
@@ -180,8 +195,12 @@ export default function ProviderApplication() {
 
   async function saveBookingSettings() {
     if (!providerId) return;
+    setMessage("");
+    setBookingMessageKind("info");
+    setBookingMessage("Saving preferences…");
     const { error } = await supabase.from("provider_booking_settings").update({ booking_notice_min: notice, buffer_min: buffer }).eq("provider_id", providerId);
-    setMessage(error ? error.message : "Preferences saved ✓");
+    setBookingMessageKind(error ? "error" : "success");
+    setBookingMessage(error ? error.message : "Preferences saved.");
   }
 
   async function submitApplication() {
@@ -220,6 +239,7 @@ export default function ProviderApplication() {
       </div>
       {roles.has("deaf_tutor") ? <p className="notice">RealSign SASL lessons are reserved for Deaf SASL tutors. Interpreter approval is handled separately.</p> : null}
       {editable ? <button className="btn secondary" onClick={saveRoles}>Save roles</button> : null}
+      {rolesMessage ? <p className={`inline-feedback ${rolesMessageKind}`} aria-live="polite">{rolesMessage}</p> : null}
     </section>
 
     <section className="card">
@@ -235,6 +255,7 @@ export default function ProviderApplication() {
       <label>Introduction video<input className="field" type="file" accept="video/*" disabled={!editable} onChange={uploadIntro} /></label>
       <label>About me<textarea className="field" rows={5} value={introText} disabled={!editable} onChange={e=>setIntroText(e.target.value)} /></label>
       <div className="row wrap">{editable ? <button className="btn secondary" onClick={saveProfile}>Save introduction</button> : null}<button className="btn ghost" type="button" disabled>✨ Improve my writing — AI hook ready</button></div>
+      {profileMessage ? <p className={`inline-feedback ${profileMessageKind}`} aria-live="polite">{profileMessage}</p> : null}
     </section>
 
     <LanguageSelector modes={languageModes} />
@@ -259,6 +280,7 @@ export default function ProviderApplication() {
         <label>Break between sessions<select className="field" disabled={!editable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
       </div>
       {editable ? <button className="btn secondary" onClick={saveBookingSettings}>Save preferences</button> : null}
+      {bookingMessage ? <p className={`inline-feedback ${bookingMessageKind}`} aria-live="polite">{bookingMessage}</p> : null}
     </section>
 
     <section className="card">
