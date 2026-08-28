@@ -153,7 +153,7 @@ export default function ProviderApplication() {
   async function saveBookingSettings() {
     if (!providerId) return;
     const { error } = await supabase.from("provider_booking_settings").update({ booking_notice_min: notice, buffer_min: buffer }).eq("provider_id", providerId);
-    setMessage(error ? error.message : "Booking settings saved ✓");
+    setMessage(error ? error.message : "Preferences saved ✓");
   }
 
   async function submitApplication() {
@@ -224,13 +224,12 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <div className="row"><div><h2>5. Booking settings</h2><p>RealSign protects preparation and rest time.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h2>5. Your schedule and wellbeing</h2><p>Choose the notice and break that work for you.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       <div className="grid2">
-        <label>Minimum notice<select className="field" disabled={!editable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
+        <label>Minimum notice before someone can book you<select className="field" disabled={!editable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
         <label>Break between sessions<select className="field" disabled={!editable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
       </div>
-      {editable ? <button className="btn secondary" onClick={saveBookingSettings}>Save booking settings</button> : null}
-      <Link className="btn ghost" href="/provider/availability">Set weekly availability →</Link>
+      {editable ? <button className="btn secondary" onClick={saveBookingSettings}>Save preferences</button> : null}
     </section>
 
     <section className="card">
