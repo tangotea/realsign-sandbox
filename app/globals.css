@@ -228,6 +228,10 @@ button { cursor: pointer; }
 .form-grid .span2 { grid-column:1 / -1; }
 .price-guidance { display:block; margin:-8px 0 16px; color:var(--muted); }
 .service-list { margin:12px 0 18px; }
+.service-feedback { margin:0 0 14px; font-weight:700; }
+.service-feedback.success { color:#16803c; }
+.service-feedback.error { color:#b42318; }
+.service-feedback.info { color:var(--muted); }
 .availability-list { display:grid; gap:0; margin:18px 0; border-top:1px solid var(--border); }
 .availability-day { display:grid; grid-template-columns:130px 1fr; gap:16px; padding:14px 0; border-bottom:1px solid var(--border); }
 .day-rules { display:grid; gap:8px; min-width:0; }

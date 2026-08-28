@@ -35,6 +35,8 @@ export default function ProviderApplication() {
   const supabase = useMemo(() => createClient(), []);
   const [busy, setBusy] = useState(true);
   const [message, setMessage] = useState("");
+  const [serviceMessage, setServiceMessage] = useState("");
+  const [serviceMessageKind, setServiceMessageKind] = useState<"success" | "error" | "info">("success");
   const [userId, setUserId] = useState<string | null>(null);
   const [providerId, setProviderId] = useState<string | null>(null);
   const [status, setStatus] = useState<ProviderStatus>("draft");
@@ -135,6 +137,7 @@ export default function ProviderApplication() {
 
   async function createService(form: HTMLFormElement) {
     if (!providerId) return;
+    setServiceMessage("");
     const data = new FormData(form);
     const providerRole = String(data.get("providerRole")) as ProviderRole;
     const duration = Number(data.get("duration"));
@@ -143,16 +146,18 @@ export default function ProviderApplication() {
     const { data: rule } = await supabase.from("rate_rules").select("min_price_cents,max_price_cents").eq("provider_role", providerRole).eq("duration_min", duration).eq("active", true).maybeSingle();
     const cents = Math.round(priceRands * 100);
     if (rule && (cents < rule.min_price_cents || cents > rule.max_price_cents)) {
-      setMessage(`Price must be between R${(rule.min_price_cents/100).toFixed(0)} and R${(rule.max_price_cents/100).toFixed(0)}.`); return;
+      setServiceMessageKind("error");
+      setServiceMessage(`Price must be between R${(rule.min_price_cents/100).toFixed(0)} and R${(rule.max_price_cents/100).toFixed(0)}.`); return;
     }
     const { error } = await supabase.from("provider_services").insert({ provider_id: providerId, provider_role: providerRole, subject_id: null, title, duration_min: duration, price_cents: cents, status: "active", remote: true });
-    setMessage(error ? error.message : "Service added ✓");
+    setServiceMessageKind(error ? "error" : "success");
+    setServiceMessage(error ? error.message : "Service added.");
     if (!error) {
       const scrollTop = window.scrollY;
       (document.activeElement as HTMLElement | null)?.blur();
       form.reset();
       await refresh();
-      setMessage("Service added ✓");
+      setServiceMessage("Service added.");
       requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
     }
   }
@@ -161,13 +166,15 @@ export default function ProviderApplication() {
     if (!providerId) return;
     const confirmed = window.confirm(`Remove ${serviceLabel(service)} from your services?`);
     if (!confirmed) return;
-    setMessage("Removing service…");
+    setServiceMessageKind("info");
+    setServiceMessage("Removing service…");
     const { error } = await supabase.from("provider_services").update({ status: "archived" }).eq("id", service.id).eq("provider_id", providerId).eq("status", "active");
-    if (error) { setMessage(error.message); return; }
+    if (error) { setServiceMessageKind("error"); setServiceMessage(error.message); return; }
     const scrollTop = window.scrollY;
     (document.activeElement as HTMLElement | null)?.blur();
     setServices(current => current.filter(item => item.id !== service.id));
-    setMessage("Service removed ✓");
+    setServiceMessageKind("success");
+    setServiceMessage("Service removed.");
     requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
   }
 
@@ -235,6 +242,7 @@ export default function ProviderApplication() {
     <section className="card">
       <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, service option, length and price.</p>
       {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{editable ? <button type="button" className="mini-btn danger-text" disabled={busy} onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
+      {serviceMessage ? <p className={`service-feedback ${serviceMessageKind}`} aria-live="polite">{serviceMessage}</p> : null}
       {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
         <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
         <label>Duration<select className="field" name="duration" value={serviceDuration} onChange={e=>setServiceDuration(Number(e.target.value))}>{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
