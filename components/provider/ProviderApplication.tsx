@@ -63,7 +63,7 @@ export default function ProviderApplication() {
     const [profileRes, roleRes, serviceRes, verifyRes, settingsRes, rateRulesRes] = await Promise.all([
       supabase.from("provider_profiles").select("status,public_display_name,introduction_text").eq("id", pid).single(),
       supabase.from("provider_roles").select("role").eq("provider_id", pid),
-      supabase.from("provider_services").select("id,title,duration_min,price_cents,status,provider_role").eq("provider_id", pid).order("created_at"),
+      supabase.from("provider_services").select("id,title,duration_min,price_cents,status,provider_role").eq("provider_id", pid).eq("status", "active").order("created_at"),
       supabase.from("verification_records").select("type,state,storage_path").eq("provider_id", pid),
       supabase.from("provider_booking_settings").select("booking_notice_min,buffer_min").eq("provider_id", pid).single(),
       supabase.from("rate_rules").select("provider_role,duration_min,min_price_cents,max_price_cents").eq("active", true),
@@ -150,6 +150,17 @@ export default function ProviderApplication() {
     if (!error) { form.reset(); await refresh(); }
   }
 
+  async function removeService(service: Service) {
+    if (!providerId) return;
+    const confirmed = window.confirm(`Remove ${serviceLabel(service)} from your services?`);
+    if (!confirmed) return;
+    setMessage("Removing service…");
+    const { error } = await supabase.from("provider_services").update({ status: "inactive" }).eq("id", service.id).eq("provider_id", providerId).eq("status", "active");
+    if (error) { setMessage(error.message); return; }
+    setMessage("Service removed ✓");
+    await refresh();
+  }
+
   async function saveBookingSettings() {
     if (!providerId) return;
     const { error } = await supabase.from("provider_booking_settings").update({ booking_notice_min: notice, buffer_min: buffer }).eq("provider_id", providerId);
@@ -213,7 +224,7 @@ export default function ProviderApplication() {
 
     <section className="card">
       <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, service option, length and price.</p>
-      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><strong>R{(s.price_cents/100).toFixed(0)}</strong></div>)}</div> : <p className="muted">No services yet.</p>}
+      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{editable ? <button type="button" className="mini-btn danger-text" onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
       {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
         <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
         <label>Duration<select className="field" name="duration" value={serviceDuration} onChange={e=>setServiceDuration(Number(e.target.value))}>{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
