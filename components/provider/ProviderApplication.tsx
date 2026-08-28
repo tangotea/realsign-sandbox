@@ -147,7 +147,14 @@ export default function ProviderApplication() {
     }
     const { error } = await supabase.from("provider_services").insert({ provider_id: providerId, provider_role: providerRole, subject_id: null, title, duration_min: duration, price_cents: cents, status: "active", remote: true });
     setMessage(error ? error.message : "Service added ✓");
-    if (!error) { form.reset(); await refresh(); }
+    if (!error) {
+      const scrollTop = window.scrollY;
+      (document.activeElement as HTMLElement | null)?.blur();
+      form.reset();
+      await refresh();
+      setMessage("Service added ✓");
+      requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+    }
   }
 
   async function removeService(service: Service) {
