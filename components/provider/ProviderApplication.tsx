@@ -114,7 +114,7 @@ export default function ProviderApplication() {
     setProfileMessage("Saving profile…");
     const { error } = await supabase.from("provider_profiles").update({ public_display_name: displayName, introduction_text: introText }).eq("id", providerId);
     setProfileMessageKind(error ? "error" : "success");
-    setProfileMessage(error ? error.message : "Profile saved.");
+    setProfileMessage(error ? error.message : "Introduction saved.");
   }
 
   async function uploadIntro(event: ChangeEvent<HTMLInputElement>) {

@@ -34,6 +34,7 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [userId, setUserId] = useState<string | null>(null);
   const [status, setStatus] = useState("Loading…");
+  const [statusKind, setStatusKind] = useState<"success" | "error" | "info">("info");
 
   useEffect(() => {
     (async () => {
@@ -41,6 +42,7 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
       const uid = auth.user?.id || null;
       setUserId(uid);
       if (!uid) {
+        setStatusKind("info");
         setStatus("Sign in to save your language choices.");
         return;
       }
@@ -61,16 +63,18 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
 
   async function save() {
     if (!userId) return;
+    setStatusKind("info");
     setStatus("Saving…");
     const { data: languages, error: languageError } = await supabase.from("languages").select("id,code").in("code", Array.from(selected));
-    if (languageError) { setStatus(languageError.message); return; }
+    if (languageError) { setStatusKind("error"); setStatus(languageError.message); return; }
     const { error: deleteError } = await supabase.from("user_languages").delete().eq("user_id", userId);
-    if (deleteError) { setStatus(deleteError.message); return; }
+    if (deleteError) { setStatusKind("error"); setStatus(deleteError.message); return; }
     if ((languages || []).length) {
       const { error: insertError } = await supabase.from("user_languages").insert((languages || []).map((language: { id: number }) => ({ user_id: userId, language_id: language.id })));
-      if (insertError) { setStatus(insertError.message); return; }
+      if (insertError) { setStatusKind("error"); setStatus(insertError.message); return; }
     }
-    setStatus("Languages saved ✓");
+    setStatusKind("success");
+    setStatus("Languages saved.");
   }
 
   return (
@@ -87,7 +91,7 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
       ) : null}
       {userId && displayMode ? <button className="btn" style={{marginTop:16}} onClick={save}>{MODE_COPY[displayMode].button}</button> : null}
       {!userId ? <Link href="/sign-in" className="btn" style={{marginTop:16}}>Sign in to save</Link> : null}
-      {status ? <p className="muted" aria-live="polite">{status}</p> : null}
+      {status ? <p className={`inline-feedback ${statusKind}`} aria-live="polite">{status}</p> : null}
     </section>
   );
 }
