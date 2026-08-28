@@ -157,7 +157,7 @@ export default function ProviderApplication() {
     setMessage("Removing service…");
     const { error } = await supabase.from("provider_services").update({ status: "archived" }).eq("id", service.id).eq("provider_id", providerId).eq("status", "active");
     if (error) { setMessage(error.message); return; }
-    await refresh();
+    setServices(current => current.filter(item => item.id !== service.id));
     setMessage("Service removed ✓");
   }
 
