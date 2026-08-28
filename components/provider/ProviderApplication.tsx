@@ -224,7 +224,7 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <div className="row"><div><h2>5. Your schedule and wellbeing</h2><p>Choose the notice and break that work for you.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h2>5. Booking preferences</h2><p>Set your minimum notice time and break between sessions.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       <div className="grid2">
         <label>Minimum notice before someone can book you<select className="field" disabled={!editable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
         <label>Break between sessions<select className="field" disabled={!editable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
