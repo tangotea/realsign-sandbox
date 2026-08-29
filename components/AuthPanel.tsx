@@ -61,7 +61,7 @@ export default function AuthPanel() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=/auth/confirmed`,
             data: {
               first_name: firstName,
               last_name: lastName,
