@@ -6,6 +6,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import { createClient } from "@/lib/supabase/client";
 import { roleLabel, serviceDetailLabel, serviceLabel } from "@/lib/marketplace";
 import { BOOKING_NOTICE_OPTIONS, BUFFER_OPTIONS, PROVIDER_ROLES, SESSION_DURATIONS, minutesLabel } from "@/lib/provider";
+import { TUTOR_LESSON_GUIDES } from "@/lib/lesson-guides";
 import type { ProviderRole, ProviderStatus, VerificationState, VerificationType } from "@/lib/domain";
 
 type Service = { id: string; title: string; duration_min: number; price_cents: number; status: string; provider_role: ProviderRole };
@@ -16,13 +17,7 @@ type FeedbackKind = "success" | "error" | "info";
 const HELP_LABEL = "Open SASL help";
 const ACTIVE_PROVIDER_ROLES: ProviderRole[] = ["deaf_tutor", "interpreter"];
 const SERVICE_OPTIONS: Record<ProviderRole, string[]> = {
-  deaf_tutor: [
-    "Beginner SASL: introductions and greetings",
-    "Beginner SASL: fingerspelling and numbers",
-    "Everyday SASL conversation practice",
-    "SASL vocabulary practice",
-    "SASL homework or revision support",
-  ],
+  deaf_tutor: TUTOR_LESSON_GUIDES.map(guide => guide.title),
   interpreter: [
     "Video Call SASL Interpreting",
     "Education SASL Interpreting",

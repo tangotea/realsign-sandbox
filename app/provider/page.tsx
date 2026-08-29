@@ -109,6 +109,13 @@ export default async function ProviderPage() {
 
       <div className="stack">
         <ApplicationCard />
+        <Link href="/provider/guides" className="card choice">
+          <div className="icon">📚</div>
+          <div>
+            <h2>Lesson guides</h2>
+            <p>Browse the lesson topics learners can choose.</p>
+          </div>
+        </Link>
         <Link href="/provider/availability" className="card choice">
           <div className="icon">📅</div>
           <div>
