@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, createEmailConfirmationClient } from "@/lib/supabase/client";
 
 function retrySecondsFrom(message: string) {
   const match = message.match(/(?:after|in)\s+(\d+)\s+seconds?/i);
@@ -44,7 +44,7 @@ export default function AuthPanel() {
     const lastName = String(data.get("lastName") || "").trim();
 
     try {
-      const supabase = createClient();
+      const supabase = mode === "sign-up" ? createEmailConfirmationClient() : createClient();
       if (mode === "sign-in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -61,7 +61,7 @@ export default function AuthPanel() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=/auth/confirmed`,
+            emailRedirectTo: `${window.location.origin}/auth/confirmed`,
             data: {
               first_name: firstName,
               last_name: lastName,
