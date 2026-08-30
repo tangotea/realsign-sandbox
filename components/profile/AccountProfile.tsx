@@ -11,6 +11,7 @@ type AccountProfileProps = {
 export default function AccountProfile({ email, initialDisplayName }: AccountProfileProps) {
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [message, setMessage] = useState("");
+  const [messageKind, setMessageKind] = useState<"success" | "error">("success");
   const [busy, setBusy] = useState(false);
 
   async function saveProfile() {
@@ -19,12 +20,14 @@ export default function AccountProfile({ email, initialDisplayName }: AccountPro
     const supabase = createClient();
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) {
+      setMessageKind("error");
       setMessage("Sign in again to update your profile.");
       setBusy(false);
       return;
     }
     const { error } = await supabase.from("profiles").update({ display_name: displayName.trim() || null }).eq("id", auth.user.id);
-    setMessage(error ? error.message : "Profile saved.");
+    setMessageKind(error ? "error" : "success");
+    setMessage(error ? error.message : "Username saved.");
     setBusy(false);
   }
 
@@ -35,6 +38,7 @@ export default function AccountProfile({ email, initialDisplayName }: AccountPro
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
     });
+    setMessageKind(error ? "error" : "success");
     setMessage(error ? error.message : "Password reset email sent.");
     setBusy(false);
   }
@@ -54,7 +58,7 @@ export default function AccountProfile({ email, initialDisplayName }: AccountPro
         <button className="btn ghost" onClick={sendPasswordReset} disabled={busy}>Reset password</button>
         <button className="btn ghost" onClick={signOut}>Sign out</button>
       </div>
-      {message ? <p className="muted" aria-live="polite">{message}</p> : null}
+      {message ? <p className={`inline-feedback ${messageKind}`} aria-live="polite">{message}</p> : null}
     </section>
   );
 }

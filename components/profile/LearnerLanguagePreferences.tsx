@@ -14,6 +14,7 @@ export default function LearnerLanguagePreferences({ initialSpokenLanguage, init
   const [spokenLanguage, setSpokenLanguage] = useState(initialSpokenLanguage || "en");
   const [usesSasl, setUsesSasl] = useState(initialUsesSasl);
   const [message, setMessage] = useState("");
+  const [messageKind, setMessageKind] = useState<"success" | "error">("success");
   const [busy, setBusy] = useState(false);
 
   async function save() {
@@ -25,6 +26,7 @@ export default function LearnerLanguagePreferences({ initialSpokenLanguage, init
         learner_uses_sasl: usesSasl,
       },
     });
+    setMessageKind(error ? "error" : "success");
     setMessage(error ? error.message : "Language preferences saved.");
     setBusy(false);
   }
@@ -37,7 +39,7 @@ export default function LearnerLanguagePreferences({ initialSpokenLanguage, init
       </select></label>
       <label className="check"><input type="checkbox" checked={usesSasl} onChange={() => setUsesSasl(value => !value)} /><span><strong>South African Sign Language (SASL)</strong><small>Show SASL help where it is available.</small></span></label>
       <button className="btn secondary" style={{ marginTop: 16 }} onClick={save} disabled={busy}>{busy ? "Saving..." : "Save language preference"}</button>
-      {message ? <p className="muted" aria-live="polite">{message}</p> : null}
+      {message ? <p className={`inline-feedback ${messageKind}`} aria-live="polite">{message}</p> : null}
     </section>
   );
 }

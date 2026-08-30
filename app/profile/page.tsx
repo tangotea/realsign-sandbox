@@ -41,7 +41,7 @@ export default async function ProfilePage() {
         <div className="stack">
           <AccountProfile email={email} initialDisplayName={displayName} />
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
-          <Link href="/bookings" className="card choice"><div className="icon">▣</div><div><h2>Past lessons</h2><p>View upcoming and completed bookings.</p></div></Link>
+          <Link href="/bookings" className="card choice"><div className="icon">▣</div><div><h2>Past and future lessons</h2><p>View upcoming and completed bookings.</p></div></Link>
           <Link href="/profile/notifications" className="card choice"><div className="icon">🔔</div><div><h2>Notifications</h2><p>Booking reminders and visual push alerts.</p></div></Link>
           <Link href="/help" className="card choice"><div className="icon">[?]</div><div><h2>Help in SASL</h2><p>Watch help videos and read matching text explanations.</p></div></Link>
         </div>
