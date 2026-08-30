@@ -2,8 +2,9 @@
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function AdminProviderActions({providerId,currentStatus}:{providerId:string;currentStatus:string}){
+export default function AdminProviderActions({providerId,currentStatus,canReview}:{providerId:string;currentStatus:string;canReview:boolean}){
   const supabase=useMemo(()=>createClient(),[]); const [message,setMessage]=useState(""); const [reason,setReason]=useState("");
+  if(!canReview)return <section className="card"><h2>Admin decision</h2><p className="notice">This is your own provider application. Use a separate provider account for testing so an admin cannot approve or reject their own application.</p></section>;
   async function review(status:"approved"|"rejected"|"pending"|"suspended"){
     setMessage("Saving…"); const {error}=await supabase.rpc("admin_review_provider",{p_provider_id:providerId,p_status:status,p_reason:reason||null});
     if(error){setMessage(error.message);return;} setMessage(`Provider ${status} ✓`); window.location.reload();
