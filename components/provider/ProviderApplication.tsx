@@ -10,11 +10,17 @@ import { TUTOR_LESSON_GUIDES } from "@/lib/lesson-guides";
 import type { ProviderRole, ProviderStatus, VerificationState, VerificationType } from "@/lib/domain";
 
 type Service = { id: string; title: string; duration_min: number; price_cents: number; status: string; provider_role: ProviderRole };
-type Verification = { type: VerificationType; state: VerificationState; storage_path: string | null };
+type Verification = { id: string; type: VerificationType; state: VerificationState; storage_path: string | null };
 type RateRule = { provider_role: ProviderRole; duration_min: number; min_price_cents: number; max_price_cents: number };
 type FeedbackKind = "success" | "error" | "info";
 
 const HELP_LABEL = "Open SASL help";
+const MAX_VERIFICATION_FILE_BYTES = 10 * 1024 * 1024;
+const MAX_INTRO_VIDEO_BYTES = 100 * 1024 * 1024;
+const VERIFICATION_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const VERIFICATION_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"];
+const VIDEO_MIME_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov"];
 const ACTIVE_PROVIDER_ROLES: ProviderRole[] = ["deaf_tutor", "interpreter"];
 const SERVICE_OPTIONS: Record<ProviderRole, string[]> = {
   deaf_tutor: TUTOR_LESSON_GUIDES.map(guide => guide.title),
@@ -37,6 +43,8 @@ export default function ProviderApplication() {
   const [rolesMessageKind, setRolesMessageKind] = useState<FeedbackKind>("success");
   const [profileMessage, setProfileMessage] = useState("");
   const [profileMessageKind, setProfileMessageKind] = useState<FeedbackKind>("success");
+  const [verificationMessage, setVerificationMessage] = useState("");
+  const [verificationMessageKind, setVerificationMessageKind] = useState<FeedbackKind>("success");
   const [bookingMessage, setBookingMessage] = useState("");
   const [bookingMessageKind, setBookingMessageKind] = useState<FeedbackKind>("success");
   const [userId, setUserId] = useState<string | null>(null);
@@ -44,6 +52,7 @@ export default function ProviderApplication() {
   const [status, setStatus] = useState<ProviderStatus>("draft");
   const [displayName, setDisplayName] = useState("");
   const [introText, setIntroText] = useState("");
+  const [introVideoPath, setIntroVideoPath] = useState<string | null>(null);
   const [roles, setRoles] = useState<Set<ProviderRole>>(new Set());
   const [services, setServices] = useState<Service[]>([]);
   const [verifications, setVerifications] = useState<Verification[]>([]);
@@ -65,10 +74,10 @@ export default function ProviderApplication() {
     setProviderId(pid);
 
     const [profileRes, roleRes, serviceRes, verifyRes, settingsRes, rateRulesRes] = await Promise.all([
-      supabase.from("provider_profiles").select("status,public_display_name,introduction_text").eq("id", pid).single(),
+      supabase.from("provider_profiles").select("status,public_display_name,introduction_text,introduction_video_path").eq("id", pid).single(),
       supabase.from("provider_roles").select("role").eq("provider_id", pid),
       supabase.from("provider_services").select("id,title,duration_min,price_cents,status,provider_role").eq("provider_id", pid).eq("status", "active").order("created_at"),
-      supabase.from("verification_records").select("type,state,storage_path").eq("provider_id", pid),
+      supabase.from("verification_records").select("id,type,state,storage_path").eq("provider_id", pid),
       supabase.from("provider_booking_settings").select("booking_notice_min,buffer_min").eq("provider_id", pid).single(),
       supabase.from("rate_rules").select("provider_role,duration_min,min_price_cents,max_price_cents").eq("active", true),
     ]);
@@ -76,6 +85,7 @@ export default function ProviderApplication() {
       setStatus(profileRes.data.status as ProviderStatus);
       setDisplayName(profileRes.data.public_display_name || "");
       setIntroText(profileRes.data.introduction_text || "");
+      setIntroVideoPath(profileRes.data.introduction_video_path || null);
     }
     setRoles(new Set((roleRes.data || []).map((r: { role: ProviderRole }) => r.role).filter(role => ACTIVE_PROVIDER_ROLES.includes(role))));
     setServices((serviceRes.data || []) as Service[]);
@@ -115,6 +125,17 @@ export default function ProviderApplication() {
   async function uploadIntro(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file || !userId || !providerId) return;
+    const scrollTop = window.scrollY;
+    if (file.size > MAX_INTRO_VIDEO_BYTES) {
+      setProfileMessageKind("error");
+      setProfileMessage("Introduction video must be 100 MB or smaller.");
+      return;
+    }
+    if (!(VIDEO_MIME_TYPES.includes(file.type) || VIDEO_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext)))) {
+      setProfileMessageKind("error");
+      setProfileMessage("Please choose an MP4, WebM or MOV video.");
+      return;
+    }
     setProfileMessageKind("info");
     setProfileMessage("Uploading introduction video…");
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
@@ -123,26 +144,78 @@ export default function ProviderApplication() {
     if (uploadError) { setProfileMessageKind("error"); setProfileMessage(uploadError.message); return; }
     const { error } = await supabase.from("provider_profiles").update({ introduction_video_path: path }).eq("id", providerId);
     setProfileMessageKind(error ? "error" : "success");
-    setProfileMessage(error ? error.message : "Introduction video uploaded.");
+    setProfileMessage(error ? error.message : "Introduction video uploaded successfully.");
+    if (!error) {
+      setIntroVideoPath(path);
+      event.currentTarget.value = "";
+      requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+    }
   }
 
   async function uploadVerification(type: VerificationType, event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file || !userId || !providerId) return;
-    setMessage("Uploading verification document…");
+    const scrollTop = window.scrollY;
+    if (file.size > MAX_VERIFICATION_FILE_BYTES) {
+      setVerificationMessageKind("error");
+      setVerificationMessage("Verification files must be 10 MB or smaller.");
+      return;
+    }
+    if (!(VERIFICATION_MIME_TYPES.includes(file.type) || VERIFICATION_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext)))) {
+      setVerificationMessageKind("error");
+      setVerificationMessage("Please choose a PDF, JPG or PNG file.");
+      return;
+    }
+    setVerificationMessageKind("info");
+    setVerificationMessage("Uploading verification document…");
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const path = `${userId}/${type}/${Date.now()}-${safeName}`;
     const { error: uploadError } = await supabase.storage.from("verification-documents").upload(path, file, { upsert: false });
-    if (uploadError) return setMessage(uploadError.message);
+    if (uploadError) { setVerificationMessageKind("error"); setVerificationMessage(uploadError.message); return; }
     const existing = verifications.find(v => v.type === type);
     const payload = { provider_id: providerId, type, state: "pending", storage_path: path, submitted_at: new Date().toISOString() };
     const query = existing
       ? supabase.from("verification_records").update(payload).eq("provider_id", providerId).eq("type", type)
       : supabase.from("verification_records").insert(payload);
     const { error } = await query;
-    if (error) return setMessage(error.message);
-    setMessage("Verification submitted ✓");
+    if (error) { await supabase.storage.from("verification-documents").remove([path]); setVerificationMessageKind("error"); setVerificationMessage(error.message); return; }
+    setVerificationMessageKind("success");
+    setVerificationMessage("Verification uploaded successfully. Awaiting admin approval.");
     await refresh();
+    event.currentTarget.value = "";
+    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+  }
+
+  async function removeVerification(type: VerificationType) {
+    if (!providerId) return;
+    const verification = verifications.find(item => item.type === type);
+    if (!verification?.storage_path) return;
+    if (!window.confirm("Remove this verification file? You can upload a replacement before submitting your application.")) return;
+    const scrollTop = window.scrollY;
+    setVerificationMessageKind("info");
+    setVerificationMessage("Removing verification file…");
+    const response = await fetch("/api/provider/uploads/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ kind: "verification", providerId, verificationType: type, path: verification.storage_path }) });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) { setVerificationMessageKind("error"); setVerificationMessage(result.error || "Unable to remove the verification file."); return; }
+    setVerificationMessageKind("success");
+    setVerificationMessage("Verification file removed.");
+    await refresh();
+    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+  }
+
+  async function removeIntroVideo() {
+    if (!providerId || !introVideoPath) return;
+    if (!window.confirm("Remove this introduction video?")) return;
+    const scrollTop = window.scrollY;
+    setProfileMessageKind("info");
+    setProfileMessage("Removing introduction video…");
+    const response = await fetch("/api/provider/uploads/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ kind: "introduction_video", providerId, path: introVideoPath }) });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) { setProfileMessageKind("error"); setProfileMessage(result.error || "Unable to remove the introduction video."); return; }
+    setIntroVideoPath(null);
+    setProfileMessageKind("success");
+    setProfileMessage("Introduction video removed.");
+    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
   }
 
   async function createService(form: HTMLFormElement) {
@@ -239,15 +312,18 @@ export default function ProviderApplication() {
 
     <section className="card">
       <h2>2. Verification</h2>
-      <VerificationRow label="Identity" state={verificationState("identity")} onFile={e=>uploadVerification("identity",e)} disabled={!editable} />
-      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf SASL tutor verification" state={verificationState("deaf")} onFile={e=>uploadVerification("deaf",e)} disabled={!editable} /> : null}
-      {roles.has("interpreter") ? <VerificationRow label="Interpreter assessment / evidence" state={verificationState("interpreter_assessment")} onFile={e=>uploadVerification("interpreter_assessment",e)} disabled={!editable} /> : null}
+      <p className="upload-guidance">Accepted files: PDF, JPG or PNG · Maximum 10 MB. Your files are reviewed by RealSign Admin.</p>
+      <VerificationRow label="Identity" state={verificationState("identity")} storagePath={verifications.find(v=>v.type==="identity")?.storage_path} onFile={e=>uploadVerification("identity",e)} onRemove={()=>removeVerification("identity")} disabled={!editable} />
+      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf SASL tutor verification" state={verificationState("deaf")} storagePath={verifications.find(v=>v.type==="deaf")?.storage_path} onFile={e=>uploadVerification("deaf",e)} onRemove={()=>removeVerification("deaf")} disabled={!editable} /> : null}
+      {roles.has("interpreter") ? <VerificationRow label="Interpreter assessment / evidence" state={verificationState("interpreter_assessment")} storagePath={verifications.find(v=>v.type==="interpreter_assessment")?.storage_path} onFile={e=>uploadVerification("interpreter_assessment",e)} onRemove={()=>removeVerification("interpreter_assessment")} disabled={!editable} /> : null}
+      {verificationMessage ? <p className={`inline-feedback ${verificationMessageKind}`} aria-live="polite">{verificationMessage}</p> : null}
     </section>
 
     <section className="card">
       <div className="row"><div><h2>3. Introduction</h2><p>Video first, with optional written text.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       <label>Public display name<input className="field" value={displayName} disabled={!editable} onChange={e=>setDisplayName(e.target.value)} /></label>
-      <label>Introduction video<input className="field" type="file" accept="video/*" disabled={!editable} onChange={uploadIntro} /></label>
+      <label>Introduction video<input className="field" type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime" disabled={!editable} onChange={uploadIntro} /><small className="upload-guidance">Accepted videos: MP4, WebM or MOV · Maximum 100 MB.</small></label>
+      {introVideoPath ? <div className="upload-summary"><div><strong>Introduction video uploaded.</strong><small>Ready for RealSign Admin review.</small></div>{editable ? <button type="button" className="mini-btn danger-text" onClick={removeIntroVideo}>Remove video</button> : null}</div> : null}
       <label>About me<textarea className="field" rows={5} value={introText} disabled={!editable} onChange={e=>setIntroText(e.target.value)} /></label>
       <div className="row wrap">{editable ? <button className="btn secondary" onClick={saveProfile}>Save introduction</button> : null}<button className="btn ghost" type="button" disabled>✨ Improve my writing — AI hook ready</button></div>
       {profileMessage ? <p className={`inline-feedback ${profileMessageKind}`} aria-live="polite">{profileMessage}</p> : null}
@@ -286,6 +362,6 @@ export default function ProviderApplication() {
   </div>;
 }
 
-function VerificationRow({label,state,onFile,disabled}:{label:string;state:VerificationState;onFile:(e:ChangeEvent<HTMLInputElement>)=>void;disabled:boolean}) {
-  return <div className="verification-row"><div><strong>{label}</strong><small>Status: {state.replaceAll("_"," ")}</small></div>{state === "approved" ? <span className="status approved">✓ Approved</span> : <label className="upload-btn">Upload<input hidden type="file" disabled={disabled} onChange={onFile} /></label>}</div>;
+function VerificationRow({label,state,storagePath,onFile,onRemove,disabled}:{label:string;state:VerificationState;storagePath?:string|null;onFile:(e:ChangeEvent<HTMLInputElement>)=>void;onRemove:()=>void;disabled:boolean}) {
+  return <div className="verification-row"><div><strong>{label}</strong><small>{state === "approved" ? "Status: approved" : storagePath ? "Uploaded successfully · awaiting admin approval" : `Status: ${state.replaceAll("_"," ")}`}</small></div>{state === "approved" ? <span className="status approved">✓ Approved</span> : storagePath ? <div className="row wrap"><span className="status">Uploaded</span>{!disabled ? <button type="button" className="mini-btn danger-text" onClick={onRemove}>Remove file</button> : null}</div> : <label className="upload-btn">Upload<input hidden type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" disabled={disabled} onChange={onFile} /></label>}</div>;
 }
