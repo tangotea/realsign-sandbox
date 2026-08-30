@@ -278,6 +278,8 @@ button { cursor: pointer; }
 .admin-row:hover { background:var(--soft); }
 .admin-review-grid { display:grid; grid-template-columns:minmax(0,2fr) minmax(280px,1fr); gap:18px; margin-top:22px; align-items:start; }
 .admin-review-grid > .card { position:sticky; top:18px; }
+.admin-review-video { display:block; width:100%; max-height:420px; margin-top:12px; border-radius:14px; background:#111; object-fit:contain; }
+.admin-verification-file { display:flex; align-items:center; flex-wrap:wrap; gap:12px; min-width:0; }
 .tag-row { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
 
 @media (max-width: 720px) {
@@ -292,6 +294,8 @@ button { cursor: pointer; }
   .admin-row { grid-template-columns:1fr; gap:8px; }
   .admin-review-grid { grid-template-columns:1fr; }
   .admin-review-grid > .card { position:static; }
+  .verification-admin { align-items:flex-start; flex-wrap:wrap; }
+  .admin-verification-file { flex:1 1 220px; }
 }
 
 /* Milestone 3 learner marketplace + booking engine */
