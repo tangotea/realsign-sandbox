@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import LanguageSelector from "@/components/LanguageSelector";
 import { createClient } from "@/lib/supabase/client";
@@ -33,6 +33,63 @@ const SERVICE_OPTIONS: Record<ProviderRole, string[]> = {
   qualified_deaf_teacher: [],
 };
 
+async function uploadToStorageWithProgress(
+  supabase: ReturnType<typeof createClient>,
+  bucket: string,
+  path: string,
+  file: File,
+  onProgress: (percent: number) => void,
+): Promise<{ error: { message: string } | null }> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!accessToken || !supabaseUrl || !publishableKey) {
+    return { error: { message: "Your sign-in session has expired. Please sign in again." } };
+  }
+
+  const encodedPath = path.split("/").map(encodeURIComponent).join("/");
+  return new Promise(resolve => {
+    const request = new XMLHttpRequest();
+    request.open("POST", `${supabaseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${encodedPath}`);
+    request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+    request.setRequestHeader("apikey", publishableKey);
+    request.setRequestHeader("x-upsert", "false");
+    request.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    request.upload.onprogress = event => {
+      if (event.lengthComputable) onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+    };
+    request.onerror = () => resolve({ error: { message: "Upload failed. Please check your connection and try again." } });
+    request.onload = () => {
+      if (request.status >= 200 && request.status < 300) {
+        onProgress(100);
+        resolve({ error: null });
+        return;
+      }
+      let message = "Upload failed. Please try again.";
+      try {
+        const response = JSON.parse(request.responseText) as { message?: string; error?: string };
+        message = response.message || response.error || message;
+      } catch {
+        // Keep the friendly fallback when storage returns a non-JSON response.
+      }
+      resolve({ error: { message } });
+    };
+    request.send(file);
+  });
+}
+
+function restoreScrollPosition(scrollTop: number) {
+  requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" })));
+}
+
+function UploadProgress({ label, progress }: { label: string; progress: number }) {
+  return <div className="upload-progress" role="status" aria-live="polite">
+    <div className="upload-progress-top"><strong>{label}</strong><span>{progress}%</span></div>
+    <progress value={progress} max={100} aria-label={`${label} ${progress}%`} />
+  </div>;
+}
+
 export default function ProviderApplication() {
   const supabase = useMemo(() => createClient(), []);
   const [busy, setBusy] = useState(true);
@@ -43,8 +100,10 @@ export default function ProviderApplication() {
   const [rolesMessageKind, setRolesMessageKind] = useState<FeedbackKind>("success");
   const [profileMessage, setProfileMessage] = useState("");
   const [profileMessageKind, setProfileMessageKind] = useState<FeedbackKind>("success");
+  const [introProgress, setIntroProgress] = useState<number | null>(null);
   const [verificationMessage, setVerificationMessage] = useState("");
   const [verificationMessageKind, setVerificationMessageKind] = useState<FeedbackKind>("success");
+  const [verificationProgress, setVerificationProgress] = useState<number | null>(null);
   const [bookingMessage, setBookingMessage] = useState("");
   const [bookingMessageKind, setBookingMessageKind] = useState<FeedbackKind>("success");
   const [userId, setUserId] = useState<string | null>(null);
@@ -61,6 +120,7 @@ export default function ProviderApplication() {
   const [serviceRole, setServiceRole] = useState<ProviderRole>("deaf_tutor");
   const [serviceDuration, setServiceDuration] = useState(30);
   const [rateRules, setRateRules] = useState<RateRule[]>([]);
+  const restoreScrollTopRef = useRef<number | null>(null);
 
   const refresh = useCallback(async () => {
     setBusy(true);
@@ -97,6 +157,13 @@ export default function ProviderApplication() {
 
   useEffect(() => { refresh(); }, [refresh]);
 
+  useEffect(() => {
+    if (busy || restoreScrollTopRef.current === null) return;
+    const scrollTop = restoreScrollTopRef.current;
+    restoreScrollTopRef.current = null;
+    restoreScrollPosition(scrollTop);
+  }, [busy]);
+
   async function saveRoles() {
     if (!providerId) return;
     setMessage("");
@@ -126,6 +193,7 @@ export default function ProviderApplication() {
     const file = event.target.files?.[0];
     if (!file || !userId || !providerId) return;
     const scrollTop = window.scrollY;
+    const input = event.currentTarget;
     if (file.size > MAX_INTRO_VIDEO_BYTES) {
       setProfileMessageKind("error");
       setProfileMessage("Introduction video must be 100 MB or smaller.");
@@ -137,18 +205,24 @@ export default function ProviderApplication() {
       return;
     }
     setProfileMessageKind("info");
-    setProfileMessage("Uploading introduction video…");
+    setIntroProgress(0);
+    setProfileMessage("Uploading introduction video… 0%");
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const path = `${userId}/intro/${Date.now()}-${safeName}`;
-    const { error: uploadError } = await supabase.storage.from("provider-media").upload(path, file, { upsert: false });
+    const { error: uploadError } = await uploadToStorageWithProgress(supabase, "provider-media", path, file, percent => {
+      setIntroProgress(percent);
+      setProfileMessage(`Uploading introduction video… ${percent}%`);
+    });
+    setIntroProgress(null);
     if (uploadError) { setProfileMessageKind("error"); setProfileMessage(uploadError.message); return; }
     const { error } = await supabase.from("provider_profiles").update({ introduction_video_path: path }).eq("id", providerId);
+    if (error) await supabase.storage.from("provider-media").remove([path]);
     setProfileMessageKind(error ? "error" : "success");
     setProfileMessage(error ? error.message : "Introduction video uploaded successfully.");
     if (!error) {
       setIntroVideoPath(path);
-      event.currentTarget.value = "";
-      requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+      input.value = "";
+      restoreScrollPosition(scrollTop);
     }
   }
 
@@ -156,6 +230,7 @@ export default function ProviderApplication() {
     const file = event.target.files?.[0];
     if (!file || !userId || !providerId) return;
     const scrollTop = window.scrollY;
+    const input = event.currentTarget;
     if (file.size > MAX_VERIFICATION_FILE_BYTES) {
       setVerificationMessageKind("error");
       setVerificationMessage("Verification files must be 10 MB or smaller.");
@@ -167,10 +242,15 @@ export default function ProviderApplication() {
       return;
     }
     setVerificationMessageKind("info");
-    setVerificationMessage("Uploading verification document…");
+    setVerificationProgress(0);
+    setVerificationMessage("Uploading verification document… 0%");
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const path = `${userId}/${type}/${Date.now()}-${safeName}`;
-    const { error: uploadError } = await supabase.storage.from("verification-documents").upload(path, file, { upsert: false });
+    const { error: uploadError } = await uploadToStorageWithProgress(supabase, "verification-documents", path, file, percent => {
+      setVerificationProgress(percent);
+      setVerificationMessage(`Uploading verification document… ${percent}%`);
+    });
+    setVerificationProgress(null);
     if (uploadError) { setVerificationMessageKind("error"); setVerificationMessage(uploadError.message); return; }
     const existing = verifications.find(v => v.type === type);
     const payload = { provider_id: providerId, type, state: "pending", storage_path: path, submitted_at: new Date().toISOString() };
@@ -181,9 +261,9 @@ export default function ProviderApplication() {
     if (error) { await supabase.storage.from("verification-documents").remove([path]); setVerificationMessageKind("error"); setVerificationMessage(error.message); return; }
     setVerificationMessageKind("success");
     setVerificationMessage("Verification uploaded successfully. Awaiting admin approval.");
+    restoreScrollTopRef.current = scrollTop;
     await refresh();
-    event.currentTarget.value = "";
-    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+    input.value = "";
   }
 
   async function removeVerification(type: VerificationType) {
@@ -192,15 +272,15 @@ export default function ProviderApplication() {
     if (!verification?.storage_path) return;
     if (!window.confirm("Remove this verification file? You can upload a replacement before submitting your application.")) return;
     const scrollTop = window.scrollY;
+    restoreScrollTopRef.current = scrollTop;
     setVerificationMessageKind("info");
     setVerificationMessage("Removing verification file…");
     const response = await fetch("/api/provider/uploads/remove", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ kind: "verification", providerId, verificationType: type, path: verification.storage_path }) });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) { setVerificationMessageKind("error"); setVerificationMessage(result.error || "Unable to remove the verification file."); return; }
+    if (!response.ok) { restoreScrollTopRef.current = null; setVerificationMessageKind("error"); setVerificationMessage(result.error || "Unable to remove the verification file."); return; }
     setVerificationMessageKind("success");
     setVerificationMessage("Verification file removed.");
     await refresh();
-    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
   }
 
   async function removeIntroVideo() {
@@ -215,11 +295,12 @@ export default function ProviderApplication() {
     setIntroVideoPath(null);
     setProfileMessageKind("success");
     setProfileMessage("Introduction video removed.");
-    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+    restoreScrollPosition(scrollTop);
   }
 
   async function createService(form: HTMLFormElement) {
     if (!providerId) return;
+    const scrollTop = window.scrollY;
     setServiceMessage("");
     const data = new FormData(form);
     const providerRole = String(data.get("providerRole")) as ProviderRole;
@@ -236,29 +317,28 @@ export default function ProviderApplication() {
     setServiceMessageKind(error ? "error" : "success");
     setServiceMessage(error ? error.message : "Service added.");
     if (!error) {
-      const scrollTop = window.scrollY;
       (document.activeElement as HTMLElement | null)?.blur();
       form.reset();
+      restoreScrollTopRef.current = scrollTop;
       await refresh();
       setServiceMessage("Service added.");
-      requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
     }
   }
 
   async function removeService(service: Service) {
     if (!providerId) return;
+    const scrollTop = window.scrollY;
     const confirmed = window.confirm(`Remove ${serviceLabel(service)} from your services?`);
     if (!confirmed) return;
     setServiceMessageKind("info");
     setServiceMessage("Removing service…");
     const { error } = await supabase.from("provider_services").update({ status: "archived" }).eq("id", service.id).eq("provider_id", providerId).eq("status", "active");
     if (error) { setServiceMessageKind("error"); setServiceMessage(error.message); return; }
-    const scrollTop = window.scrollY;
     (document.activeElement as HTMLElement | null)?.blur();
     setServices(current => current.filter(item => item.id !== service.id));
     setServiceMessageKind("success");
     setServiceMessage("Service removed.");
-    requestAnimationFrame(() => window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" }));
+    restoreScrollPosition(scrollTop);
   }
 
   async function saveBookingSettings() {
@@ -313,16 +393,18 @@ export default function ProviderApplication() {
     <section className="card">
       <h2>2. Verification</h2>
       <p className="upload-guidance">Accepted files: PDF, JPG or PNG · Maximum 10 MB. Your files are reviewed by RealSign Admin.</p>
-      <VerificationRow label="Identity" state={verificationState("identity")} storagePath={verifications.find(v=>v.type==="identity")?.storage_path} onFile={e=>uploadVerification("identity",e)} onRemove={()=>removeVerification("identity")} disabled={!editable} />
-      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf SASL tutor verification" state={verificationState("deaf")} storagePath={verifications.find(v=>v.type==="deaf")?.storage_path} onFile={e=>uploadVerification("deaf",e)} onRemove={()=>removeVerification("deaf")} disabled={!editable} /> : null}
-      {roles.has("interpreter") ? <VerificationRow label="Interpreter assessment / evidence" state={verificationState("interpreter_assessment")} storagePath={verifications.find(v=>v.type==="interpreter_assessment")?.storage_path} onFile={e=>uploadVerification("interpreter_assessment",e)} onRemove={()=>removeVerification("interpreter_assessment")} disabled={!editable} /> : null}
+      <VerificationRow label="Identity" state={verificationState("identity")} storagePath={verifications.find(v=>v.type==="identity")?.storage_path} onFile={e=>uploadVerification("identity",e)} onRemove={()=>removeVerification("identity")} disabled={!editable || verificationProgress !== null} />
+      {roles.has("deaf_tutor") ? <VerificationRow label="Deaf SASL tutor verification" state={verificationState("deaf")} storagePath={verifications.find(v=>v.type==="deaf")?.storage_path} onFile={e=>uploadVerification("deaf",e)} onRemove={()=>removeVerification("deaf")} disabled={!editable || verificationProgress !== null} /> : null}
+      {roles.has("interpreter") ? <VerificationRow label="Interpreter assessment / evidence" state={verificationState("interpreter_assessment")} storagePath={verifications.find(v=>v.type==="interpreter_assessment")?.storage_path} onFile={e=>uploadVerification("interpreter_assessment",e)} onRemove={()=>removeVerification("interpreter_assessment")} disabled={!editable || verificationProgress !== null} /> : null}
+      {verificationProgress !== null ? <UploadProgress label="Uploading verification file" progress={verificationProgress} /> : null}
       {verificationMessage ? <p className={`inline-feedback ${verificationMessageKind}`} aria-live="polite">{verificationMessage}</p> : null}
     </section>
 
     <section className="card">
       <div className="row"><div><h2>3. Introduction</h2><p>Video first, with optional written text.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       <label>Public display name<input className="field" value={displayName} disabled={!editable} onChange={e=>setDisplayName(e.target.value)} /></label>
-      <label>Introduction video<input className="field" type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime" disabled={!editable} onChange={uploadIntro} /><small className="upload-guidance">Accepted videos: MP4, WebM or MOV · Maximum 100 MB.</small></label>
+      <label>Introduction video<input className="field" type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime" disabled={!editable || introProgress !== null} onChange={uploadIntro} /><small className="upload-guidance">Accepted videos: MP4, WebM or MOV · Maximum 100 MB.</small></label>
+      {introProgress !== null ? <UploadProgress label="Uploading introduction video" progress={introProgress} /> : null}
       {introVideoPath ? <div className="upload-summary"><div><strong>Introduction video uploaded.</strong><small>Ready for RealSign Admin review.</small></div>{editable ? <button type="button" className="mini-btn danger-text" onClick={removeIntroVideo}>Remove video</button> : null}</div> : null}
       <label>About me<textarea className="field" rows={5} value={introText} disabled={!editable} onChange={e=>setIntroText(e.target.value)} /></label>
       <div className="row wrap">{editable ? <button className="btn secondary" onClick={saveProfile}>Save introduction</button> : null}<button className="btn ghost" type="button" disabled>✨ Improve my writing — AI hook ready</button></div>
