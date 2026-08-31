@@ -75,6 +75,9 @@ button { cursor: pointer; }
 .card p { margin: 0; color: var(--muted); }
 .choice { min-height: 98px; display: grid; grid-template-columns: 46px 1fr; gap: 12px; align-items: center; }
 .choice .icon { font-size: 30px; }
+.provider-link-wrap { position: relative; }
+.provider-link-wrap > .choice { padding-right: 66px; }
+.provider-link-wrap > .help-btn { position: absolute; top: 18px; right: 18px; }
 .provider-choice { background:transparent; box-shadow:none; }
 .provider-choice .icon { font-size:28px; }
 .btn {
@@ -206,6 +209,8 @@ button { cursor: pointer; }
 .check small, .verification-row small, .service-row small, .availability-day small, .admin-row small { display:block; color:var(--muted); margin-top:3px; }
 .notice { margin-top:14px !important; padding:12px 14px; border-radius:12px; background:var(--soft); color:var(--text) !important; }
 .success-box { margin-top:14px !important; padding:12px 14px; border:1px solid var(--strong); border-radius:12px; color:var(--text) !important; }
+.approval-shortcut { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.approval-shortcut .mini-btn { flex:0 0 auto; }
 .auth-error { display:grid; gap:4px; margin-top:14px !important; padding:12px 14px; border:1px solid #b42318; border-radius:12px; background:#fff1f0; color:#8a1f1f !important; }
 .auth-error strong { color:#8a1f1f; }
 .auth-error a { color:#8a1f1f; text-decoration:underline; font-weight:700; }

@@ -8,6 +8,7 @@ import { roleLabel, serviceDetailLabel, serviceLabel } from "@/lib/marketplace";
 import { BOOKING_NOTICE_OPTIONS, BUFFER_OPTIONS, PROVIDER_ROLES, SESSION_DURATIONS, minutesLabel } from "@/lib/provider";
 import { TUTOR_LESSON_GUIDES } from "@/lib/lesson-guides";
 import type { ProviderRole, ProviderStatus, VerificationState, VerificationType } from "@/lib/domain";
+import HelpButton from "@/components/help/HelpButton";
 
 type Service = { id: string; title: string; duration_min: number; price_cents: number; status: string; provider_role: ProviderRole };
 type Verification = { id: string; type: VerificationType; state: VerificationState; storage_path: string | null };
@@ -378,7 +379,7 @@ export default function ProviderApplication() {
     <section className="card">
       <div className="row"><div><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Status: <strong>{status.replaceAll("_", " ")}</strong></p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       {status === "pending" ? <p className="notice">Your application is with RealSign Admin. You can view it here while it is being reviewed.</p> : null}
-      {status === "approved" ? <p className="success-box">Approved ✓ Your provider profile is ready for the payout-setup step.</p> : null}
+      {status === "approved" ? <div className="success-box approval-shortcut"><span>Approved ✓ Your provider profile is ready for the payout-setup step.</span><Link href="/provider/payout" className="mini-btn">Open payout setup</Link></div> : null}
     </section>
 
     <section className="card">
@@ -392,7 +393,7 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <h2>2. Verification</h2>
+      <div className="row"><h2>2. Verification</h2><HelpButton slug="provider-verification" label="Verification help" fallbackText="Upload the documents required for the provider role you selected. RealSign Admin reviews each file before approving the application." /></div>
       <p className="upload-guidance">Accepted files: PDF, JPG or PNG · Maximum 10 MB. Your files are reviewed by RealSign Admin.</p>
       <VerificationRow label="Identity" state={verificationState("identity")} storagePath={verifications.find(v=>v.type==="identity")?.storage_path} onFile={e=>uploadVerification("identity",e)} onRemove={()=>removeVerification("identity")} disabled={!editable || verificationProgress !== null} />
       {roles.has("deaf_tutor") ? <VerificationRow label="Deaf SASL tutor verification" state={verificationState("deaf")} storagePath={verifications.find(v=>v.type==="deaf")?.storage_path} onFile={e=>uploadVerification("deaf",e)} onRemove={()=>removeVerification("deaf")} disabled={!editable || verificationProgress !== null} /> : null}
@@ -415,7 +416,7 @@ export default function ProviderApplication() {
     <LanguageSelector modes={languageModes} />
 
     <section className="card">
-      <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, service option, length and price.</p>
+      <div className="row"><h2>4. Lessons, interpreting & rates</h2><HelpButton slug="provider-services-rates" label="Lessons, interpreting and rates help" fallbackText="Choose a service or lesson guide, select a duration, and set a price within the allowed range. You can update or remove active services later." /></div><p>Choose a service type, service option, length and price.</p>
       {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{providerSettingsEditable ? <button type="button" className="mini-btn danger-text" disabled={busy} onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
       {serviceMessage ? <p className={`service-feedback ${serviceMessageKind}`} aria-live="polite">{serviceMessage}</p> : null}
       {providerSettingsEditable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
@@ -438,7 +439,7 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <h2>6. Submit</h2><p>RealSign Admin will review your profile and verification. Approval is required before you can be booked.</p>
+      <div className="row"><h2>6. Submit</h2><HelpButton slug="provider-submit" label="Submit help" fallbackText="Submit when your provider profile, verification, introduction, services, and availability are ready. RealSign Admin reviews the application before learners can book you." /></div><p>RealSign Admin will review your profile and verification. Approval is required before you can be booked.</p>
       {editable ? <button className="btn" onClick={submitApplication}>Submit for approval</button> : null}
       {message ? <p className="muted" aria-live="polite">{message}</p> : null}
     </section>
