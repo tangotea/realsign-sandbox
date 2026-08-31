@@ -14,7 +14,7 @@ function ProviderTools({ status }: { status: string }) {
     <section>
       <div className="row"><h2>Provider tools</h2><span className="status">{status}</span></div>
       <div className="stack" style={{ marginTop: 12 }}>
-        <ProviderLink href="/provider/application" icon="🤟" title="Application & profile" description="Update roles, verification, introduction, services and rates." />
+        <ProviderLink href="/provider/application" icon="🤟" title="Provider profile & services" description="Manage your provider details, services, rates and booking preferences." />
         {status === "approved" ? <>
           <ProviderLink href="/provider/guides" icon="📚" title="Lesson guides" description="Browse the lesson topics learners can choose." />
           <ProviderLink href="/provider/availability" icon="📅" title="Availability" description="Set the times learners may book you." />
@@ -76,7 +76,7 @@ export default async function ProfilePage() {
         <div className="stack">
           <AccountProfile email={email} initialDisplayName={displayName} />
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
-          <Link href="/profile/identity" className="card choice"><div className="icon">ID</div><div><div className="row"><h2>Identity verification</h2><span className="status">{identityStatusLabel(identity?.state || "not_started")}</span></div><p>Verify your identity before booking a lesson or interpreter.</p></div></Link>
+          {!provider || provider.status !== "approved" ? <Link href="/profile/identity" className="card choice"><div className="icon">ID</div><div><div className="row"><h2>Identity verification</h2><span className="status">{identityStatusLabel(identity?.state || "not_started")}</span></div><p>Verify your identity before booking a lesson or interpreter.</p></div></Link> : null}
           {provider ? <ProviderTools status={provider.status} /> : null}
           <Link href="/bookings" className="card choice"><div className="icon">▣</div><div><h2>Past and future lessons</h2><p>View upcoming and completed bookings.</p></div></Link>
           <Link href="/profile/notifications" className="card choice"><div className="icon">🔔</div><div><h2>Notifications</h2><p>Booking reminders and visual push alerts.</p></div></Link>

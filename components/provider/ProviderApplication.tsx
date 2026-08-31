@@ -363,6 +363,7 @@ export default function ProviderApplication() {
 
   const verificationState = (type: VerificationType) => verifications.find(v => v.type === type)?.state || "not_submitted";
   const editable = status === "draft" || status === "rejected";
+  const providerSettingsEditable = editable || status === "approved";
   const selectedServiceRole = roles.has(serviceRole) ? serviceRole : (Array.from(roles)[0] || "deaf_tutor");
   const serviceOptions = SERVICE_OPTIONS[selectedServiceRole].length ? SERVICE_OPTIONS[selectedServiceRole] : ["General RealSign service"];
   const selectedRateRule = rateRules.find(rule => rule.provider_role === selectedServiceRole && rule.duration_min === serviceDuration);
@@ -415,9 +416,9 @@ export default function ProviderApplication() {
 
     <section className="card">
       <h2>4. Lessons, interpreting & rates</h2><p>Choose a service type, service option, length and price.</p>
-      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{editable ? <button type="button" className="mini-btn danger-text" disabled={busy} onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
+      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{providerSettingsEditable ? <button type="button" className="mini-btn danger-text" disabled={busy} onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
       {serviceMessage ? <p className={`service-feedback ${serviceMessageKind}`} aria-live="polite">{serviceMessage}</p> : null}
-      {editable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
+      {providerSettingsEditable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
         <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
         <label>Duration<select className="field" name="duration" value={serviceDuration} onChange={e=>setServiceDuration(Number(e.target.value))}>{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
         <label className="span2">Service option<select className="field" name="title" required>{serviceOptions.map(option=><option key={option} value={option}>{option}</option>)}</select></label>
@@ -429,10 +430,10 @@ export default function ProviderApplication() {
     <section className="card">
       <div className="row"><div><h2>5. Booking preferences</h2><p>Set your minimum notice time and break between sessions.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       <div className="grid2">
-        <label>Minimum notice before someone can book you<select className="field" disabled={!editable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
-        <label>Break between sessions<select className="field" disabled={!editable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
+         <label>Minimum notice before someone can book you<select className="field" disabled={!providerSettingsEditable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
+         <label>Break between sessions<select className="field" disabled={!providerSettingsEditable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
       </div>
-      {editable ? <button className="btn secondary" onClick={saveBookingSettings}>Save preferences</button> : null}
+      {providerSettingsEditable ? <button className="btn secondary" onClick={saveBookingSettings}>Save preferences</button> : null}
       {bookingMessage ? <p className={`inline-feedback ${bookingMessageKind}`} aria-live="polite">{bookingMessage}</p> : null}
     </section>
 
