@@ -38,7 +38,7 @@ export default function IdentityAdminActions({
     }
 
     setMessageKind("success");
-    setMessage(nextState === "approved" ? "ID approved." : "ID review status updated.");
+    setMessage(nextState === "approved" ? "ID approved." : nextState === "rejected" ? "ID rejected." : "More information requested.");
     router.refresh();
   }
 

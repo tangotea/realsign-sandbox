@@ -5,16 +5,16 @@ import AccountProfile from "@/components/profile/AccountProfile";
 import LearnerLanguagePreferences from "@/components/profile/LearnerLanguagePreferences";
 import { createClient } from "@/lib/supabase/server";
 
-function ProviderLink({ href, icon, title, description }: { href: string; icon: string; title: string; description: string }) {
-  return <Link href={href} className="card choice"><div className="icon">{icon}</div><div><h2>{title}</h2><p>{description}</p></div></Link>;
+function ProviderLink({ href, icon, title, description, status }: { href: string; icon: string; title: string; description: string; status?: string }) {
+  return <Link href={href} className="card choice"><div className="icon">{icon}</div><div>{status ? <div className="row wrap"><h2>{title}</h2><span className={`status ${status === "approved" ? "approved" : ""}`}>{status === "approved" ? "Approved" : "Draft"}</span></div> : <h2>{title}</h2>}<p>{description}</p></div></Link>;
 }
 
 function ProviderTools({ status }: { status: string }) {
   return (
     <section>
-      <div className="row"><h2>Provider tools</h2><span className="status">{status}</span></div>
+      <h2>Provider tools</h2>
       <div className="stack" style={{ marginTop: 12 }}>
-        <ProviderLink href="/provider/application" icon="🤟" title="Provider profile & services" description="Manage your provider details, services, rates and booking preferences." />
+        <ProviderLink href="/provider/application" icon="🤟" title="Provider profile & services" description="Manage your provider details, services, rates and booking preferences." status={status} />
         {status === "approved" ? <>
           <ProviderLink href="/provider/guides" icon="📚" title="Lesson guides" description="Browse the lesson topics learners can choose." />
           <ProviderLink href="/provider/availability" icon="📅" title="Availability" description="Set the times learners may book you." />
