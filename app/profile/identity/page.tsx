@@ -115,6 +115,9 @@ export default function Page() {
       await supabase.storage.from("verification-documents").remove([path]);
       setMessageKind("error"); setMessage(error.message); return;
     }
+    if (storagePath && storagePath !== path) {
+      await supabase.storage.from("verification-documents").remove([storagePath]);
+    }
     setStoragePath(path);
     setState("pending");
     setMessageKind("success");

@@ -358,7 +358,7 @@ export default function ProviderApplication() {
     if (!error) await refresh();
   }
 
-  if (busy) return <section className="card"><h1>Provider application</h1><p>Loading…</p></section>;
+  if (busy) return <section className="card"><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Loading…</p></section>;
   if (!userId) return <section className="card"><h1>Become a provider</h1><p>Sign in before starting your application.</p><Link className="btn" href="/sign-in">Sign in</Link></section>;
 
   const verificationState = (type: VerificationType) => verifications.find(v => v.type === type)?.state || "not_submitted";
@@ -375,7 +375,7 @@ export default function ProviderApplication() {
 
   return <div className="stack">
     <section className="card">
-      <div className="row"><div><h1>Provider application</h1><p>Status: <strong>{status.replaceAll("_", " ")}</strong></p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Status: <strong>{status.replaceAll("_", " ")}</strong></p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
       {status === "pending" ? <p className="notice">Your application is with RealSign Admin. You can view it here while it is being reviewed.</p> : null}
       {status === "approved" ? <p className="success-box">Approved ✓ Your provider profile is ready for the payout-setup step.</p> : null}
     </section>
