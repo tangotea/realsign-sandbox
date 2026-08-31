@@ -107,44 +107,11 @@ export default async function ProviderPage() {
         </section>
       )}
 
-      <div className="stack">
-        <ApplicationCard />
-        <Link href="/provider/guides" className="card choice">
-          <div className="icon">📚</div>
-          <div>
-            <h2>Lesson guides</h2>
-            <p>Browse the lesson topics learners can choose.</p>
-          </div>
-        </Link>
-        <Link href="/provider/availability" className="card choice">
-          <div className="icon">📅</div>
-          <div>
-            <h2>Availability</h2>
-            <p>Set the times learners may book you.</p>
-          </div>
-        </Link>
-        <Link href="/provider/payout" className="card choice">
-          <div className="icon">🏦</div>
-          <div>
-            <h2>Payout setup</h2>
-            <p>Verify the South African bank account used for weekly payouts.</p>
-          </div>
-        </Link>
-        <Link href="/profile/notifications" className="card choice">
-          <div className="icon">🔔</div>
-          <div>
-            <h2>Notifications</h2>
-            <p>Booking reminders and visual push alerts.</p>
-          </div>
-        </Link>
-        <Link href="/provider/earnings" className="card choice">
-          <div className="icon">💰</div>
-          <div>
-            <h2>My earnings</h2>
-            <p>See pending, available and paid provider earnings.</p>
-          </div>
-        </Link>
-      </div>
+      <section className="card">
+        <h2>Provider settings</h2>
+        <p>Manage your provider profile, availability, lesson guides, payouts and earnings from Profile.</p>
+        <Link className="btn secondary" href="/profile" style={{ marginTop: 12 }}>Open Profile</Link>
+      </section>
     </ProviderShell>
   );
 }

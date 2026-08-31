@@ -35,7 +35,7 @@ export default async function Home() {
             <div className="icon">👐</div>
             <div><h2>Video Call SASL Interpreting</h2></div>
           </Link>
-          <Link className="card choice provider-choice" href="/provider">
+          <Link className="card choice provider-choice" href="/provider/application">
             <div className="icon">＋</div>
             <div><h2>Offer a Service</h2><p>Apply as a SASL tutor or interpreter.</p></div>
           </Link>

@@ -37,7 +37,7 @@ export default async function ProviderGuidesPage() {
   return (
     <div className="shell">
       <header className="topbar">
-        <Link href="/provider" aria-label="Back to provider dashboard">←</Link>
+        <Link href="/profile" aria-label="Back to profile">←</Link>
         <strong>Lesson guides</strong>
         <button className="help-btn" aria-label="Open SASL help">?</button>
       </header>
