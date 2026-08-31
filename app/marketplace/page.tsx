@@ -24,6 +24,9 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     p_limit: 30,
   });
   const providers = ((data || []) as MarketplaceProvider[]).filter(p => role ? p.roles.some(r => r === role || (role === "deaf_tutor" && r === "deaf tutor")) : p.roles.some(r => r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter"));
+  const { data: auth } = await supabase.auth.getUser();
+  const { data: ownProvider } = auth.user ? await supabase.from("provider_profiles").select("id").eq("user_id", auth.user.id).maybeSingle() : { data: null };
+  const ownProviderId = ownProvider?.id || null;
   const { data: languages } = await supabase.from("languages").select("code,name").eq("active",true).order("display_order");
 
   return <div className="shell"><header className="topbar"><Link href="/">←</Link><strong>{pageTitle}</strong><button className="help-btn" aria-label="Open SASL help">?</button></header>
@@ -38,15 +41,16 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         <button className="btn secondary">Update results</button>
       </form>
       {error ? <p className="notice">Marketplace could not load: {error.message}</p> : null}
-      <div className="stack marketplace-list">{providers.map(p=><article className="card provider-card" key={p.provider_id}>
+      <div className="stack marketplace-list">{providers.map(p=>{const isOwnProvider=p.provider_id===ownProviderId;return <article className="card provider-card" key={p.provider_id}>
         <div className="provider-avatar">▶</div>
         <div className="provider-card-body"><h2>{p.public_display_name}</h2>
-          <div className="tag-row">{p.roles.filter(r => role ? (r === role || (role === "deaf_tutor" && r === "deaf tutor")) : (r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter")).map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}</div>
+          <div className="tag-row">{p.roles.filter(r => role ? (r === role || (role === "deaf_tutor" && r === "deaf tutor")) : (r === "deaf_tutor" || r === "deaf tutor" || r === "interpreter")).map(r=><span className="pill" key={r}>{roleLabel(r)}</span>)}{isOwnProvider?<span className="pill">Your provider profile</span>:null}</div>
           {p.languages.length ? <p><strong>Languages I use:</strong> {p.languages.map(language => languageLabel(language, role)).filter(Boolean).join(" · ")}</p> : null}
           <p><strong>{serviceLabel(role)}</strong><br/>{p.sample_duration_min} min · from {money(p.min_price_cents)}</p>
-          <div className="row wrap"><Link className="btn" href={`/providers/${p.provider_id}${role ? `?role=${role}` : ""}`}>View profile</Link><Link className="btn secondary" href={`/providers/${p.provider_id}/book?service=${p.sample_service_id}`}>View times</Link></div>
+          {isOwnProvider?<p className="notice"><strong>This is your provider profile.</strong> You cannot book yourself.</p>:null}
+          <div className="row wrap"><Link className="btn" href={`/providers/${p.provider_id}${role ? `?role=${role}` : ""}`}>{isOwnProvider?"View your profile":"View profile"}</Link>{!isOwnProvider?<Link className="btn secondary" href={`/providers/${p.provider_id}/book?service=${p.sample_service_id}`}>View times</Link>:null}</div>
         </div>
-      </article>)}</div>
+      </article>})}</div>
       {!providers.length && !error ? <section className="card"><h2>No providers yet</h2><p>Try another language or check again as RealSign providers are approved.</p></section> : null}
     </main><AppNav /></div>;
 }

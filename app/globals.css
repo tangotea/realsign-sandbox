@@ -238,6 +238,7 @@ button { cursor: pointer; }
 .service-feedback.success { color:#16803c; }
 .service-feedback.error { color:#b42318; }
 .service-feedback.info { color:var(--muted); }
+.admin-success { margin:14px 0 0 !important; padding:12px 14px; border:1px solid #2f7d32; border-radius:12px; background:#effaf0; color:#1f5f23 !important; }
 .inline-feedback { margin:12px 0 0; font-weight:700; }
 .inline-feedback.success { color:#16803c; }
 .inline-feedback.error { color:#b42318; }
