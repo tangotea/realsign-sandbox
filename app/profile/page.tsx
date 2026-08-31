@@ -26,6 +26,16 @@ function ProviderTools({ status }: { status: string }) {
   );
 }
 
+function identityStatusLabel(state: string) {
+  switch (state) {
+    case "pending": return "Pending review";
+    case "approved": return "Approved";
+    case "needs_information": return "Needs information";
+    case "rejected": return "Not approved";
+    default: return "Not submitted";
+  }
+}
+
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
@@ -45,9 +55,10 @@ export default async function ProfilePage() {
     );
   }
 
-  const [{ data: profile }, { data: provider }] = await Promise.all([
+  const [{ data: profile }, { data: provider }, { data: identity }] = await Promise.all([
     supabase.from("profiles").select("display_name,first_name,last_name").eq("id", auth.user.id).maybeSingle(),
     supabase.from("provider_profiles").select("id,status").eq("user_id", auth.user.id).maybeSingle(),
+    supabase.from("user_identity_verifications").select("state").eq("user_id", auth.user.id).maybeSingle(),
   ]);
   const email = auth.user.email || "";
   const metadata = auth.user.user_metadata || {};
@@ -65,6 +76,7 @@ export default async function ProfilePage() {
         <div className="stack">
           <AccountProfile email={email} initialDisplayName={displayName} />
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
+          <Link href="/profile/identity" className="card choice"><div className="icon">ID</div><div><div className="row"><h2>Identity verification</h2><span className="status">{identityStatusLabel(identity?.state || "not_started")}</span></div><p>Verify your identity before booking a lesson or interpreter.</p></div></Link>
           {provider ? <ProviderTools status={provider.status} /> : null}
           <Link href="/bookings" className="card choice"><div className="icon">▣</div><div><h2>Past and future lessons</h2><p>View upcoming and completed bookings.</p></div></Link>
           <Link href="/profile/notifications" className="card choice"><div className="icon">🔔</div><div><h2>Notifications</h2><p>Booking reminders and visual push alerts.</p></div></Link>
