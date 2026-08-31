@@ -18,7 +18,7 @@ function ProviderTools({ status }: { status: string }) {
         <ProviderLink href="/provider/application" icon="🤟" title="Provider profile & services" description="Manage your provider details, services, rates and booking preferences." status={status} />
         {status === "approved" ? <>
           <ProviderLink href="/provider/guides" icon="📚" title="Lesson guides" description="Browse the lesson topics learners can choose." helpSlug="provider-lesson-guides" helpText="Browse the built-in lesson topics before adding a service. Learners can choose the topic you publish." />
-          <ProviderLink href="/provider/availability" icon="📅" title="Availability" description="Set the times learners may book you." />
+          <ProviderLink href="/provider/availability" icon="📅" title="Availability" description="Set the times learners may book you." helpSlug="provider-availability" helpText="Turn on the regular time windows when learners may book you. Use 15-minute time steps, and switch a window off when you are not available." />
           <ProviderLink href="/provider/payout" icon="🏦" title="Payout setup" description="Manage the bank account used for provider payouts." helpSlug="provider-payout-setup" helpText="Verify the bank account that RealSign will use for provider payouts. You can return here later to review the payout account." />
           <ProviderLink href="/provider/earnings" icon="💰" title="My earnings" description="See pending, available and paid provider earnings." helpSlug="provider-earnings" helpText="Review earnings from completed bookings, including pending and available amounts and payout history." />
         </> : null}
