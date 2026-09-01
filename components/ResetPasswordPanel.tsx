@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import HelpButton from "@/components/help/HelpButton";
 
 export default function ResetPasswordPanel() {
   const supabase = useMemo(() => createClient(), []);
@@ -92,7 +93,7 @@ export default function ResetPasswordPanel() {
   if (hasRecoveryError || !sessionReady) {
     return (
       <section className="card">
-        <div className="row"><h1 style={{ margin: 0 }}>Choose a new password</h1><button className="help-btn" type="button" aria-label="Password reset help">?</button></div>
+        <div className="row"><h1 style={{ margin: 0 }}>Choose a new password</h1><HelpButton slug="password-reset" label="Password reset help" fallbackText="Use the newest password reset email on this device. The link must open a secure recovery session before a new password can be saved." /></div>
         <div className="auth-error" role="alert">
           <strong>Password reset link is invalid or has expired.</strong>
           <span>Please request a new password reset email and open the newest link on this device.</span>
@@ -106,7 +107,7 @@ export default function ResetPasswordPanel() {
     <section className="card">
       <div className="row">
         <h1 style={{ margin: 0 }}>Choose a new password</h1>
-        <button className="help-btn" type="button" aria-label="Password reset help">?</button>
+        <HelpButton slug="password-reset" label="Password reset help" fallbackText="Use the newest password reset email on this device. The link must open a secure recovery session before a new password can be saved." />
       </div>
       <form onSubmit={submit} style={{ marginTop: 18 }}>
         <label>New password<input className="field" name="password" type="password" minLength={8} required /></label>

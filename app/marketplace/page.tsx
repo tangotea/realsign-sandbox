@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import AppNav from "@/components/AppNav";
 import { createClient } from "@/lib/supabase/server";
 import { MarketplaceProvider, languageLabel, money, roleLabel, serviceLabel } from "@/lib/marketplace";
+import HelpButton from "@/components/help/HelpButton";
 
 export default async function MarketplacePage({ searchParams }: { searchParams: Promise<Record<string,string|undefined>> }) {
   const q = await searchParams;
@@ -29,7 +30,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const ownProviderId = ownProvider?.id || null;
   const { data: languages } = await supabase.from("languages").select("code,name").eq("active",true).order("display_order");
 
-  return <div className="shell"><header className="topbar"><Link href="/">←</Link><strong>{pageTitle}</strong><button className="help-btn" aria-label="Open SASL help">?</button></header>
+  return <div className="shell"><header className="topbar"><Link href="/">←</Link><strong>{pageTitle}</strong><HelpButton slug="marketplace" label="Marketplace help" size="regular" fallbackText="Choose a language and review approved provider profiles. Open a profile to see services, prices and available booking times." /></header>
     <main className="main">
       <section className="hero"><h1>{pageTitle}</h1><p>Only approved providers and active services are shown.</p></section>
       <form className="market-filters" method="get">

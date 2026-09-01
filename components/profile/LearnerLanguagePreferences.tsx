@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { LEARNER_LANGUAGE_OPTIONS } from "@/lib/languages";
+import HelpButton from "@/components/help/HelpButton";
 
 type LearnerLanguagePreferencesProps = {
   initialSpokenLanguage: string;
@@ -33,7 +34,7 @@ export default function LearnerLanguagePreferences({ initialSpokenLanguage, init
 
   return (
     <section className="card">
-      <div className="row"><div><h2>Languages</h2><p>Your learner language preference.</p></div><button className="help-btn" aria-label="Language preference help">?</button></div>
+      <div className="row"><div><h2>Languages</h2><p>Your learner language preference.</p></div><HelpButton slug="learner-languages" label="Learner language help" fallbackText="Choose the spoken language you prefer for written communication and whether you would like SASL help where it is available." /></div>
       <label>Spoken language<select className="field" value={spokenLanguage} onChange={event => setSpokenLanguage(event.target.value)}>
         {LEARNER_LANGUAGE_OPTIONS.map(language => <option key={language.code} value={language.code}>{language.label}</option>)}
       </select></label>

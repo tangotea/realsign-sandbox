@@ -2,6 +2,7 @@ import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import AuthAction from "@/components/AuthAction";
 import BrandLockup from "@/components/BrandLockup";
+import HelpButton from "@/components/help/HelpButton";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
@@ -23,7 +24,7 @@ export default async function Home() {
 
         <div className="row" style={{marginTop: 14}}>
           <strong>What is RealSign?</strong>
-          <button className="help-btn" aria-label="What is RealSign help">?</button>
+          <HelpButton slug="what-is-realsign" label="What is RealSign help" size="regular" fallbackText="RealSign connects learners with Deaf SASL tutors and South African Sign Language interpreters for lessons and video calls." />
         </div>
 
         <section className="stack" aria-label="Choose a service">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import { createClient } from "@/lib/supabase/server";
 import { serviceLabel } from "@/lib/marketplace";
+import HelpButton from "@/components/help/HelpButton";
 
 function ProviderShell({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,7 @@ function ProviderShell({ children }: { children: React.ReactNode }) {
       <header className="topbar">
         <Link href="/">←</Link>
         <strong>Provider</strong>
-        <button className="help-btn">?</button>
+        <HelpButton slug="provider-dashboard" label="Provider dashboard help" size="regular" fallbackText="Use the provider tools to manage your profile, lesson guides, availability, payouts and earnings." />
       </header>
       <main className="main">{children}</main>
       <AppNav />

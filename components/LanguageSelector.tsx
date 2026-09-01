@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { LanguageDisplayMode, officialLanguageLabel, officialLanguageOptions } from "@/lib/languages";
+import HelpButton from "@/components/help/HelpButton";
 
 type LanguageSelectorProps = {
   modes?: Array<Exclude<LanguageDisplayMode, "combined">>;
@@ -79,7 +80,7 @@ export default function LanguageSelector({ modes = ["tutor"] }: LanguageSelector
 
   return (
     <section className="card">
-      <div className="row"><div><h2>Languages</h2><p>{displayMode ? "Select all that apply." : "Choose tutor or interpreter first."}</p></div><button className="help-btn" aria-label="Languages help">?</button></div>
+      <div className="row"><div><h2>Languages</h2><p>{displayMode ? "Select all that apply." : "Choose tutor or interpreter first."}</p></div><HelpButton slug="provider-languages" label="Provider languages help" fallbackText="Choose the languages you can use for teaching or interpreting. A language choice describes communication ability and does not mean you hear or speak the language." /></div>
       {displayMode ? (
         <div className="language-mode">
           <h3>{MODE_COPY[displayMode].title}</h3>

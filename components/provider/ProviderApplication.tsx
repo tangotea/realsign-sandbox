@@ -377,13 +377,13 @@ export default function ProviderApplication() {
 
   return <div className="stack">
     <section className="card">
-      <div className="row"><div><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Status: <strong>{status.replaceAll("_", " ")}</strong></p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Status: <strong>{status.replaceAll("_", " ")}</strong></p></div><HelpButton slug="provider-application" label="Provider application help" fallbackText="Complete this application to offer SASL tutoring, SASL interpreting, or both. Provider approval is required before learners can book you." /></div>
       {status === "pending" ? <p className="notice">Your application is with RealSign Admin. You can view it here while it is being reviewed.</p> : null}
       {status === "approved" ? <div className="success-box approval-shortcut"><span>Approved ✓ Your provider profile is ready for the payout-setup step.</span><Link href="/provider/payout" className="mini-btn">Open payout setup</Link></div> : null}
     </section>
 
     <section className="card">
-      <div className="row"><div><h2>1. What would you like to offer?</h2><p>You can select more than one role.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h2>1. What would you like to offer?</h2><p>You can select more than one role.</p></div><HelpButton slug="provider-roles" label="Provider roles help" fallbackText="Choose whether you want to teach SASL, interpret SASL, or offer both services. RealSign applies separate approval rules where needed." /></div>
       <div className="stack compact">
         {PROVIDER_ROLES.map(r => <label className="check" key={r.value}><input disabled={!editable} type="checkbox" checked={roles.has(r.value)} onChange={() => { const next=new Set(roles); next.has(r.value)?next.delete(r.value):next.add(r.value); setRoles(next); }} /><span><strong>{r.icon} {r.label}</strong><small>{r.description}</small></span></label>)}
       </div>
@@ -403,7 +403,7 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <div className="row"><div><h2>3. Introduction</h2><p>Video first, with optional written text.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h2>3. Introduction</h2><p>Video first, with optional written text.</p></div><HelpButton slug="provider-introduction" label="Provider introduction help" fallbackText="Add the name and introduction that learners will see on your provider profile. An introduction video helps learners understand who they may book." /></div>
       <label>Public display name<input className="field" value={displayName} disabled={!editable} onChange={e=>setDisplayName(e.target.value)} /></label>
       <label>Introduction video<input className="field" type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime" disabled={!editable || introProgress !== null} onChange={uploadIntro} /><small className="upload-guidance">Accepted videos: MP4, WebM or MOV · Maximum 100 MB.</small></label>
       {introProgress !== null ? <UploadProgress label="Uploading introduction video" progress={introProgress} /> : null}
@@ -429,7 +429,7 @@ export default function ProviderApplication() {
     </section>
 
     <section className="card">
-      <div className="row"><div><h2>5. Booking preferences</h2><p>Set your minimum notice time and break between sessions.</p></div><button className="help-btn" aria-label={HELP_LABEL}>?</button></div>
+      <div className="row"><div><h2>5. Booking preferences</h2><p>Set your minimum notice time and break between sessions.</p></div><HelpButton slug="provider-booking-preferences" label="Booking preferences help" fallbackText="Set how much notice you need before a booking and the minimum break between sessions. RealSign uses these settings to protect your time." /></div>
       <div className="grid2">
          <label>Minimum notice before someone can book you<select className="field" disabled={!providerSettingsEditable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
          <label>Break between sessions<select className="field" disabled={!providerSettingsEditable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>

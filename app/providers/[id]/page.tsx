@@ -4,7 +4,7 @@ import AppNav from "@/components/AppNav";
 import BookingPicker from "@/components/booking/BookingPicker";
 import LessonGuideDetails from "@/components/marketplace/LessonGuideDetails";
 import { createClient } from "@/lib/supabase/server";
-import { PublicProvider, languageLabel, money, roleLabel, serviceDetailLabel, serviceLabel } from "@/lib/marketplace";import ReportReviewButton from "@/components/meet/ReportReviewButton";
+import { PublicProvider, languageLabel, money, roleLabel, serviceDetailLabel, serviceLabel } from "@/lib/marketplace";import ReportReviewButton from "@/components/meet/ReportReviewButton";import HelpButton from "@/components/help/HelpButton";
 
 export default async function ProviderProfilePage({ params, searchParams }: { params: Promise<{id:string}>; searchParams: Promise<{role?:string}> }) {
   const { id } = await params;
@@ -19,13 +19,13 @@ export default async function ProviderProfilePage({ params, searchParams }: { pa
   const bookableServices = visibleServices.filter(s => s.remote);
   const bookableService = bookableServices[0];
   const { data: reviewData } = await supabase.rpc("get_public_provider_reviews", { p_provider_id: id, p_limit: 8 });
-  return <div className="shell"><header className="topbar"><Link href="/marketplace">←</Link><strong>{p.display_name}</strong><button className="help-btn" aria-label="Open SASL help">?</button></header>
+  return <div className="shell"><header className="topbar"><Link href="/marketplace">←</Link><strong>{p.display_name}</strong><HelpButton slug="provider-profile" label="Provider profile help" size="regular" fallbackText="Review this provider’s introduction, languages, services, prices and available booking times before choosing a service." /></header>
     <main className="main">
       <section className="provider-profile-head">
         {p.introduction_video_path ? <video className="profile-video" controls preload="metadata" src={`/api/provider-media/${p.id}`} /> : <div className="video-placeholder">Introduction video</div>}
         <h1>{p.display_name}</h1>
         <div className="tag-row">{visibleRoles.map(r=><span className="pill" key={r.role}>{roleLabel(r.role)}</span>)}</div>
-        <div className="verification-badges">{p.verification_badges?.includes("identity")?<span>🪪 Identity Verified <button className="help-btn mini" aria-label="Identity Verified help">?</button></span>:null}{p.verification_badges?.includes("deaf")?<span>🤟 Deaf Verified <button className="help-btn mini" aria-label="Deaf Verified help">?</button></span>:null}{p.verification_badges?.includes("teacher_qualification")?<span>🎓 Teacher Qualification Verified <button className="help-btn mini" aria-label="Teacher qualification help">?</button></span>:null}{p.verification_badges?.includes("interpreter_assessment")?<span>👐 Interpreter Verified <button className="help-btn mini" aria-label="Interpreter Verified help">?</button></span>:null}</div>
+        <div className="verification-badges">{p.verification_badges?.includes("identity")?<span>🪪 Identity Verified <HelpButton slug="identity-verified" label="Identity Verified help" fallbackText="RealSign Admin has reviewed this provider’s identity document." /></span>:null}{p.verification_badges?.includes("deaf")?<span>🤟 Deaf Verified <HelpButton slug="deaf-verified" label="Deaf Verified help" fallbackText="RealSign Admin has reviewed the provider’s Deaf verification." /></span>:null}{p.verification_badges?.includes("teacher_qualification")?<span>🎓 Teacher Qualification Verified <HelpButton slug="teacher-qualification" label="Teacher qualification help" fallbackText="RealSign Admin has reviewed this provider’s teaching qualification." /></span>:null}{p.verification_badges?.includes("interpreter_assessment")?<span>👐 Interpreter Verified <HelpButton slug="interpreter-verified" label="Interpreter Verified help" fallbackText="RealSign Admin has reviewed this provider’s interpreter assessment." /></span>:null}</div>
       </section>
       <section className="card"><h2>About me</h2><p>{p.introduction_text || "This provider has not added written introduction text yet."}</p><h3>Languages I use</h3><p>{p.languages.map(l=>languageLabel(l.name, roleContext)).filter(Boolean).join(" · ") || "Not listed"}</p></section>
       <section className="card"><h2>Services</h2><div className="service-list">{visibleServices.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} minutes · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>{serviceDetailLabel(s)}</small>:null}<LessonGuideDetails title={s.title} /></div><div className="service-action"><strong>{money(s.price_cents)}</strong>{s.provider_role==="interpreter"&&s.in_person?<Link className="mini-btn" href={`/providers/${p.id}/request`}>Request in person</Link>:null}</div></div>)}</div></section>

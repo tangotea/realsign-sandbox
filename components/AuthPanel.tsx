@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { createClient, createEmailConfirmationClient } from "@/lib/supabase/client";
+import HelpButton from "@/components/help/HelpButton";
 
 function retrySecondsFrom(message: string) {
   const match = message.match(/(?:after|in)\s+(\d+)\s+seconds?/i);
@@ -93,7 +94,7 @@ export default function AuthPanel() {
     <section className="card">
       <div className="row">
         <h1 style={{margin: 0}}>{mode === "sign-in" ? "Welcome back" : mode === "reset" ? "Reset password" : "Create account"}</h1>
-        <button className="help-btn" type="button" aria-label="Account help">?</button>
+        <HelpButton slug="account-access" label="Account access help" size="regular" fallbackText="Create an account, sign in, request a password reset, or confirm your email address to use RealSign." />
       </div>
       <form onSubmit={submit} style={{marginTop: 18}}>
         {mode === "sign-up" && (

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import HelpButton from "@/components/help/HelpButton";
 
 type AccountProfileProps = {
   email: string;
@@ -51,7 +52,7 @@ export default function AccountProfile({ email, initialDisplayName }: AccountPro
 
   return (
     <section className="card">
-      <div className="row"><div><h2>Account</h2><p>{email}</p></div><button className="help-btn" aria-label="Account help">?</button></div>
+      <div className="row"><div><h2>Account</h2><p>{email}</p></div><HelpButton slug="account" label="Account help" fallbackText="Update your username, request a password reset, or sign out of RealSign from this section." /></div>
       <label>Username<input className="field" value={displayName} onChange={event => setDisplayName(event.target.value)} /></label>
       <div className="row wrap">
         <button className="btn secondary" onClick={saveProfile} disabled={busy}>Save username</button>
