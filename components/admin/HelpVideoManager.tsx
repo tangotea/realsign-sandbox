@@ -53,6 +53,27 @@ export default function HelpVideoManager({ items }: { items: HelpItem[] }) {
     router.refresh();
   }
 
+  async function deleteItem(item: HelpItem) {
+    if (!window.confirm(`Delete the published help content for "${item.title}"? The built-in help text will be used again.`)) return;
+    setBusy(true);
+    setMsg("");
+    const result = await fetch("/api/admin/help", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ slug: item.slug }),
+    });
+    const body = await result.json().catch(() => ({}));
+    if (!result.ok) {
+      setMsg(body.error || "Unable to delete help content.");
+      setBusy(false);
+      return;
+    }
+    if (editing?.slug === item.slug) setEditing(null);
+    setMsg(body.resetToDefault ? "Help content reset to built-in text." : "Help content deleted.");
+    setBusy(false);
+    router.refresh();
+  }
+
   return (
     <div className="stack" style={{ marginTop: 0 }}>
       <section className="card">
@@ -80,7 +101,7 @@ export default function HelpVideoManager({ items }: { items: HelpItem[] }) {
       <section className="card">
         <h2>Published help content</h2>
         <div className="stack" style={{ marginTop: 12 }}>
-          {items.map(item => <div className="service-row" key={item.id}><div><strong>{item.title}</strong><small>{item.slug}</small></div><button type="button" className="mini-btn" onClick={() => startEditing(item)}>Edit</button></div>)}
+          {items.map(item => <div className="service-row" key={item.id}><div><strong>{item.title}</strong><small>{item.slug}</small></div><div className="row wrap"><button type="button" className="mini-btn" onClick={() => startEditing(item)} disabled={busy}>Edit</button><button type="button" className="mini-btn danger-text" onClick={() => deleteItem(item)} disabled={busy}>Delete</button></div></div>)}
           {!items.length ? <p className="muted">No help content yet.</p> : null}
         </div>
       </section>
