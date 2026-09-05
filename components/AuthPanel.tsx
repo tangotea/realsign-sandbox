@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { createClient, createEmailConfirmationClient, createRecoveryClient } from "@/lib/supabase/client";
 import HelpButton from "@/components/help/HelpButton";
+import PasswordInput from "@/components/PasswordInput";
 
 function retrySecondsFrom(message: string) {
   const match = message.match(/(?:after|in)\s+(\d+)\s+seconds?/i);
@@ -111,7 +112,7 @@ export default function AuthPanel() {
           </div>
         )}
         <label>Email<input className="field" name="email" type="email" required /></label>
-        {mode !== "reset" ? <label>Password<input className="field" name="password" type="password" minLength={8} required /></label> : null}
+        {mode !== "reset" ? <label>Password<PasswordInput name="password" minLength={8} required /></label> : null}
         <button className="btn" disabled={busy || (mode === "reset" && retryAfter > 0)}>{retryAfter > 0 ? "Please wait..." : busy ? "Please wait..." : mode === "sign-in" ? "Sign in" : mode === "reset" ? "Send reset email" : "Create account"}</button>
       </form>
       {message ? <p aria-live="polite" className={messageKind === "error" ? "auth-error" : messageKind === "success" ? "auth-success" : "muted"}>{message}</p> : null}

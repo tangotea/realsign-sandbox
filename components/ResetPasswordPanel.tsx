@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createRecoveryClient } from "@/lib/supabase/client";
 import HelpButton from "@/components/help/HelpButton";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function ResetPasswordPanel() {
   const supabase = useMemo(() => createRecoveryClient(), []);
@@ -27,11 +28,10 @@ export default function ResetPasswordPanel() {
       const code = params.get("code");
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) {
-          if (alive) setCheckingSession(false);
-          return;
-        }
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // The browser client may already have exchanged this code during
+        // initialization. In that case the second exchange can fail even
+        // though a valid recovery session is already available.
+        if (!error) window.history.replaceState({}, document.title, window.location.pathname);
       }
 
       const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
@@ -39,11 +39,7 @@ export default function ResetPasswordPanel() {
       const refreshToken = hashParams.get("refresh_token");
       if (accessToken && refreshToken) {
         const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
-        if (error) {
-          if (alive) setCheckingSession(false);
-          return;
-        }
-        window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.search}`);
+        if (!error) window.history.replaceState({}, document.title, window.location.pathname);
       }
 
       const { data } = await supabase.auth.getSession();
@@ -51,6 +47,7 @@ export default function ResetPasswordPanel() {
         setSessionReady(Boolean(data.session?.user));
         setCheckingSession(false);
       }
+      if (data.session?.user) window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     establishRecoverySession();
@@ -120,8 +117,8 @@ export default function ResetPasswordPanel() {
         <HelpButton slug="password-reset" label="Password reset help" fallbackText="Use the newest password reset email on this device. The link must open a secure recovery session before a new password can be saved." />
       </div>
       <form onSubmit={submit} style={{ marginTop: 18 }}>
-        <label>New password<input className="field" name="password" type="password" minLength={8} required /></label>
-        <label>Confirm new password<input className="field" name="confirmPassword" type="password" minLength={8} required /></label>
+        <label>New password<PasswordInput name="password" minLength={8} required /></label>
+        <label>Confirm new password<PasswordInput name="confirmPassword" minLength={8} required /></label>
         <button className="btn" disabled={busy || !sessionReady}>{busy ? "Please wait..." : "Update password"}</button>
       </form>
       {message ? <p aria-live="polite" className={messageKind === "error" ? "auth-error" : "muted"}>{message}</p> : null}
