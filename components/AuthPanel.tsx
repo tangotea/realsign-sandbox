@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { createClient, createEmailConfirmationClient } from "@/lib/supabase/client";
+import { createClient, createEmailConfirmationClient, createRecoveryClient } from "@/lib/supabase/client";
 import HelpButton from "@/components/help/HelpButton";
 
 function retrySecondsFrom(message: string) {
@@ -45,14 +45,14 @@ export default function AuthPanel() {
     const lastName = String(data.get("lastName") || "").trim();
 
     try {
-      const supabase = mode === "sign-up" ? createEmailConfirmationClient() : createClient();
+      const supabase = mode === "sign-up" ? createEmailConfirmationClient() : mode === "reset" ? createRecoveryClient() : createClient();
       if (mode === "sign-in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         window.location.href = "/profile";
       } else if (mode === "reset") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+          redirectTo: `${window.location.origin}/reset-password`,
         });
         if (error) throw error;
         setMessage("Password reset email sent. Open the link in your email to choose a new password.");

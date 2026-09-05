@@ -24,6 +24,16 @@ export default function ResetPasswordPanel() {
         return;
       }
 
+      const code = params.get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          if (alive) setCheckingSession(false);
+          return;
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
       const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
       const accessToken = hashParams.get("access_token");
       const refreshToken = hashParams.get("refresh_token");

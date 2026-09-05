@@ -1,19 +1,13 @@
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
-import AuthAction from "@/components/AuthAction";
 import BrandLockup from "@/components/BrandLockup";
 import HelpButton from "@/components/help/HelpButton";
-import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
-  const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-
   return (
     <div className="shell">
       <header className="topbar">
         <BrandLockup />
-        <AuthAction initialSignedIn={Boolean(auth.user)} />
       </header>
 
       <main className="main">

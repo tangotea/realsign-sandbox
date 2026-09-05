@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PwaRegister from "@/components/PwaRegister";
+import GlobalAuthAction from "@/components/GlobalAuthAction";
 
 export const metadata: Metadata = {
   title: "RealSign",
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <PwaRegister />
+        <GlobalAuthAction />
         {children}
       </body>
     </html>
