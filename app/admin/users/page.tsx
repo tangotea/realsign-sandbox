@@ -21,7 +21,7 @@ export default async function Page() {
   const service = createAdminClient();
   if (!service) return <main className="main"><h1>Admin setup incomplete</h1><p>Server configuration is missing.</p></main>;
 
-  const [{ data: authUsers, error: usersError }, { data: profiles }, { data: providers }, { data: roles }, { data: identities }, { data: deaf }] = await Promise.all([
+  const [{ data: authUserPage, error: usersError }, { data: profiles }, { data: providers }, { data: roles }, { data: identities }, { data: deaf }] = await Promise.all([
     service.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     service.from("profiles").select("id,display_name,first_name,last_name,created_at,account_state"),
     service.from("provider_profiles").select("user_id,status"),
@@ -31,6 +31,7 @@ export default async function Page() {
   ]);
 
   if (usersError) return <main className="main"><h1>Unable to load users</h1><p>{usersError.message}</p></main>;
+  const authUsers = authUserPage?.users || [];
 
   const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]));
   const providerMap = new Map((providers || []).map((provider: any) => [provider.user_id, provider]));
