@@ -7,7 +7,9 @@ export async function GET(request: Request) {
   const requestedNext = url.searchParams.get("next") || "/profile";
   const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/profile";
   const isRecovery = next === "/reset-password";
-  const errorDestination = isRecovery ? "/reset-password?error=recovery" : "/auth/confirmed?error=confirmation";
+  const confirmationErrorDestination = new URL("/auth/confirmed", url.origin);
+  confirmationErrorDestination.searchParams.set("error", "confirmation");
+  if (next !== "/profile") confirmationErrorDestination.searchParams.set("next", next);
 
   // Recovery links must be completed in the browser because the PKCE verifier
   // is stored there, not in the server request cookies.
@@ -19,14 +21,14 @@ export async function GET(request: Request) {
   }
 
   if (url.searchParams.get("error")) {
-    return NextResponse.redirect(new URL(errorDestination, url.origin));
+    return NextResponse.redirect(isRecovery ? new URL("/reset-password?error=recovery", url.origin) : confirmationErrorDestination);
   }
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
-      return NextResponse.redirect(new URL(errorDestination, url.origin));
+      return NextResponse.redirect(isRecovery ? new URL("/reset-password?error=recovery", url.origin) : confirmationErrorDestination);
     }
   }
 

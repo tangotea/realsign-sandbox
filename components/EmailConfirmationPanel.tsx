@@ -4,14 +4,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+function safeNextPath(value: string | null) {
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/profile";
+}
+
 export default function EmailConfirmationPanel() {
   const [state, setState] = useState<"checking" | "confirmed" | "error">("checking");
+  const [nextPath, setNextPath] = useState("/profile");
 
   useEffect(() => {
     let alive = true;
 
     async function processConfirmation() {
       const params = new URLSearchParams(window.location.search);
+      const next = safeNextPath(params.get("next"));
+      if (alive) setNextPath(next);
       if (params.get("error") === "confirmation") {
         if (alive) setState("error");
         return;
@@ -54,7 +61,7 @@ export default function EmailConfirmationPanel() {
           <strong>We could not confirm this email link.</strong>
           <span>The link may have expired or already been used. You can try signing in.</span>
         </div>
-        <Link className="btn" href="/sign-in" style={{ marginTop: 16 }}>Go to sign in</Link>
+        <Link className="btn" href={`/sign-in?next=${encodeURIComponent(nextPath)}`} style={{ marginTop: 16 }}>Go to sign in</Link>
       </section>
     );
   }
@@ -66,7 +73,7 @@ export default function EmailConfirmationPanel() {
         <strong>Your email was confirmed successfully.</strong>
         <span>Your RealSign account is ready. Continue to RealSign to use your account.</span>
       </div>
-      <Link className="btn" href="/profile" style={{ marginTop: 16 }}>Continue to RealSign</Link>
+      <Link className="btn" href={nextPath} style={{ marginTop: 16 }}>Continue to RealSign</Link>
     </section>
   );
 }

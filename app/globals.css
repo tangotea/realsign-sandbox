@@ -23,19 +23,21 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 
 .shell { min-height: 100vh; }
-.topbar { 
+.topbar {
   position: sticky;
   top: 0;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 14px clamp(18px,3vw,28px);
+  padding-right: clamp(140px,18vw,240px);
   background: rgba(247,247,244,.94);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
-.global-auth-action { position: fixed; top: 10px; right: 66px; z-index: 40; }
+.topbar > strong { min-width: 0; text-align: center; overflow-wrap: anywhere; }
+.global-auth-action { position: fixed; top: 18px; right: 18px; z-index: 40; }
 .global-auth-action .btn { min-height: 40px; padding: 8px 12px; }
 .brand { font-weight: 900; letter-spacing: .08em; }
 .brand-lockup { display:inline-flex; align-items:center; gap:6px; }
@@ -395,7 +397,8 @@ button { cursor: pointer; }
 
 /* Milestone 6 notifications, booking changes, sponsorships and SASL help */
 .help-modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.52);display:grid;place-items:center;overflow-y:auto;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}.help-modal{width:min(100%,620px);max-height:calc(100dvh - 36px);overflow:auto;margin:auto;background:white;border-radius:18px;padding:18px;border:1px solid var(--border)}.help-modal h2{min-width:0;overflow-wrap:anywhere}.help-video{width:100%;max-height:420px;object-fit:contain;background:#111;border-radius:14px;margin:12px 0}.price-breakdown{display:grid;gap:8px;margin:14px 0;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--soft)}.price-breakdown>div{display:flex;justify-content:space-between;gap:16px}.price-breakdown .total{padding-top:8px;border-top:1px solid var(--border);font-size:1.08rem}.change-panel{margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:14px}.help-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--border);border-radius:9px;background:white;font-weight:900}.help-btn.mini{width:28px;height:28px}.notification-dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}.sponsor-fund-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.credit-badge{display:inline-flex;padding:7px 9px;border:1px solid var(--border);border-radius:999px;background:var(--soft)}
-@media(max-width:720px){.global-auth-action{top:8px;right:56px}.global-auth-action .btn{min-height:36px;padding:7px 10px;font-size:13px}.sponsor-fund-grid{grid-template-columns:1fr}.help-modal{max-height:calc(100dvh - 36px);padding:14px}.price-breakdown{padding:12px}}
+.dictionary-page > .row .help-btn { transform: translateY(-2px); }
+@media(max-width:720px){.topbar{padding-right:132px}.global-auth-action{top:16px;right:12px}.global-auth-action .btn{min-height:36px;padding:7px 10px;font-size:13px}.sponsor-fund-grid{grid-template-columns:1fr}.help-modal{max-height:calc(100dvh - 36px);padding:14px}.price-breakdown{padding:12px}}
 .multi-select{min-height:150px}
 .provider-recipient-list{display:grid;gap:8px;margin:18px 0 0;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--soft)}
 .provider-recipient-list legend{padding:0 4px;font-weight:800}

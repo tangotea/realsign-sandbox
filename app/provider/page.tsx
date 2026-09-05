@@ -42,7 +42,7 @@ export default async function ProviderPage() {
           <p>Create an account first. You can complete the provider setup after signing in.</p>
         </section>
         <div className="stack">
-          <Link href="/sign-in" className="card choice">
+          <Link href="/sign-in?next=%2Fprovider%2Fapplication" className="card choice">
             <div className="icon">🤟</div>
             <div>
               <h2>Start provider registration</h2>

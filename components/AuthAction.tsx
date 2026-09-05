@@ -14,6 +14,7 @@ export default function AuthAction({ initialSignedIn }: AuthActionProps) {
   const supabase = useMemo(() => createClient(), []);
   const [signedIn, setSignedIn] = useState(initialSignedIn);
   const [busy, setBusy] = useState(false);
+  const [returnPath, setReturnPath] = useState("/");
 
   useEffect(() => {
     let alive = true;
@@ -28,6 +29,11 @@ export default function AuthAction({ initialSignedIn }: AuthActionProps) {
       listener.subscription.unsubscribe();
     };
   }, [supabase]);
+
+  useEffect(() => {
+    const currentPath = `${window.location.pathname}${window.location.search}`;
+    setReturnPath(currentPath || "/");
+  }, []);
 
   async function signOut() {
     setBusy(true);
@@ -46,6 +52,6 @@ export default function AuthAction({ initialSignedIn }: AuthActionProps) {
       {busy ? "Signing out…" : "Sign out"}
     </button>
   ) : (
-    <Link className="btn secondary" href="/sign-in">Sign in</Link>
+    <Link className="btn secondary" href={`/sign-in?next=${encodeURIComponent(returnPath)}`}>Sign in / Sign up</Link>
   );
 }

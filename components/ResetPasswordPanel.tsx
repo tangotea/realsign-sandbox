@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createRecoveryClient } from "@/lib/supabase/client";
 import HelpButton from "@/components/help/HelpButton";
 
 export default function ResetPasswordPanel() {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = useMemo(() => createRecoveryClient(), []);
   const [checkingSession, setCheckingSession] = useState(true);
   const [sessionReady, setSessionReady] = useState(false);
   const [busy, setBusy] = useState(false);

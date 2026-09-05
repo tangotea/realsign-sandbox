@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, createRecoveryClient } from "@/lib/supabase/client";
 import HelpButton from "@/components/help/HelpButton";
 
 type AccountProfileProps = {
@@ -54,8 +54,9 @@ export default function AccountProfile({ email, initialDisplayName }: AccountPro
     setBusy(true);
     setMessage("");
     const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+    const recoveryClient = createRecoveryClient();
+    const { error } = await recoveryClient.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     if (error) {
       const seconds = retrySecondsFrom(error.message);

@@ -13,6 +13,10 @@ function isResetRateLimit(message: string) {
   return /rate limit|too many|security purposes|request this after/i.test(message);
 }
 
+function safeNextPath(value: string | null) {
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/profile";
+}
+
 export default function AuthPanel() {
   const [mode, setMode] = useState<"sign-in" | "sign-up" | "reset">("sign-in");
   const [message, setMessage] = useState("");
@@ -43,13 +47,14 @@ export default function AuthPanel() {
     const password = String(data.get("password") || "");
     const firstName = String(data.get("firstName") || "").trim();
     const lastName = String(data.get("lastName") || "").trim();
+    const next = safeNextPath(new URLSearchParams(window.location.search).get("next"));
 
     try {
       const supabase = mode === "sign-up" ? createEmailConfirmationClient() : mode === "reset" ? createRecoveryClient() : createClient();
       if (mode === "sign-in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        window.location.href = "/profile";
+        window.location.href = next;
       } else if (mode === "reset") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
@@ -58,11 +63,13 @@ export default function AuthPanel() {
         setMessage("Password reset email sent. Open the link in your email to choose a new password.");
         setMessageKind("success");
       } else {
+        const confirmationUrl = new URL("/auth/confirmed", window.location.origin);
+        confirmationUrl.searchParams.set("next", next);
         const { data: result, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/confirmed`,
+            emailRedirectTo: confirmationUrl.toString(),
             data: {
               first_name: firstName,
               last_name: lastName,
@@ -73,7 +80,7 @@ export default function AuthPanel() {
         if (error) throw error;
         setMessage(result.session ? "Account created. You are signed in." : "Account created. Check your email to confirm your address.");
         setMessageKind("success");
-        if (result.session) window.location.href = "/profile";
+        if (result.session) window.location.href = next;
       }
     } catch (error) {
       const errorText = error instanceof Error ? error.message : "Something went wrong.";
