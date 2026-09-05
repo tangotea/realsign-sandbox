@@ -19,6 +19,14 @@ export function createRecoveryClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { flowType: "pkce" } }
+    {
+      auth: {
+        // Recovery is handled explicitly by ResetPasswordPanel. Implicit
+        // recovery links carry the session in the URL fragment, so a link
+        // opened from an email app does not depend on a browser-only verifier.
+        flowType: "implicit",
+        detectSessionInUrl: false,
+      },
+    }
   );
 }
