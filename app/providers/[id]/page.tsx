@@ -19,11 +19,11 @@ export default async function ProviderProfilePage({ params, searchParams }: { pa
   const bookableServices = visibleServices.filter(s => s.remote);
   const bookableService = bookableServices[0];
   const { data: reviewData } = await supabase.rpc("get_public_provider_reviews", { p_provider_id: id, p_limit: 8 });
-  return <div className="shell"><header className="topbar"><Link href="/marketplace">←</Link><strong>{p.display_name}</strong><HelpButton slug="provider-profile" label="Provider profile help" size="regular" fallbackText="Review this provider’s introduction, languages, services, prices and available booking times before choosing a service." /></header>
+  return <div className="shell"><header className="topbar"><Link href="/marketplace">←</Link><strong>{p.display_name}</strong><span /></header>
     <main className="main">
       <section className="provider-profile-head">
         {p.introduction_video_path ? <video className="profile-video" controls preload="metadata" src={`/api/provider-media/${p.id}`} /> : <div className="video-placeholder">Introduction video</div>}
-        <h1>{p.display_name}</h1>
+        <div className="page-heading"><h1>{p.display_name}</h1><HelpButton slug="provider-profile" label="Provider profile help" size="regular" fallbackText="Review this provider’s introduction, languages, services, prices and available booking times before choosing a service." /></div>
         <div className="tag-row">{visibleRoles.map(r=><span className="pill" key={r.role}>{roleLabel(r.role)}</span>)}</div>
         <div className="verification-badges">{p.verification_badges?.includes("identity")?<span>🪪 Identity Verified <HelpButton slug="identity-verified" label="Identity Verified help" fallbackText="RealSign Admin has reviewed this provider’s identity document." /></span>:null}{p.verification_badges?.includes("deaf")?<span>🤟 Deaf Verified <HelpButton slug="deaf-verified" label="Deaf Verified help" fallbackText="RealSign Admin has reviewed the provider’s Deaf verification." /></span>:null}{p.verification_badges?.includes("teacher_qualification")?<span>🎓 Teacher Qualification Verified <HelpButton slug="teacher-qualification" label="Teacher qualification help" fallbackText="RealSign Admin has reviewed this provider’s teaching qualification." /></span>:null}{p.verification_badges?.includes("interpreter_assessment")?<span>👐 Interpreter Verified <HelpButton slug="interpreter-verified" label="Interpreter Verified help" fallbackText="RealSign Admin has reviewed this provider’s interpreter assessment." /></span>:null}</div>
       </section>

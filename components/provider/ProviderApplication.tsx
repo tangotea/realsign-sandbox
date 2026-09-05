@@ -360,7 +360,7 @@ export default function ProviderApplication() {
   }
 
   if (busy) return <section className="card"><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Loading…</p></section>;
-  if (!userId) return <section className="card"><h1>Become a provider</h1><p>Sign in before starting your application.</p><Link className="btn" href="/sign-in?next=%2Fprovider%2Fapplication">Sign in / Sign up</Link></section>;
+  if (!userId) return <section className="card provider-entry-card"><h1>Become a provider</h1><p>Sign in before starting your application.</p><Link className="btn" href="/sign-in?next=%2Fprovider%2Fapplication">Sign in / Sign up</Link></section>;
 
   const verificationState = (type: VerificationType) => verifications.find(v => v.type === type)?.state || "not_submitted";
   const editable = status === "draft" || status === "rejected";

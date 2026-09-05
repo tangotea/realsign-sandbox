@@ -10,7 +10,7 @@ function ProviderShell({ children }: { children: React.ReactNode }) {
       <header className="topbar">
         <Link href="/">←</Link>
         <strong>Provider</strong>
-        <HelpButton slug="provider-dashboard" label="Provider dashboard help" size="regular" fallbackText="Use the provider tools to manage your profile, lesson guides, availability, payouts and earnings." />
+        <span />
       </header>
       <main className="main">{children}</main>
       <AppNav />
@@ -38,8 +38,13 @@ export default async function ProviderPage() {
     return (
       <ProviderShell>
         <section className="hero">
-          <h1>Offer a service</h1>
-          <p>Create an account first. You can complete the provider setup after signing in.</p>
+          <div className="page-heading">
+            <div>
+              <h1>Offer a service</h1>
+              <p>Create an account first. You can complete the provider setup after signing in.</p>
+            </div>
+            <HelpButton slug="provider-dashboard" label="Provider dashboard help" size="regular" fallbackText="Use the provider tools to manage your profile, lesson guides, availability, payouts and earnings." />
+          </div>
         </section>
         <div className="stack">
           <Link href="/sign-in?next=%2Fprovider%2Fapplication" className="card choice">
@@ -64,8 +69,13 @@ export default async function ProviderPage() {
     return (
       <ProviderShell>
         <section className="hero">
-          <h1>Teach or interpret</h1>
-          <p>Complete your provider application first. More tools appear after approval.</p>
+          <div className="page-heading">
+            <div>
+              <h1>Teach or interpret</h1>
+              <p>Complete your provider application first. More tools appear after approval.</p>
+            </div>
+            <HelpButton slug="provider-dashboard" label="Provider dashboard help" size="regular" fallbackText="Complete your provider application first. After approval, use the provider tools to manage your profile, lesson guides, availability, payouts and earnings." />
+          </div>
         </section>
         <div className="stack">
           <ApplicationCard />
@@ -86,8 +96,13 @@ export default async function ProviderPage() {
   return (
     <ProviderShell>
       <section className="hero">
-        <h1>Hello {provider.public_display_name || "there"} 👋</h1>
-        <p>Your next RealSign bookings are shown first.</p>
+        <div className="page-heading">
+          <div>
+            <h1>Hello {provider.public_display_name || "there"} 👋</h1>
+            <p>Your next RealSign bookings are shown first.</p>
+          </div>
+          <HelpButton slug="provider-dashboard" label="Provider dashboard help" size="regular" fallbackText="Use the provider tools to manage your profile, lesson guides, availability, payouts and earnings." />
+        </div>
       </section>
 
       {bookings?.length ? (

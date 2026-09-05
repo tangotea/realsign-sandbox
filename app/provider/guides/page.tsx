@@ -40,12 +40,17 @@ export default async function ProviderGuidesPage() {
       <header className="topbar">
         <Link href="/profile" aria-label="Back to profile">←</Link>
         <strong>Lesson guides</strong>
-        <HelpButton slug="provider-lesson-guides" label="Lesson guides help" size="regular" fallbackText="Browse the built-in lesson topics and choose one when adding a service. Learners will see the topic you publish." />
+        <span />
       </header>
       <main className="main">
         <section className="hero">
-          <h1>Lesson guides</h1>
-          <p>Browse the built-in topics you can offer to learners. Choose a guide when adding a service.</p>
+          <div className="page-heading">
+            <div>
+              <h1>Lesson guides</h1>
+              <p>Browse the built-in topics you can offer to learners. Choose a guide when adding a service.</p>
+            </div>
+            <HelpButton slug="provider-lesson-guides" label="Lesson guides help" size="regular" fallbackText="Browse the built-in lesson topics and choose one when adding a service. Learners will see the topic you publish." />
+          </div>
         </section>
         <section>
           <h2>Tutor lesson guides</h2>

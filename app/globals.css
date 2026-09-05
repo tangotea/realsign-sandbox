@@ -64,6 +64,9 @@ button { cursor: pointer; }
 .topbar > a:first-child:focus-visible { outline:3px solid rgba(24,24,24,.18); outline-offset:2px; }
 .main { width: min(100%, 760px); margin: 0 auto; padding: 24px 18px 98px; }
 .hero { padding: 18px 0 12px; }
+.page-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.page-heading > .help-btn { flex:none; margin-top:2px; }
+.page-heading h1 { margin:0 0 8px; }
 .hero h1 { margin: 0 0 8px; font-size: clamp(30px, 7vw, 46px); line-height: 1.05; }
 .hero p { margin: 0; color: var(--muted); font-size: 17px; }
 .stack { display: grid; gap: 14px; margin-top: 22px; }
@@ -335,6 +338,8 @@ button { cursor: pointer; }
 .provider-avatar { min-height:150px; border-radius:14px; background:#202020; color:white; display:grid; place-items:center; font-size:30px; }
 .provider-card-body h2 { margin-top:0; }
 .provider-profile-head { margin-bottom:18px; }
+.provider-entry-card h1 { margin:0 0 14px; }
+.provider-entry-card p { margin:0 0 10px; }
 .profile-video { width:100%; aspect-ratio:16/10; background:#111; border-radius:16px; object-fit:contain; }
 .verification-badges { display:flex; flex-wrap:wrap; gap:9px; margin:12px 0; }
 .verification-badges > span { display:inline-flex; gap:6px; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:12px; background:white; }

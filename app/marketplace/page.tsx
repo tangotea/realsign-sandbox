@@ -30,9 +30,9 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const ownProviderId = ownProvider?.id || null;
   const { data: languages } = await supabase.from("languages").select("code,name").eq("active",true).order("display_order");
 
-  return <div className="shell"><header className="topbar"><Link href="/">←</Link><strong>{pageTitle}</strong><HelpButton slug="marketplace" label="Marketplace help" size="regular" fallbackText="Choose a language and review approved provider profiles. Open a profile to see services, prices and available booking times." /></header>
+  return <div className="shell"><header className="topbar"><Link href="/">←</Link><strong>{pageTitle}</strong><span /></header>
     <main className="main">
-      <section className="hero"><h1>{pageTitle}</h1><p>Only approved providers and active services are shown.</p></section>
+      <section className="hero"><div className="page-heading"><div><h1>{pageTitle}</h1><p>Only approved providers and active services are shown.</p></div><HelpButton slug="marketplace" label="Marketplace help" size="regular" fallbackText="Choose a language and review approved provider profiles. Open a profile to see services, prices and available booking times." /></div></section>
       <form className="market-filters" method="get">
         {subject ? <input type="hidden" name="subject" value={subject}/> : null}
         {q.subjectName ? <input type="hidden" name="subjectName" value={q.subjectName}/> : null}
