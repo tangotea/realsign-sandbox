@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export function createClient() {
   return createBrowserClient(
@@ -16,7 +17,9 @@ export function createEmailConfirmationClient() {
 }
 
 export function createRecoveryClient() {
-  return createBrowserClient(
+  // SSR's browser helper forces PKCE and may reuse an existing client.
+  // Recovery must work when the email opens in a different browser.
+  return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -26,6 +29,8 @@ export function createRecoveryClient() {
         // opened from an email app does not depend on a browser-only verifier.
         flowType: "implicit",
         detectSessionInUrl: false,
+        persistSession: false,
+        autoRefreshToken: false,
       },
     }
   );
