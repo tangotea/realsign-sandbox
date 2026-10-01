@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type AuthActionProps = {
@@ -11,6 +11,7 @@ type AuthActionProps = {
 
 export default function AuthAction({ initialSignedIn }: AuthActionProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = useMemo(() => createClient(), []);
   const [signedIn, setSignedIn] = useState(initialSignedIn);
   const [busy, setBusy] = useState(false);
@@ -33,7 +34,7 @@ export default function AuthAction({ initialSignedIn }: AuthActionProps) {
   useEffect(() => {
     const currentPath = `${window.location.pathname}${window.location.search}`;
     setReturnPath(currentPath || "/");
-  }, []);
+  }, [pathname]);
 
   async function signOut() {
     setBusy(true);

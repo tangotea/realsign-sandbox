@@ -30,7 +30,7 @@ export default async function Page() {
   }
 
   return <div className="admin-shell">
-    <aside className="sidebar"><div className="brand">REALSIGN ADMIN</div><nav><Link href="/admin">Dashboard</Link><Link href="/admin/sponsorships">Sponsorships</Link><Link href="/admin/help">Help Videos</Link></nav></aside>
+    
     <main className="admin-main">
       <h1>Access & Sponsorships</h1>
       <p className="muted">Credits are non-transferable booking subsidies; they are not withdrawable cash balances.</p>

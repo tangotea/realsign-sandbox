@@ -1,5 +1,6 @@
 import AppNav from "@/components/AppNav";
 import BrandLockup from "@/components/BrandLockup";
+import ModeSwitch from "@/components/ExperienceMode";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { money, serviceLabel } from "@/lib/marketplace";
@@ -11,6 +12,7 @@ export default async function Page() {
   if (!auth.user) {
     return (
       <div className="shell">
+        <header className="topbar"><BrandLockup /></header>
         <main className="main">
           <section className="card">
             <h1>Bookings</h1>
@@ -55,6 +57,7 @@ export default async function Page() {
         <strong>Bookings</strong>
       </header>
       <main className="main">
+        <ModeSwitch />
         <h1>Bookings</h1>
 
         <section className="card booking-shortcuts">

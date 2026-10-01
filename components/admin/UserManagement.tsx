@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type AccountState = "active" | "archived" | "blocked";
 
@@ -17,12 +18,16 @@ export type AdminUser = {
   reviewUrl: string | null;
   isProvider: boolean;
   providerStatus: string | null;
+  providerId: string | null;
+  providerRoles: string[];
 };
 
 const tabs = [
   ["all", "All users"],
   ["learner", "Learners"],
   ["provider", "Providers"],
+  ["tutor", "Tutors"],
+  ["interpreter", "Interpreters"],
   ["archived", "Archived"],
   ["blocked", "Blocked"],
 ] as const;
@@ -46,6 +51,8 @@ export default function UserManagement({ users, currentUserId }: { users: AdminU
         activeTab === "all" ||
         (activeTab === "learner" && user.roles.includes("learner") && user.accountState === "active") ||
         (activeTab === "provider" && user.isProvider && user.accountState === "active") ||
+        (activeTab === "tutor" && user.providerRoles.some(role => role === "deaf_tutor" || role === "qualified_deaf_teacher") && user.accountState === "active") ||
+        (activeTab === "interpreter" && user.providerRoles.includes("interpreter") && user.accountState === "active") ||
         (activeTab === "archived" && user.accountState === "archived") ||
         (activeTab === "blocked" && user.accountState === "blocked");
       return matchesSearch && matchesTab;
@@ -64,6 +71,7 @@ export default function UserManagement({ users, currentUserId }: { users: AdminU
 
     setBusyId(user.id);
     setMessage(null);
+    try {
     const response = await fetch("/api/admin/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -75,8 +83,14 @@ export default function UserManagement({ users, currentUserId }: { users: AdminU
       setMessage({ text: result.error || "The account action could not be completed.", kind: "error" });
       return;
     }
-    setMessage({ text: action === "delete" ? "User removed." : `User ${action}d.`, kind: "success" });
+    const success = { archive: "Account archived.", restore: "Account restored.", block: "Account blocked.", unblock: "Account unblocked.", delete: "User removed." };
+    setMessage({ text: success[action], kind: "success" });
     router.refresh();
+    } catch {
+      setMessage({ text: "Unable to reach the server. Please try again.", kind: "error" });
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -101,7 +115,9 @@ export default function UserManagement({ users, currentUserId }: { users: AdminU
           const isSelf = user.id === currentUserId;
           const busy = busyId === user.id;
           return (
-            <article className="admin-row admin-user-row" key={user.id}>
+            <details className="person-record" key={user.id}>
+              <summary><strong>{user.name}</strong><span>{user.email}</span><span className={`status ${user.accountState}`}>{label(user.accountState)}</span><span>View details</span></summary>
+              <div className="admin-row admin-user-row">
               <div className="admin-user-summary">
                 <div className="row wrap compact-gap">
                   <strong>{user.name}</strong>
@@ -113,6 +129,7 @@ export default function UserManagement({ users, currentUserId }: { users: AdminU
                 <small>Joined {new Date(user.createdAt).toLocaleDateString()}</small>
               </div>
               <div className="admin-user-review">
+                {user.providerId ? <Link className="mini-btn" href={`/admin/providers/${user.providerId}`}>Provider profile & verification</Link> : null}
                 <span className="status">ID: {label(user.identityState || "not started")}</span>
                 {user.deafState !== "not_submitted" ? <span className="status">Deaf verification: {label(user.deafState)}</span> : null}
                 {user.providerStatus ? <span className="status">Provider: {label(user.providerStatus)}</span> : null}
@@ -126,7 +143,8 @@ export default function UserManagement({ users, currentUserId }: { users: AdminU
                 {!isSelf && user.accountState === "blocked" ? <button className="mini-btn" disabled={busy} onClick={() => runAction("unblock", user)}>Unblock</button> : null}
                 {!isSelf ? <button className="mini-btn danger" disabled={busy} onClick={() => runAction("delete", user)}>Remove permanently</button> : null}
               </div>
-            </article>
+              </div>
+            </details>
           );
         })}
         {!visibleUsers.length ? <p className="admin-empty">No users match this search or group.</p> : null}

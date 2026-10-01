@@ -3,6 +3,7 @@ import AppNav from "@/components/AppNav";
 import { createClient } from "@/lib/supabase/server";
 import { serviceLabel } from "@/lib/marketplace";
 import HelpButton from "@/components/help/HelpButton";
+import ModeSwitch from "@/components/ExperienceMode";
 
 function ProviderShell({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +13,7 @@ function ProviderShell({ children }: { children: React.ReactNode }) {
         <strong>Provider</strong>
         <span />
       </header>
-      <main className="main">{children}</main>
+      <main className="main"><ModeSwitch />{children}</main>
       <AppNav />
     </div>
   );
@@ -84,14 +85,14 @@ export default async function ProviderPage() {
     );
   }
 
-  const { data: bookings } = await supabase
+  const [{ data: bookings, error: bookingError }, { count: pendingRequests, error: requestError }] = await Promise.all([supabase
     .from("bookings")
     .select("id,reference,state,start_at,end_at,learner_first_name,provider_services(title,provider_role)")
     .eq("provider_id", provider.id)
     .in("state", ["confirmed", "in_session"])
     .gte("end_at", new Date().toISOString())
     .order("start_at", { ascending: true })
-    .limit(8);
+    .limit(8), supabase.from("interpreter_requests").select("id", { count:"exact", head:true }).eq("provider_id", provider.id).eq("state", "pending")]);
 
   return (
     <ProviderShell>
@@ -105,7 +106,8 @@ export default async function ProviderPage() {
         </div>
       </section>
 
-      {bookings?.length ? (
+      {requestError ? <p role="alert">Booking requests could not load.</p> : pendingRequests ? <Link className="notice" href="/provider/requests">{pendingRequests} booking request{pendingRequests === 1 ? "" : "s"} awaiting your response</Link> : null}
+      {bookingError ? <p role="alert">Upcoming bookings could not load. Please try again.</p> : bookings?.length ? (
         <div className="stack">
           {bookings.map((booking: any, index: number) => (
             <section className="card" key={booking.id}>
@@ -123,7 +125,17 @@ export default async function ProviderPage() {
         </section>
       )}
 
-      <section className="card">
+      <nav className="workspace-shortcuts" aria-label="Provider tools">
+        <Link href="/provider/requests">Booking requests</Link>
+        <Link href="/provider/availability">Availability</Link>
+        <Link href="/provider/earnings">Earnings</Link>
+        <Link href="/provider/application">Profile & services</Link>
+        <Link href="/provider/payout">Payout setup</Link>
+        <Link href="/provider/guides">Lesson guides</Link>
+        <Link href="/dictionary">Dictionary</Link>
+        <Link href="/help">Help in SASL</Link>
+      </nav>
+      <section className="provider-settings">
         <h2>Provider settings</h2>
         <p>Manage your provider profile, availability, lesson guides, payouts and earnings from Profile.</p>
         <Link className="btn secondary" href="/profile" style={{ marginTop: 12 }}>Open Profile</Link>

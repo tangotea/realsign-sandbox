@@ -19,7 +19,7 @@ export default async function Page() {
   helpItems.push(...saved.filter(item => !builtInSlugs.has(item.slug)));
   return (
     <div className="admin-shell">
-      <aside className="sidebar"><div className="brand">REALSIGN ADMIN</div><nav><Link href="/admin">Dashboard</Link><Link href="/admin/help">Help Videos</Link><Link href="/admin/sponsorships">Sponsorships</Link></nav></aside>
+      
       <main className="admin-main">
         <h1>SASL Help Video Manager</h1>
         <p className="muted">Publish or edit short SASL explanations without releasing a new app version.</p>

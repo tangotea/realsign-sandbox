@@ -4,6 +4,7 @@ import BrandLockup from "@/components/BrandLockup";
 import AccountProfile from "@/components/profile/AccountProfile";
 import LearnerLanguagePreferences from "@/components/profile/LearnerLanguagePreferences";
 import HelpButton from "@/components/help/HelpButton";
+import ModeSwitch from "@/components/ExperienceMode";
 import { createClient } from "@/lib/supabase/server";
 
 function ProviderLink({ href, icon, title, description, status, helpSlug, helpText }: { href: string; icon: string; title: string; description: string; status?: string; helpSlug?: string; helpText?: string }) {
@@ -44,7 +45,9 @@ export default async function ProfilePage() {
   if (!auth.user) {
     return (
       <div className="shell">
+        <header className="topbar"><BrandLockup /></header>
         <main className="main">
+          <ModeSwitch />
           <section className="card">
             <h1>Profile</h1>
             <p>Sign in to manage your RealSign profile.</p>
@@ -69,13 +72,15 @@ export default async function ProfilePage() {
     <div className="shell">
       <header className="topbar"><BrandLockup /><strong>Profile</strong></header>
       <main className="main">
+        <ModeSwitch />
         <section className="hero">
           <h1>Your profile</h1>
-          <p>Account, lessons, language preferences and help.</p>
+          <p>Your account and preferences.</p>
         </section>
 
         <div className="stack">
           <AccountProfile email={email} initialDisplayName={displayName} />
+          <Link className="card choice" href="/dictionary"><div><h2>SASL dictionary</h2></div></Link>
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
           {!provider || provider.status !== "approved" ? <Link href="/profile/identity" className="card choice"><div className="icon">ID</div><div><div className="row"><h2>Identity verification</h2><span className="status">{identityStatusLabel(identity?.state || "not_started")}</span></div><p>Verify your identity before booking a lesson or interpreter.</p></div></Link> : null}
           {provider?.status === "approved" ? <ProviderTools status={provider.status} /> : null}

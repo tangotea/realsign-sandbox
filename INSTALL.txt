@@ -1,0 +1,33 @@
+RealSign workspaces update
+
+1. In GitHub Desktop, select the RealSign repository and choose Repository > Show in Explorer.
+2. Merge the app and components folders from this package into that project folder.
+3. Replace matching files. Do not delete the existing folders.
+4. Commit with: Simplify Admin and add booking/provider workspaces
+5. Push and wait for Vercel to finish deploying.
+
+No database migration, email-template change or new dependency is required.
+
+Changes
+- Book a service / Provide a service mode switch, using the same account.
+- Four-item navigation with provider-specific bookings.
+- Provider shortcuts and pending request count.
+- Five shared Admin areas, accessible on desktop and mobile.
+- Tutor / Interpreter People filters, expandable account details and provider review link.
+- Shared typography, spacing, colours and compact controls.
+
+Checks completed
+- Production compilation and TypeScript checks.
+- Generated-page browser checks at 320px, 390px and 1440px.
+- People filtering, search and expandable details using sample accounts.
+
+After deployment, test with your real sandbox accounts
+- Switch workspaces and navigate through Profile, Bookings and Messages.
+- Confirm providers see their own incoming bookings and pending requests.
+- Open each Admin area and inspect an account.
+- Confirm existing payout and account actions still work with test data.
+
+Limits
+- This update does not implement the separate messaging or unread-badge milestone.
+- Live payments, account mutations and signed-in provider flows were not exercised.
+- Existing development-server route-name conflict prevents local next dev startup; production build passed.

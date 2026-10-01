@@ -24,7 +24,7 @@ export default async function Page() {
   const [{ data: authUserPage, error: usersError }, { data: profiles }, { data: providers }, { data: roles }, { data: identities }, { data: deaf }] = await Promise.all([
     service.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     service.from("profiles").select("id,display_name,first_name,last_name,created_at,account_state"),
-    service.from("provider_profiles").select("user_id,status"),
+    service.from("provider_profiles").select("id,user_id,status,provider_roles(role)"),
     service.from("user_roles").select("user_id,role"),
     service.from("user_identity_verifications").select("user_id,state,storage_path"),
     service.from("user_deaf_verifications").select("user_id,state"),
@@ -63,22 +63,17 @@ export default async function Page() {
       reviewUrl: identity?.reviewUrl || null,
       isProvider: Boolean(provider) || (roleMap.get(user.id) || []).includes("provider"),
       providerStatus: provider?.status || null,
+      providerId: provider?.id || null,
+      providerRoles: (provider?.provider_roles || []).map((item: any) => item.role),
     };
   });
 
   return (
     <div className="admin-shell">
-      <aside className="sidebar">
-        <div className="brand">REALSIGN ADMIN</div>
-        <nav>
-          <Link href="/admin">Dashboard</Link>
-          <Link href="/admin/users">Users</Link>
-          <Link href="/admin/providers">Providers</Link>
-        </nav>
-      </aside>
+      
       <main className="admin-main">
-        <h1>Users &amp; identity</h1>
-        <p className="muted">Search accounts, review identity status, and manage account access. Archive keeps history; block prevents access and future signup with the same email.</p>
+        <h1>People</h1>
+        
         <UserManagement users={users} currentUserId={auth.user.id} />
       </main>
     </div>
