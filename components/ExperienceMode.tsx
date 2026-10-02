@@ -31,7 +31,7 @@ export function useExperienceMode() { return useContext(ModeContext); }
 export default function ModeSwitch() {
   const mode = useExperienceMode();
   return <nav className="mode-switch" aria-label="Choose your RealSign workspace">
-    <Link href="/" aria-current={mode === "book" ? "page" : undefined}>Book a service</Link>
-    <Link href="/provider" aria-current={mode === "provide" ? "page" : undefined}>Provide a service</Link>
+    <Link href="/" aria-current={mode === "book" ? "page" : undefined}><strong>Book a service</strong><small>Find a SASL tutor or interpreter.</small></Link>
+    <Link href="/provider" aria-current={mode === "provide" ? "page" : undefined}><strong>Offer a service</strong><small>Teach SASL or interpret.</small></Link>
   </nav>;
 }
