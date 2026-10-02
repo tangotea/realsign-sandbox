@@ -1,6 +1,6 @@
 import AppNav from "@/components/AppNav";
 import BrandLockup from "@/components/BrandLockup";
-import ModeSwitch from "@/components/ExperienceMode";
+import BookingNavigation from "@/components/BookingNavigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { money, serviceLabel } from "@/lib/marketplace";
@@ -25,7 +25,7 @@ export default async function Page() {
     );
   }
 
-  const [{ data: bookings }, { data: requests }, { data: holds }] = await Promise.all([
+  const [{ data: bookings }, { data: requests }, { data: holds }, { data: provider }] = await Promise.all([
     supabase
       .from("bookings")
       .select("id,reference,state,start_at,end_at,price_cents,provider_id,provider_services(title,provider_role),provider_profiles(public_display_name)")
@@ -44,6 +44,7 @@ export default async function Page() {
       .eq("state", "hold")
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false }),
+    supabase.from("provider_profiles").select("id").eq("user_id", auth.user.id).maybeSingle(),
   ]);
 
   const activeRequests = (requests || []).filter((request: any) => !["confirmed", "expired", "declined", "cancelled"].includes(request.state));
@@ -57,8 +58,8 @@ export default async function Page() {
         <strong>Bookings</strong>
       </header>
       <main className="main">
-        <ModeSwitch />
-        <h1>Bookings</h1>
+        <h1>My bookings</h1>
+        {provider ? <BookingNavigation current="mine" /> : null}
 
         <section className="card booking-shortcuts">
           <h2>Book again</h2>

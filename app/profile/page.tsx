@@ -4,7 +4,6 @@ import BrandLockup from "@/components/BrandLockup";
 import AccountProfile from "@/components/profile/AccountProfile";
 import LearnerLanguagePreferences from "@/components/profile/LearnerLanguagePreferences";
 import HelpButton from "@/components/help/HelpButton";
-import ModeSwitch from "@/components/ExperienceMode";
 import { createClient } from "@/lib/supabase/server";
 
 function ProviderLink({ href, icon, title, description, status, helpSlug, helpText }: { href: string; icon: string; title: string; description: string; status?: string; helpSlug?: string; helpText?: string }) {
@@ -47,7 +46,6 @@ export default async function ProfilePage() {
       <div className="shell">
         <header className="topbar"><BrandLockup /></header>
         <main className="main">
-          <ModeSwitch />
           <section className="card">
             <h1>Profile</h1>
             <p>Sign in to manage your RealSign profile.</p>
@@ -72,10 +70,12 @@ export default async function ProfilePage() {
     <div className="shell">
       <header className="topbar"><BrandLockup /><strong>Profile</strong></header>
       <main className="main">
-        <ModeSwitch />
         <section className="hero">
           <h1>Your profile</h1>
           <p>Your account and preferences.</p>
+          <Link className="profile-provider-link" href={provider ? "/provider" : "/provider/application"}>
+            {provider ? "Provider dashboard" : "Become a provider"}
+          </Link>
         </section>
 
         <div className="stack">

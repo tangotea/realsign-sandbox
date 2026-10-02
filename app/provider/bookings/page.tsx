@@ -1,7 +1,7 @@
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import BrandLockup from "@/components/BrandLockup";
-import ModeSwitch from "@/components/ExperienceMode";
+import BookingNavigation from "@/components/BookingNavigation";
 import { createClient } from "@/lib/supabase/server";
 import { serviceLabel } from "@/lib/marketplace";
 
@@ -14,7 +14,8 @@ export default async function ProviderBookings() {
     ? await s.from("bookings").select("id,state,start_at,learner_first_name,provider_services(title,provider_role)").eq("provider_id", provider.id).order("start_at", { ascending: false })
     : { data: null, error: null };
   return <div className="shell"><header className="topbar"><BrandLockup /></header><main className="main">
-    <ModeSwitch /><div className="page-heading"><h1>Your bookings</h1><Link className="btn secondary" href="/provider/requests">Requests</Link></div>
+    <div className="page-heading"><h1>Client bookings</h1><Link className="btn secondary" href="/provider/requests">Requests</Link></div>
+    {provider ? <BookingNavigation current="clients" /> : <Link className="profile-provider-link" href="/bookings">My bookings</Link>}
     {error ? <p role="alert">Bookings could not load. Please try again.</p> : null}
     {!provider ? <Link className="btn" href="/provider/application">Start provider application</Link> : null}
     <div className="stack">{(bookings || []).map((booking: any) => <article className="card" key={booking.id}>
@@ -26,4 +27,3 @@ export default async function ProviderBookings() {
     {provider && !error && !bookings?.length ? <p>No provider bookings yet.</p> : null}
   </main><AppNav /></div>;
 }
-
