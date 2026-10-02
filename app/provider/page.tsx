@@ -136,9 +136,8 @@ export default async function ProviderPage() {
         <Link href="/help">Help in SASL</Link>
       </nav>
       <section className="provider-settings">
-        <h2>Provider settings</h2>
-        <p>Manage your provider profile, availability, lesson guides, payouts and earnings from Profile.</p>
-        <Link className="btn secondary" href="/profile" style={{ marginTop: 12 }}>Open Profile</Link>
+        <h2>Account settings</h2>
+        <Link className="btn secondary" href="/profile" style={{ marginTop: 12 }}>Your profile</Link>
       </section>
     </ProviderShell>
   );
