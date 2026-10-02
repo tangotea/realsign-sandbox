@@ -13,10 +13,7 @@ export default async function Home() {
 
       <main className="main">
         <ModeSwitch />
-        <section className="hero">
-          <h1>Book a service</h1>
-          <p>SASL lessons and interpreting.</p>
-        </section>
+        <h1 className="home-accessible-heading">Book a service</h1>
 
         <div className="row utility-links" style={{marginTop: 14}}>
           <Link href="/dictionary">Dictionary</Link>
@@ -26,11 +23,11 @@ export default async function Home() {
 
         <section className="stack" aria-label="Choose a service">
           <Link className="card choice service-choice" href="/learn">
-            <img className="service-illustration" src="/service-illustrations/learn.png" width="112" height="112" alt="" />
+            <img className="service-illustration" src="/service-illustrations/learn.png" width="160" height="160" alt="" />
             <div><h2>Learn SASL</h2></div>
           </Link>
           <Link className="card choice service-choice" href="/interpreter">
-            <img className="service-illustration" src="/service-illustrations/interpret.png" width="112" height="112" alt="" />
+            <img className="service-illustration" src="/service-illustrations/interpret.png" width="160" height="160" alt="" />
             <div><h2>Book an interpreter</h2></div>
           </Link>
         </section>
