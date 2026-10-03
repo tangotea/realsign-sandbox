@@ -442,6 +442,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline:3px solid
 .mode-switch { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); width:100%; padding:4px; gap:4px; background:#e7edef; border-radius:8px; margin:0 0 24px; }
 .mode-switch a { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-height:92px; padding:16px; gap:8px; border-radius:6px; text-align:left; font-size:24px; line-height:1.25; font-weight:700; }
 .mode-switch small { font-size:15px; line-height:1.4; color:var(--muted); font-weight:400; }
+.booking-mode-switch a { font-size:18px; min-height:88px; padding:12px; }
+.booking-mode-switch small { font-size:13px; }
 .service-choice { grid-template-columns:160px minmax(0,1fr) 24px; gap:24px; min-height:184px; padding:12px 24px; border-color:#a9b8be; cursor:pointer; transition:background-color .15s, border-color .15s, box-shadow .15s; }
 .service-chevron { font-family:Arial,sans-serif; font-size:36px; line-height:1; color:#126b57; text-align:center; }
 .service-choice:focus-visible { outline:3px solid #168ca4; outline-offset:3px; background:#f2faf6; }

@@ -58,7 +58,7 @@ export default async function Page() {
         <strong>Bookings</strong>
       </header>
       <main className="main">
-        <h1>My bookings</h1>
+        <h1>Bookings</h1>
         {provider ? <BookingNavigation current="mine" /> : null}
 
         <section className="card booking-shortcuts">
