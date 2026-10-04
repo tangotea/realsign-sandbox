@@ -441,6 +441,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline:3px solid
 .booking-navigation a:hover { background:#f2faf6; }
 .booking-role { margin-bottom:12px; padding:12px; background:#edf6f1; border-left:3px solid #126b57; }
 .booking-role p { margin:4px 0 0; }
+.booking-times { display:block; margin:8px 0; font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+.booking-times > span { display:block; margin:4px 0; }
+.slot-btn .booking-times { font-size:12px; text-align:left; }
 .booking-navigation button[aria-pressed="true"] { background:#126b57; color:white; }
 .booking-filter-switch { display:inline-grid; grid-template-columns:repeat(3,minmax(0,1fr)); max-width:100%; padding:4px; gap:4px; margin:20px 0 24px; border-radius:8px; background:#e7edef; }
 .booking-filter-switch .mini-btn { min-height:44px; padding:8px 10px; border:0; background:transparent; color:var(--text,#111); font-weight:600; }

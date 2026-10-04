@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import BookingTimes from "./BookingTimes";
 import BookingRole from "./BookingRole";
 import { related } from "@/lib/bookingRole";
 import { money, serviceLabel } from "@/lib/marketplace";
@@ -22,7 +23,7 @@ export default function BookingList({ bookings, now }: { bookings: any[]; now: n
         <BookingRole serviceRole={related<any>(b.provider_services)?.provider_role} providing={b.providing} />
         <span className="status">{b.state.replaceAll("_", " ")}</span>
         <h2>{b.providing ? b.learner_first_name || "Client" : related<any>(b.provider_profiles)?.public_display_name}</h2>
-        <p>{serviceLabel(related<any>(b.provider_services))}<br />{new Date(b.start_at).toLocaleString()} · {money(b.price_cents)}</p>
+        <p>{serviceLabel(related<any>(b.provider_services))} · {money(b.price_cents)}</p><BookingTimes startAt={b.start_at} endAt={b.end_at} providerZone={b.providerZone} />
         <small>{b.reference}</small>
         <div style={{marginTop:12}}><Link className="mini-btn" href={`/bookings/${b.id}`}>Manage booking</Link></div>
       </section>)}

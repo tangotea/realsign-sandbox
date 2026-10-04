@@ -54,7 +54,10 @@ export default async function Page() {
     : { data: [], error: null };
   const combined = new Map((bookings || []).map(b => [b.id, { ...b, providing: false }]));
   for (const b of providerBookings || []) if (!combined.has(b.id)) combined.set(b.id, { ...b, providing: true });
-  const allBookings = Array.from(combined.values());
+  const providerIds = Array.from(new Set(Array.from(combined.values()).map(b => b.provider_id)));
+  const { data: timezones } = providerIds.length ? await supabase.from("provider_booking_settings").select("provider_id,timezone").in("provider_id", providerIds) : { data: [] };
+  const zones = new Map((timezones || []).map(z => [z.provider_id, z.timezone]));
+  const allBookings = Array.from(combined.values()).map(b => ({...b, providerZone: zones.get(b.provider_id)}));
   const activeRequests = (requests || []).filter((request: any) => !["confirmed", "expired", "declined", "cancelled"].includes(request.state));
   const recentTutor = (bookings || []).find((booking: any) => booking.provider_services?.provider_role !== "interpreter");
   const recentInterpreter = (bookings || []).find((booking: any) => booking.provider_services?.provider_role === "interpreter");
