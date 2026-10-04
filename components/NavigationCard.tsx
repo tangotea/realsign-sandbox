@@ -13,7 +13,7 @@ type Props = {
 
 export default function NavigationCard({ href, icon, title, description, status, helpSlug, helpText }: Props) {
   return <div className="card navigation-card">
-    <span className="navigation-card-icon" aria-hidden="true">{icon}</span>
+    {icon ? <span className="navigation-card-icon" aria-hidden="true">{icon}</span> : null}
     <div className="navigation-card-content">
       <div className="navigation-card-heading">
         <h2><Link href={href}>{title}</Link></h2>

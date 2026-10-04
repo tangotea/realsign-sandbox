@@ -33,14 +33,17 @@ export default function LearnerLanguagePreferences({ initialSpokenLanguage, init
   }
 
   return (
-    <section className="card">
-      <div className="row"><div><h2>Languages</h2><p>Your learner language preference.</p></div><HelpButton slug="learner-languages" label="Learner language help" fallbackText="Choose the spoken language you prefer for written communication and whether you would like SASL help where it is available." /></div>
+    <details className="card language-preferences">
+      <summary><strong>Languages</strong><span className="service-chevron" aria-hidden="true">&#8250;</span></summary>
+      <div className="language-preferences-body">
+      <div className="row"><p>Your learner language preference.</p><HelpButton slug="learner-languages" label="Learner language help" fallbackText="Choose the spoken language you prefer for written communication and whether you would like SASL help where it is available." /></div>
       <label>Spoken language<select className="field" value={spokenLanguage} onChange={event => setSpokenLanguage(event.target.value)}>
         {LEARNER_LANGUAGE_OPTIONS.map(language => <option key={language.code} value={language.code}>{language.label}</option>)}
       </select></label>
       <label className="check"><input type="checkbox" checked={usesSasl} onChange={() => setUsesSasl(value => !value)} /><span><strong>South African Sign Language (SASL)</strong><small>Show SASL help where it is available.</small></span></label>
       <button className="btn secondary" style={{ marginTop: 16 }} onClick={save} disabled={busy}>{busy ? "Saving..." : "Save language preference"}</button>
       {message ? <p className={`inline-feedback ${messageKind}`} aria-live="polite">{message}</p> : null}
-    </section>
+      </div>
+    </details>
   );
 }

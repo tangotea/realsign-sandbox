@@ -91,7 +91,7 @@ function UploadProgress({ label, progress }: { label: string; progress: number }
   </div>;
 }
 
-export default function ProviderApplication() {
+export default function ProviderApplication({ servicesOnly = false }: { servicesOnly?: boolean }) {
   const supabase = useMemo(() => createClient(), []);
   const [busy, setBusy] = useState(true);
   const [message, setMessage] = useState("");
@@ -359,7 +359,7 @@ export default function ProviderApplication() {
     if (!error) await refresh();
   }
 
-  if (busy) return <section className="card"><h1>Provider Application for Deaf Tutors and Interpreters</h1><p>Loading…</p></section>;
+  if (busy) return <section className="card"><h1>{servicesOnly ? "Services & rates" : "Provider Application for Deaf Tutors and Interpreters"}</h1><p>Loading…</p></section>;
   if (!userId) return <section className="card provider-entry-card"><h1>Become a provider</h1><p>Sign in before starting your application.</p><Link className="btn" href="/sign-in?next=%2Fprovider%2Fapplication">Sign in / Sign up</Link></section>;
 
   const verificationState = (type: VerificationType) => verifications.find(v => v.type === type)?.state || "not_submitted";
@@ -374,6 +374,33 @@ export default function ProviderApplication() {
     roles.has("deaf_tutor") ? "tutor" : null,
     roles.has("interpreter") ? "interpreter" : null,
   ].filter(Boolean) as ("tutor" | "interpreter")[];
+
+  const serviceSettings = <>
+    <section className="card">
+      <div className="row"><h2>Services & rates</h2><HelpButton slug="provider-services-rates" label="Lessons, interpreting and rates help" fallbackText="Choose a service or lesson guide, select a duration, and set a price within the allowed range. You can update or remove active services later." /></div><p>Choose a service type, service option, length and price.</p>
+      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{providerSettingsEditable ? <button type="button" className="mini-btn danger-text" disabled={busy} onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
+      {serviceMessage ? <p className={`service-feedback ${serviceMessageKind}`} aria-live="polite">{serviceMessage}</p> : null}
+      {providerSettingsEditable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
+        <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
+        <label>Duration<select className="field" name="duration" value={serviceDuration} onChange={e=>setServiceDuration(Number(e.target.value))}>{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
+        <label className="span2">Service option<select className="field" name="title" required>{serviceOptions.map(option=><option key={option} value={option}>{option}</option>)}</select></label>
+        <label>Price (R)<input className="field" name="price" type="number" min={minPrice ?? 0} max={maxPrice ?? undefined} step="1" required />{selectedRateRule ? <small className="price-guidance">Allowed price: R{minPrice?.toFixed(0)} to R{maxPrice?.toFixed(0)} for {serviceDuration} minutes.</small> : <small className="price-guidance">Choose a role and duration to see the allowed price range.</small>}</label>
+        <button className="btn span2" disabled={!roles.size}>Add service</button>
+      </form> : null}
+    </section>
+
+    <section className="card">
+      <div className="row"><div><h2>Booking preferences</h2><p>Set your minimum notice time and break between sessions.</p></div><HelpButton slug="provider-booking-preferences" label="Booking preferences help" fallbackText="Set how much notice you need before a booking and the minimum break between sessions. RealSign uses these settings to protect your time." /></div>
+      <div className="grid2">
+         <label>Minimum notice before someone can book you<select className="field" disabled={!providerSettingsEditable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
+         <label>Break between sessions<select className="field" disabled={!providerSettingsEditable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
+      </div>
+      {providerSettingsEditable ? <button className="btn secondary" onClick={saveBookingSettings}>Save preferences</button> : null}
+      {bookingMessage ? <p className={`inline-feedback ${bookingMessageKind}`} aria-live="polite">{bookingMessage}</p> : null}
+    </section>
+
+  </>;
+  if (servicesOnly) return <div className="stack">{message ? <p role="status">{message}</p> : null}{serviceSettings}</div>;
 
   return <div className="stack">
     <section className="card">
@@ -415,28 +442,7 @@ export default function ProviderApplication() {
 
     <LanguageSelector modes={languageModes} />
 
-    <section className="card">
-      <div className="row"><h2>4. Lessons, interpreting & rates</h2><HelpButton slug="provider-services-rates" label="Lessons, interpreting and rates help" fallbackText="Choose a service or lesson guide, select a duration, and set a price within the allowed range. You can update or remove active services later." /></div><p>Choose a service type, service option, length and price.</p>
-      {services.length ? <div className="service-list">{services.map(s=><div className="service-row" key={s.id}><div><strong>{serviceLabel(s)}</strong><small>{s.duration_min} min · {roleLabel(s.provider_role)}</small>{serviceDetailLabel(s)?<small>Outline: {serviceDetailLabel(s)}</small>:null}</div><div className="service-action"><strong>R{(s.price_cents/100).toFixed(0)}</strong>{providerSettingsEditable ? <button type="button" className="mini-btn danger-text" disabled={busy} onClick={()=>removeService(s)}>Remove</button> : null}</div></div>)}</div> : <p className="muted">No services yet.</p>}
-      {serviceMessage ? <p className={`service-feedback ${serviceMessageKind}`} aria-live="polite">{serviceMessage}</p> : null}
-      {providerSettingsEditable ? <form className="form-grid" onSubmit={async e=>{e.preventDefault(); await createService(e.currentTarget);}}>
-        <label>Role<select className="field" name="providerRole" required value={selectedServiceRole} onChange={e=>setServiceRole(e.target.value as ProviderRole)}>{Array.from(roles).map(r=><option key={r} value={r}>{PROVIDER_ROLES.find(x=>x.value===r)?.label}</option>)}</select></label>
-        <label>Duration<select className="field" name="duration" value={serviceDuration} onChange={e=>setServiceDuration(Number(e.target.value))}>{SESSION_DURATIONS.map(d=><option key={d} value={d}>{d} minutes</option>)}</select></label>
-        <label className="span2">Service option<select className="field" name="title" required>{serviceOptions.map(option=><option key={option} value={option}>{option}</option>)}</select></label>
-        <label>Price (R)<input className="field" name="price" type="number" min={minPrice ?? 0} max={maxPrice ?? undefined} step="1" required />{selectedRateRule ? <small className="price-guidance">Allowed price: R{minPrice?.toFixed(0)} to R{maxPrice?.toFixed(0)} for {serviceDuration} minutes.</small> : <small className="price-guidance">Choose a role and duration to see the allowed price range.</small>}</label>
-        <button className="btn span2" disabled={!roles.size}>Add service</button>
-      </form> : null}
-    </section>
-
-    <section className="card">
-      <div className="row"><div><h2>5. Booking preferences</h2><p>Set your minimum notice time and break between sessions.</p></div><HelpButton slug="provider-booking-preferences" label="Booking preferences help" fallbackText="Set how much notice you need before a booking and the minimum break between sessions. RealSign uses these settings to protect your time." /></div>
-      <div className="grid2">
-         <label>Minimum notice before someone can book you<select className="field" disabled={!providerSettingsEditable} value={notice} onChange={e=>setNotice(Number(e.target.value))}>{BOOKING_NOTICE_OPTIONS.map(n=><option value={n} key={n}>{minutesLabel(n)}</option>)}</select><small>RealSign minimum: 1 hour</small></label>
-         <label>Break between sessions<select className="field" disabled={!providerSettingsEditable} value={buffer} onChange={e=>setBuffer(Number(e.target.value))}>{BUFFER_OPTIONS.map(n=><option value={n} key={n}>{n} minutes</option>)}</select><small>RealSign minimum: 15 minutes</small></label>
-      </div>
-      {providerSettingsEditable ? <button className="btn secondary" onClick={saveBookingSettings}>Save preferences</button> : null}
-      {bookingMessage ? <p className={`inline-feedback ${bookingMessageKind}`} aria-live="polite">{bookingMessage}</p> : null}
-    </section>
+    {status === "approved" ? <Link className="btn secondary" href="/provider/services">Services &amp; rates</Link> : serviceSettings}
 
     <section className="card">
       <div className="row"><h2>6. Submit</h2><HelpButton slug="provider-submit" label="Submit help" fallbackText="Submit when your provider profile, verification, introduction, services, and availability are ready. RealSign Admin reviews the application before learners can book you." /></div><p>RealSign Admin will review your profile and verification. Approval is required before you can be booked.</p>
