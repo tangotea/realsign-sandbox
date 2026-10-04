@@ -184,6 +184,10 @@ button { cursor: pointer; }
 }
 .bottomnav .nav-icon-frame { width:28px; height:24px; }
 .bottomnav .nav-icon-img { display:block; width:24px; height:24px; object-fit:contain; filter:brightness(0); }
+@media (max-width:360px) {
+  .bottomnav a { font-size:10px; padding-inline:1px; }
+}
+.home-utility-links { justify-content:flex-end; }
 .admin-shell { display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
 .sidebar { padding:24px 16px; border-right:1px solid var(--border); background:white; }
 .sidebar nav { display:grid; gap:8px; margin-top:24px; }

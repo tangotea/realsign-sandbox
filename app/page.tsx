@@ -28,7 +28,6 @@ export default async function Home() {
           </Link>
         </section>
         <div className="row utility-links home-utility-links">
-          <Link href="/dictionary">Dictionary</Link>
           <div className="home-about-link">
             <strong>What is RealSign?</strong>
             <HelpButton slug="what-is-realsign" label="What is RealSign help" size="regular" fallbackText="RealSign connects learners with Deaf SASL tutors and South African Sign Language interpreters for lessons and video calls." />

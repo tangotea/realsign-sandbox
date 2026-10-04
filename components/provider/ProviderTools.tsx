@@ -7,8 +7,6 @@ const tools = [
   ["/provider/application", "Profile & services"],
   ["/provider/payout", "Payout setup"],
   ["/provider/guides", "Lesson guides"],
-  ["/dictionary", "Dictionary"],
-  ["/help", "Help in SASL"],
 ];
 
 export default function ProviderTools() {

@@ -7,6 +7,7 @@ import { useExperienceMode } from "@/components/ExperienceMode";
 const NAV_ITEMS = [
   { href: "/", icon: "", iconSrc: "/nav-icons/home.svg", label: "Home", exact: true },
   { href: "/bookings", icon: "", iconSrc: "/nav-icons/booking.svg", label: "Bookings" },
+  { href: "/dictionary", icon: "", iconSrc: "/nav-icons/dictionary.svg", label: "Dictionary" },
   { href: "/messages", icon: "", iconSrc: "/nav-icons/message.svg", label: "Messages" },
   { href: "/profile", icon: "", iconSrc: "/nav-icons/profile.svg", label: "Profile", authRequired: true },
 ];
