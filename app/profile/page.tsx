@@ -1,9 +1,9 @@
+import NavigationCard from "@/components/NavigationCard";
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import BrandLockup from "@/components/BrandLockup";
 import AccountProfile from "@/components/profile/AccountProfile";
 import LearnerLanguagePreferences from "@/components/profile/LearnerLanguagePreferences";
-import HelpButton from "@/components/help/HelpButton";
 import { createClient } from "@/lib/supabase/server";
 
 
@@ -57,9 +57,9 @@ export default async function ProfilePage() {
         <div className="stack">
           <AccountProfile email={email} initialDisplayName={displayName} />
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
-          {!provider || provider.status !== "approved" ? <Link href="/profile/identity" className="card choice"><div className="icon">ID</div><div><div className="row"><h2>Identity verification</h2><span className="status">{identityStatusLabel(identity?.state || "not_started")}</span></div><p>Verify your identity before booking a lesson or interpreter.</p></div></Link> : null}
-          <div className="provider-link-wrap"><Link href="/profile/notifications" className="card choice"><div className="icon">🔔</div><div><h2>Notifications</h2><p>Booking reminders and visual push alerts.</p></div></Link><HelpButton slug="push-reminders" label="Push reminders help" fallbackText="Manage booking reminders and visual push alerts so important updates are easier to notice." /></div>
-          <div className="provider-link-wrap"><Link href="/help" className="card choice"><div className="icon">[?]</div><div><h2>Help in SASL</h2><p>Watch help videos and read matching text explanations.</p></div></Link><HelpButton slug="realsign-help" label="RealSign help" fallbackText="Open short RealSign help explanations with matching text and SASL videos when they are available." /></div>
+          {!provider || provider.status !== "approved" ? <NavigationCard href="/profile/identity" icon="ID" title="Identity verification" description="Verify your identity before booking a lesson or interpreter." status={identityStatusLabel(identity?.state || "not_started")} /> : null}
+          <NavigationCard href="/profile/notifications" icon="🔔" title="Notifications" description="Booking reminders and visual push alerts." helpSlug="push-reminders" helpText="Manage booking reminders and visual push alerts so important updates are easier to notice." />
+          <NavigationCard href="/help" icon="[?]" title="Help in SASL" description="Watch help videos and read matching text explanations." helpSlug="realsign-help" helpText="Open short RealSign help explanations with matching text and SASL videos when they are available." />
         </div>
       </main>
       <AppNav />

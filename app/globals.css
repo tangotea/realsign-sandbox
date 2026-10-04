@@ -449,6 +449,17 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline:3px solid
 .booking-mode-switch small { font-size:13px; }
 .service-choice { grid-template-columns:160px minmax(0,1fr) 24px; gap:24px; min-height:184px; padding:12px 24px; border-color:#a9b8be; cursor:pointer; transition:background-color .15s, border-color .15s, box-shadow .15s; }
 .service-chevron { font-family:Arial,sans-serif; font-size:36px; line-height:1; color:#126b57; text-align:center; }
+.navigation-card { position:relative; display:grid; grid-template-columns:36px minmax(0,1fr) 24px; align-items:center; gap:16px; min-height:104px; border-color:#a9b8be; transition:background-color .15s,border-color .15s; }
+.navigation-card-icon { font-size:30px; }
+.navigation-card-content { min-width:0; }
+.navigation-card-heading { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; }
+.navigation-card-heading h2 { margin:0; }
+.navigation-card-heading a::after { content:""; position:absolute; inset:0; border-radius:8px; }
+.navigation-card-heading .help-btn { position:relative; z-index:1; }
+.navigation-card p { margin:6px 0 0; }
+.navigation-card:hover { background:#f2faf6; border-color:#126b57; }
+.navigation-card:has(a:focus-visible) { outline:3px solid #168ca4; outline-offset:3px; background:#f2faf6; }
+.navigation-card:has(a:active) { background:#dceee5; border-color:#126b57; }
 .service-choice:focus-visible { outline:3px solid #168ca4; outline-offset:3px; background:#f2faf6; }
 .service-choice:active { background:#dceee5; border-color:#126b57; box-shadow:inset 0 0 0 1px #126b57; }
 .mode-switch a { border:2px solid transparent; cursor:pointer; transition:background-color .15s, border-color .15s; }

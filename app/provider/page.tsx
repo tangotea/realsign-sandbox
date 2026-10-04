@@ -1,3 +1,4 @@
+import NavigationCard from "@/components/NavigationCard";
 import BookingRole from "@/components/booking/BookingRole";
 import { related } from "@/lib/bookingRole";
 import Link from "next/link";
@@ -22,15 +23,7 @@ function ProviderShell({ children }: { children: React.ReactNode }) {
 }
 
 function ApplicationCard() {
-  return (
-    <Link href="/provider/application" className="card choice">
-      <div className="icon">🤟</div>
-      <div>
-        <h2>Application & profile</h2>
-        <p>Roles, verification, introduction, lessons, interpreting and rates.</p>
-      </div>
-    </Link>
-  );
+  return <NavigationCard href="/provider/application" icon="🤟" title="Application & profile" description="Roles, verification, introduction, lessons, interpreting and rates." />;
 }
 
 export default async function ProviderPage() {
