@@ -12,8 +12,8 @@ type LanguageSelectorProps = {
 
 const MODE_COPY: Record<LanguageDisplayMode, { title: string; subtitle: string; button: string }> = {
   tutor: {
-    title: "Written languages I can use",
-    subtitle: "Lessons are taught in SASL. Select the languages you can read and type. This does not mean you hear or speak these languages.",
+    title: "Languages I can read and write",
+    subtitle: "Lessons are taught in SASL. Select the languages you can read and write. This does not mean you hear or speak these languages.",
     button: "Save tutor languages",
   },
   interpreter: {
@@ -23,7 +23,7 @@ const MODE_COPY: Record<LanguageDisplayMode, { title: string; subtitle: string; 
   },
   combined: {
     title: "Languages I can use for both roles",
-    subtitle: "Select only languages you can read and type and also interpret between SASL. Selecting a language does not mean you hear or speak it.",
+    subtitle: "Select only languages you can read and write and also interpret between SASL. Selecting a language does not mean you hear or speak it.",
     button: "Save language choices",
   },
 };

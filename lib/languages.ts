@@ -3,17 +3,17 @@ export type LanguageDisplayMode = "tutor" | "interpreter" | "combined";
 
 export const OFFICIAL_LANGUAGES = [
   { code: "sasl", label: "South African Sign Language (SASL)", modality: "signed" as LanguageModality },
-  { code: "en", label: "I can type in English", modality: "spoken_written" as LanguageModality },
-  { code: "af", label: "I can type in Afrikaans", modality: "spoken_written" as LanguageModality },
-  { code: "nr", label: "I can type in isiNdebele", modality: "spoken_written" as LanguageModality },
-  { code: "xh", label: "I can type in isiXhosa", modality: "spoken_written" as LanguageModality },
-  { code: "zu", label: "I can type in isiZulu", modality: "spoken_written" as LanguageModality },
-  { code: "nso", label: "I can type in Sepedi", modality: "spoken_written" as LanguageModality },
-  { code: "st", label: "I can type in Sesotho", modality: "spoken_written" as LanguageModality },
-  { code: "tn", label: "I can type in Setswana", modality: "spoken_written" as LanguageModality },
-  { code: "ss", label: "I can type in siSwati", modality: "spoken_written" as LanguageModality },
-  { code: "ve", label: "I can type in Tshivenda", modality: "spoken_written" as LanguageModality },
-  { code: "ts", label: "I can type in Xitsonga", modality: "spoken_written" as LanguageModality }
+  { code: "en", label: "English (read & write)", modality: "spoken_written" as LanguageModality },
+  { code: "af", label: "Afrikaans (lees & skryf)", modality: "spoken_written" as LanguageModality },
+  { code: "nr", label: "isiNdebele (ukufunda nokutlola)", modality: "spoken_written" as LanguageModality },
+  { code: "xh", label: "isiXhosa (ukufunda nokubhala)", modality: "spoken_written" as LanguageModality },
+  { code: "zu", label: "isiZulu (ukufunda nokubhala)", modality: "spoken_written" as LanguageModality },
+  { code: "nso", label: "Sepedi (go bala le go ngwala)", modality: "spoken_written" as LanguageModality },
+  { code: "st", label: "Sesotho (ho bala le ho ngola)", modality: "spoken_written" as LanguageModality },
+  { code: "tn", label: "Setswana (go buisa le go kwala)", modality: "spoken_written" as LanguageModality },
+  { code: "ss", label: "siSwati (kufundza nekubhala)", modality: "spoken_written" as LanguageModality },
+  { code: "ve", label: "Tshivenda (u vhala na u ṅwala)", modality: "spoken_written" as LanguageModality },
+  { code: "ts", label: "Xitsonga (ku hlaya na ku tsala)", modality: "spoken_written" as LanguageModality }
 ] as const;
 
 export const LEARNER_LANGUAGE_OPTIONS = [
@@ -48,7 +48,7 @@ export function officialLanguageLabel(code: string, mode: LanguageDisplayMode) {
   const language = OFFICIAL_LANGUAGES.find(item => item.code === code);
   if (mode === "interpreter") return INTERPRETER_LABELS[code] || language?.label || code;
   if (mode === "combined" && code !== "sasl") {
-    return `${INTERPRETER_LABELS[code] || language?.label || code} (typing and interpreting)`;
+    return `${INTERPRETER_LABELS[code] || language?.label || code} (read & write; interpreting)`;
   }
   return language?.label || code;
 }

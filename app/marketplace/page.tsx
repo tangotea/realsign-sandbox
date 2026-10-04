@@ -38,7 +38,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         {q.subjectName ? <input type="hidden" name="subjectName" value={q.subjectName}/> : null}
         {grade ? <input type="hidden" name="grade" value={String(grade)}/> : null}
         {roleLocked ? <><input type="hidden" name="role" value={role}/><label>Provider type<div className="field readonly-field">{roleLabel(role)}</div></label></> : null}
-        <label>Language<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).filter(l=>role!=="interpreter"||l.code!=="sasl").map(l=><option key={l.code} value={l.code}>{languageLabel(l.name, role)}</option>)}</select></label>
+        <label>{role === "interpreter" ? "Interpreting language" : "Written language"}<select className="field" name="language" defaultValue={language || ""}><option value="">Any language</option>{(languages||[]).filter(l=>l.code!=="sasl").map(l=><option key={l.code} value={l.code}>{languageLabel(l.name, role)}</option>)}</select></label>
         <button className="btn secondary">Update results</button>
       </form>
       {error ? <p className="notice">Marketplace could not load: {error.message}</p> : null}

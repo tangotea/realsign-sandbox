@@ -100,17 +100,17 @@ export function languageLabel(name: string, role?: string | null) {
     return name;
   }
   if (normal === "sasl") return "South African Sign Language (SASL)";
-  if (normal.includes("english")) return "I can type in English";
-  if (normal.includes("afrikaans")) return "I can type in Afrikaans";
-  if (normal.includes("isindebele")) return "I can type in isiNdebele";
-  if (normal.includes("isixhosa")) return "I can type in isiXhosa";
-  if (normal.includes("isizulu")) return "I can type in isiZulu";
-  if (normal.includes("sepedi")) return "I can type in Sepedi";
-  if (normal.includes("sesotho")) return "I can type in Sesotho";
-  if (normal.includes("setswana")) return "I can type in Setswana";
-  if (normal.includes("siswati")) return "I can type in siSwati";
-  if (normal.includes("tshivenda")) return "I can type in Tshivenda";
-  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "I can type in Xitsonga";
+  if (normal.includes("english")) return "English (read & write)";
+  if (normal.includes("afrikaans")) return "Afrikaans (lees & skryf)";
+  if (normal.includes("isindebele")) return "isiNdebele (ukufunda nokutlola)";
+  if (normal.includes("isixhosa")) return "isiXhosa (ukufunda nokubhala)";
+  if (normal.includes("isizulu")) return "isiZulu (ukufunda nokubhala)";
+  if (normal.includes("sepedi")) return "Sepedi (go bala le go ngwala)";
+  if (normal.includes("sesotho")) return "Sesotho (ho bala le ho ngola)";
+  if (normal.includes("setswana")) return "Setswana (go buisa le go kwala)";
+  if (normal.includes("siswati")) return "siSwati (kufundza nekubhala)";
+  if (normal.includes("tshivenda")) return "Tshivenda (u vhala na u ṅwala)";
+  if (normal.includes("xitsonga") || normal.includes("itsonga")) return "Xitsonga (ku hlaya na ku tsala)";
   if (normal.startsWith("sasl")) return name;
-  return `I can type in ${name}`;
+  return `${name} (read & write)`;
 }
