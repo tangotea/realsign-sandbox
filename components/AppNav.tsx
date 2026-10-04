@@ -17,7 +17,7 @@ export default function AppNav() {
 
   return (
     <nav className="bottomnav" aria-label="Primary navigation">
-      {NAV_ITEMS.map(item => mode === "provide" && item.href === "/" ? { ...item, href: "/provider", label: "Overview" } : mode === "provide" && item.href === "/bookings" ? { ...item, href: "/provider/bookings" } : item).map(item => {
+      {NAV_ITEMS.map(item => mode === "provide" && item.href === "/" ? { ...item, href: "/provider", label: "Overview" } : item).map(item => {
         const active = item.label === "Bookings"
           ? pathname === item.href || pathname.startsWith("/bookings/") || pathname.startsWith("/provider/bookings") || (mode === "provide" && pathname === "/provider/requests")
           : item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);

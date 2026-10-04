@@ -1,3 +1,5 @@
+import BookingRole from "@/components/booking/BookingRole";
+import { related } from "@/lib/bookingRole";
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import { createClient } from "@/lib/supabase/server";
@@ -111,6 +113,7 @@ export default async function ProviderPage() {
         <div className="stack">
           {bookings.map((booking: any, index: number) => (
             <section className="card" key={booking.id}>
+              <BookingRole serviceRole={related<any>(booking.provider_services)?.provider_role} providing />
               <span className="status">{index === 0 ? "Next booking" : booking.state.replaceAll("_", " ")}</span>
               <h2>{new Date(booking.start_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</h2>
               <p>{booking.learner_first_name || "Verified learner"} · {serviceLabel(booking.provider_services as any)}</p>

@@ -1,6 +1,8 @@
 import AppNav from "@/components/AppNav";
 import BrandLockup from "@/components/BrandLockup";
-import BookingNavigation from "@/components/BookingNavigation";
+import BookingRole from "@/components/booking/BookingRole";
+import BookingList from "@/components/booking/BookingList";
+import { related } from "@/lib/bookingRole";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { money, serviceLabel } from "@/lib/marketplace";
@@ -25,7 +27,7 @@ export default async function Page() {
     );
   }
 
-  const [{ data: bookings }, { data: requests }, { data: holds }, { data: provider }] = await Promise.all([
+  const [{ data: bookings, error: bookingsError }, { data: requests }, { data: holds }, { data: provider }] = await Promise.all([
     supabase
       .from("bookings")
       .select("id,reference,state,start_at,end_at,price_cents,provider_id,provider_services(title,provider_role),provider_profiles(public_display_name)")
@@ -47,6 +49,12 @@ export default async function Page() {
     supabase.from("provider_profiles").select("id").eq("user_id", auth.user.id).maybeSingle(),
   ]);
 
+  const { data: providerBookings, error: providerBookingsError } = provider
+    ? await supabase.from("bookings").select("id,reference,state,start_at,end_at,price_cents,provider_id,learner_first_name,provider_services(title,provider_role),provider_profiles(public_display_name)").eq("provider_id", provider.id)
+    : { data: [], error: null };
+  const combined = new Map((bookings || []).map(b => [b.id, { ...b, providing: false }]));
+  for (const b of providerBookings || []) if (!combined.has(b.id)) combined.set(b.id, { ...b, providing: true });
+  const allBookings = Array.from(combined.values());
   const activeRequests = (requests || []).filter((request: any) => !["confirmed", "expired", "declined", "cancelled"].includes(request.state));
   const recentTutor = (bookings || []).find((booking: any) => booking.provider_services?.provider_role !== "interpreter");
   const recentInterpreter = (bookings || []).find((booking: any) => booking.provider_services?.provider_role === "interpreter");
@@ -59,7 +67,7 @@ export default async function Page() {
       </header>
       <main className="main">
         <h1>Bookings</h1>
-        {provider ? <BookingNavigation current="mine" /> : null}
+
 
         <section className="card booking-shortcuts">
           <h2>Book again</h2>
@@ -76,6 +84,7 @@ export default async function Page() {
 
         {activeRequests.map((request: any) => (
           <section className="card" key={request.id}>
+            <BookingRole serviceRole="interpreter" />
             <span className="status">Interpreter request · {request.state.replaceAll("_", " ")}</span>
             <h2>{request.provider_profiles?.public_display_name}</h2>
             <p>{serviceLabel(request.provider_services)}<br />{new Date(request.requested_start_at).toLocaleString()} · {request.mode.replace("_", " ")}</p>
@@ -85,6 +94,7 @@ export default async function Page() {
 
         {(holds || []).map((hold: any) => (
           <section className="card" key={hold.id}>
+            <BookingRole serviceRole={related<any>(hold.provider_services)?.provider_role} />
             <span className="status">Checkout hold</span>
             <h2>{hold.provider_profiles?.public_display_name}</h2>
             <p>{serviceLabel(hold.provider_services)}<br />{new Date(hold.start_at).toLocaleString()} · {money(hold.price_cents_snapshot)}</p>
@@ -92,17 +102,10 @@ export default async function Page() {
           </section>
         ))}
 
-        {(bookings || []).map((booking: any) => (
-          <section className="card" key={booking.id}>
-            <span className="status">{booking.state.replaceAll("_", " ")}</span>
-            <h2>{booking.provider_profiles?.public_display_name}</h2>
-            <p>{serviceLabel(booking.provider_services)}<br />{new Date(booking.start_at).toLocaleString()} · {money(booking.price_cents)}</p>
-            <small>{booking.reference}</small>
-            <div style={{ marginTop: 12 }}><Link className="mini-btn" href={`/bookings/${booking.id}`}>Manage booking</Link></div>
-          </section>
-        ))}
+        {bookingsError || providerBookingsError ? <p role="alert">Some bookings could not load. Please refresh to try again.</p> : null}
+        <BookingList bookings={allBookings} now={Date.now()} />
 
-        {!activeRequests.length && !holds?.length && !bookings?.length ? <section className="card"><p>No bookings yet. Choose a service above to get started.</p></section> : null}
+        {!activeRequests.length && !holds?.length && !allBookings.length && !bookingsError && !providerBookingsError ? <section className="card"><p>No bookings yet. Choose a service above to get started.</p></section> : null}
       </main>
       <AppNav />
     </div>
