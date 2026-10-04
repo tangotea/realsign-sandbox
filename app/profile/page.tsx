@@ -1,4 +1,5 @@
 import NavigationCard from "@/components/NavigationCard";
+import ProviderTools from "@/components/provider/ProviderTools";
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import BrandLockup from "@/components/BrandLockup";
@@ -56,6 +57,10 @@ export default async function ProfilePage() {
 
         <div className="stack">
           <AccountProfile email={email} initialDisplayName={displayName} />
+          {provider?.status === "approved" ? <section aria-labelledby="profile-provider-tools">
+            <h2 id="profile-provider-tools">Provider tools</h2>
+            <ProviderTools />
+          </section> : null}
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
           {!provider || provider.status !== "approved" ? <NavigationCard href="/profile/identity" icon="ID" title="Identity verification" description="Verify your identity before booking a lesson or interpreter." status={identityStatusLabel(identity?.state || "not_started")} /> : null}
           <NavigationCard href="/profile/notifications" icon="🔔" title="Notifications" description="Booking reminders and visual push alerts." helpSlug="push-reminders" helpText="Manage booking reminders and visual push alerts so important updates are easier to notice." />

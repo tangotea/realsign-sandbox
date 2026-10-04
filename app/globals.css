@@ -277,7 +277,7 @@ button { cursor: pointer; }
 .availability-card-top small { display:block; margin-top:6px; color:var(--muted); }
 .time-select-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .time-select-row .field { margin:6px 0 0; }
-.repeat-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+.repeat-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; margin:16px 0; }
 .repeat-days button { min-height:44px; border:1px solid transparent; border-radius:999px; background:transparent; color:var(--muted); font-weight:900; }
 .repeat-days button.selected { background:#8f8cf8; color:white; }
 .toggle-switch { width:58px; height:32px; padding:3px; border:0; border-radius:999px; background:#c9c9c1; display:flex; align-items:center; justify-content:flex-start; }
@@ -387,7 +387,28 @@ button { cursor: pointer; }
 .provider-block-calendar .calendar-day.blocked { border-color:#222; background:#fff; }
 .provider-block-calendar .calendar-day.blocked:hover { outline:2px solid #222; outline-offset:1px; }
 .provider-block-calendar .blocked-label strong { color:#111; }
-.blocked-summary { margin-top:12px; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:white; color:var(--muted); }
+.blocked-summary { margin:20px 0 24px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:white; color:var(--muted); }
+.blocked-days .closed-dates-empty { margin:20px 0 24px; }
+.closed-date-form { display:flex; flex-wrap:wrap; align-items:end; gap:12px; margin:20px 0 24px; }
+.closed-date-form label { display:grid; gap:8px; min-width:0; flex:1 1 200px; }
+.closed-date-form input { min-width:0; width:100%; }
+.provider-tool-buttons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:20px 0; }
+.provider-tool-buttons .btn { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:56px; padding:14px 16px; text-align:left; white-space:normal; }
+.provider-tool-buttons .btn span:first-child { min-width:0; overflow-wrap:anywhere; }
+.provider-tool-buttons .btn:focus-visible { outline:3px solid #126b57; outline-offset:3px; }
+.provider-block-calendar .calendar-day:focus-visible { outline:3px solid #126b57; outline-offset:2px; }
+@media (max-width:540px) {
+  .provider-block-calendar .calendar-day { min-height:64px; align-items:center; padding:6px 2px; }
+  .provider-block-calendar .day-pill { background:transparent; min-height:18px; padding:0; overflow:visible; }
+  .provider-block-calendar .day-pill > * { display:none; }
+  .provider-block-calendar .day-pill::after { content:""; width:10px; height:10px; border-radius:50%; background:#2f9e44; }
+  .provider-block-calendar .day-status { min-height:18px; }
+  .provider-block-calendar .blocked-label small { display:none; }
+}
+@media (max-width:540px) {
+  .provider-tool-buttons { grid-template-columns:minmax(0,1fr); }
+  .closed-date-form .btn { width:100%; }
+}
 @media (max-width:720px){.booking-calendar{gap:4px}.calendar-day{min-height:74px;padding:5px;border-radius:9px}.day-number{font-size:13px}.day-pill{min-height:36px;padding:5px 3px;font-size:11px;border-radius:7px}.day-pill small{font-size:9px}.day-status{min-height:34px;font-size:10px}.day-status strong{font-size:16px}.calendar-legend{font-size:12px}.compact-field{width:100%}.time-row input{flex:1 1 120px;min-width:0}.time-row .mini-btn{flex:1 1 100%}.verification-row,.upload-summary{align-items:flex-start;flex-wrap:wrap}.verification-row>div:first-child,.upload-summary>div:first-child{min-width:0;flex:1 1 180px}.admin-user-row{grid-template-columns:1fr;gap:12px}.admin-user-actions{justify-content:flex-start}.admin-user-review{align-items:flex-start}.admin-tab{flex:1 1 auto}}
 
 /* Milestone 4 payments + payouts */

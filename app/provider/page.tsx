@@ -1,4 +1,5 @@
 import NavigationCard from "@/components/NavigationCard";
+import ProviderTools from "@/components/provider/ProviderTools";
 import BookingRole from "@/components/booking/BookingRole";
 import { related } from "@/lib/bookingRole";
 import Link from "next/link";
@@ -94,7 +95,7 @@ export default async function ProviderPage() {
       <section className="hero">
         <div className="page-heading">
           <div>
-            <h1>Hello {provider.public_display_name || "there"} 👋</h1>
+            <h1>Hello Provider (Tutor, Interpreter or both)</h1>
             <p>Your next RealSign bookings are shown first.</p>
           </div>
           <HelpButton slug="provider-dashboard" label="Provider dashboard help" size="regular" fallbackText="Use the provider tools to manage your profile, lesson guides, availability, payouts and earnings." />
@@ -121,20 +122,7 @@ export default async function ProviderPage() {
         </section>
       )}
 
-      <nav className="workspace-shortcuts" aria-label="Provider tools">
-        <Link href="/provider/requests">Booking requests</Link>
-        <Link href="/provider/availability">Availability</Link>
-        <Link href="/provider/earnings">Earnings</Link>
-        <Link href="/provider/application">Profile & services</Link>
-        <Link href="/provider/payout">Payout setup</Link>
-        <Link href="/provider/guides">Lesson guides</Link>
-        <Link href="/dictionary">Dictionary</Link>
-        <Link href="/help">Help in SASL</Link>
-      </nav>
-      <section className="provider-settings">
-        <h2>Account settings</h2>
-        <Link className="btn secondary" href="/profile" style={{ marginTop: 12 }}>Your profile</Link>
-      </section>
+      <ProviderTools />
     </ProviderShell>
   );
 }
