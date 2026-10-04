@@ -14,7 +14,7 @@ export default function BookingList({ bookings, now }: { bookings: any[]; now: n
     return view === "Cancelled" ? cancelled : view === "Past" ? !cancelled && past : !cancelled && !past;
   }).sort((a,b) => view === "Upcoming" ? Date.parse(a.start_at)-Date.parse(b.start_at) : Date.parse(b.start_at)-Date.parse(a.start_at));
   return <>
-    <div className="booking-navigation" role="group" aria-label="Filter bookings">
+    <div className="booking-filter-switch" role="group" aria-label="Filter bookings">
       {["Upcoming", "Past", "Cancelled"].map(label => <button type="button" className="mini-btn" key={label} aria-pressed={view === label} onClick={() => setView(label)}>{label}</button>)}
     </div>
     <div className="stack" aria-live="polite">

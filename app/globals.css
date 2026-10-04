@@ -442,6 +442,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline:3px solid
 .booking-role { margin-bottom:12px; padding:12px; background:#edf6f1; border-left:3px solid #126b57; }
 .booking-role p { margin:4px 0 0; }
 .booking-navigation button[aria-pressed="true"] { background:#126b57; color:white; }
+.booking-filter-switch { display:inline-grid; grid-template-columns:repeat(3,minmax(0,1fr)); max-width:100%; padding:4px; gap:4px; margin:20px 0 24px; border-radius:8px; background:#e7edef; }
+.booking-filter-switch .mini-btn { min-height:44px; padding:8px 10px; border:0; background:transparent; color:var(--text,#111); font-weight:600; }
+.booking-filter-switch .mini-btn:hover { background:#f2faf6; }
+.booking-filter-switch .mini-btn[aria-pressed="true"] { background:#126b57; color:white; }
 .mode-switch { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); width:100%; padding:4px; gap:4px; background:#e7edef; border-radius:8px; margin:0 0 24px; }
 .mode-switch a { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-height:92px; padding:16px; gap:8px; border-radius:6px; text-align:left; font-size:24px; line-height:1.25; font-weight:700; }
 .mode-switch small { font-size:15px; line-height:1.4; color:var(--muted); font-weight:400; }

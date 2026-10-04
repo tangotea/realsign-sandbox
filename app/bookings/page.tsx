@@ -105,7 +105,6 @@ export default async function Page() {
         {bookingsError || providerBookingsError ? <p role="alert">Some bookings could not load. Please refresh to try again.</p> : null}
         <BookingList bookings={allBookings} now={Date.now()} />
 
-        {!activeRequests.length && !holds?.length && !allBookings.length && !bookingsError && !providerBookingsError ? <section className="card"><p>No bookings yet. Choose a service above to get started.</p></section> : null}
       </main>
       <AppNav />
     </div>
