@@ -52,10 +52,6 @@ export default async function ProfilePage() {
       <main className="main">
         <section className="hero">
           <h1>Your profile</h1>
-          <p>Your account and preferences.</p>
-          <Link className="profile-provider-link" href={provider ? "/provider" : "/provider/application"}>
-            {provider ? "Provider dashboard" : "Become a provider"}
-          </Link>
         </section>
 
         <div className="stack">
