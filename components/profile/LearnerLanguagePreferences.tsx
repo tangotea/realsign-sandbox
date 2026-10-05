@@ -34,7 +34,7 @@ export default function LearnerLanguagePreferences({ initialSpokenLanguage, init
 
   return (
     <details className="card language-preferences">
-      <summary><strong>Languages</strong><span className="service-chevron" aria-hidden="true">&#8250;</span></summary>
+      <summary><img className="settings-icon" src="/ui-icons/languages.svg" width="30" height="30" alt="" aria-hidden="true" /><strong>Languages</strong><img className="settings-chevron language-chevron" src="/ui-icons/chevron-down.svg" width="24" height="24" alt="" aria-hidden="true" /></summary>
       <div className="language-preferences-body">
       <div className="row"><p>Your learner language preference.</p><HelpButton slug="learner-languages" label="Learner language help" fallbackText="Choose the spoken language you prefer for written communication and whether you would like SASL help where it is available." /></div>
       <label>Spoken language<select className="field" value={spokenLanguage} onChange={event => setSpokenLanguage(event.target.value)}>

@@ -62,9 +62,9 @@ export default async function ProfilePage() {
             <ProviderTools />
           </section> : null}
           <LearnerLanguagePreferences initialSpokenLanguage={String(metadata.learner_spoken_language || "en")} initialUsesSasl={Boolean(metadata.learner_uses_sasl ?? true)} />
-          {!provider || provider.status !== "approved" ? <NavigationCard href="/profile/identity" icon="ID" title="Identity verification" description="Verify your identity before booking a lesson or interpreter." status={identityStatusLabel(identity?.state || "not_started")} /> : null}
-          <NavigationCard href="/profile/notifications" icon="🔔" title="Notifications" description="Booking reminders and visual push alerts." helpSlug="push-reminders" helpText="Manage booking reminders and visual push alerts so important updates are easier to notice." />
-          <NavigationCard href="/help" icon="[?]" title="Help in SASL" description="Watch help videos and read matching text explanations." helpSlug="realsign-help" helpText="Open short RealSign help explanations with matching text and SASL videos when they are available." />
+          {!provider || provider.status !== "approved" ? <NavigationCard href="/profile/identity" iconSrc="/ui-icons/badge-check.svg" title="Identity verification" description="Verify your identity before booking a lesson or interpreter." status={identityStatusLabel(identity?.state || "not_started")} /> : null}
+          <NavigationCard href="/profile/notifications" iconSrc="/ui-icons/bell.svg" title="Notifications" description="Booking reminders and visual push alerts." helpSlug="push-reminders" helpText="Manage booking reminders and visual push alerts so important updates are easier to notice." />
+          <NavigationCard href="/help" iconSrc="/ui-icons/circle-help.svg" title="Help in SASL" description="Watch help videos and read matching text explanations." helpSlug="realsign-help" helpText="Open short RealSign help explanations with matching text and SASL videos when they are available." />
         </div>
       </main>
       <AppNav />

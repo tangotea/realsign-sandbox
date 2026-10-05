@@ -3,7 +3,8 @@ import HelpButton from "@/components/help/HelpButton";
 
 type Props = {
   href: string;
-  icon: string;
+  icon?: string;
+  iconSrc?: string;
   title: string;
   description: string;
   status?: string;
@@ -11,9 +12,9 @@ type Props = {
   helpText?: string;
 };
 
-export default function NavigationCard({ href, icon, title, description, status, helpSlug, helpText }: Props) {
+export default function NavigationCard({ href, icon, iconSrc, title, description, status, helpSlug, helpText }: Props) {
   return <div className="card navigation-card">
-    {icon ? <span className="navigation-card-icon" aria-hidden="true">{icon}</span> : null}
+    {iconSrc || icon ? <span className="navigation-card-icon" aria-hidden="true">{iconSrc ? <img className="settings-icon" src={iconSrc} width="30" height="30" alt="" /> : icon}</span> : null}
     <div className="navigation-card-content">
       <div className="navigation-card-heading">
         <h2><Link href={href}>{title}</Link></h2>
@@ -22,6 +23,6 @@ export default function NavigationCard({ href, icon, title, description, status,
       </div>
       <p>{description}</p>
     </div>
-    <span className="service-chevron" aria-hidden="true">&#8250;</span>
+    <img className="settings-chevron" src="/ui-icons/chevron-right.svg" width="24" height="24" alt="" aria-hidden="true" />
   </div>;
 }
